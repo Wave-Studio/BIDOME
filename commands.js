@@ -3,7 +3,7 @@ const fs = require("fs");
 const Database = require("@replit/database")
 const botdevs = ["423258218035150849", "314166178144583682"]
 
-const pvideos = ["./assets/pvideos/vid1.mp4", "./assets/pvideos/vid2.mp4", "./assets/pvideos/vid3.mp4"]
+const pvideos = ["./assets/pvideos/vid1.mp4", "./assets/pvideos/vid2.mp4", "./assets/pvideos/vid3.mp4", "./assets/pvideos/vid4.mp4", "./assets/pvideos/vid5.mp4"]
 
 async function commands(msg, bot, command, db, prefix) {
   const args = msg.content.toString().split(" ");
@@ -22,7 +22,7 @@ async function commands(msg, bot, command, db, prefix) {
           return msg.channel.send(new discord.MessageEmbed().setTitle("BIDOME BOT HELP").addField("⮞ **Commands [1]:**", "\`prefix\` \n \n*Make sure to use \`" + msgprefix + "config <arg>\` in your messages!*"))
           break;
         case "misc":
-          return msg.channel.send(new discord.MessageEmbed().setTitle("BIDOME BOT HELP").addField("⮞ **Commands [3]:**", "`ping` \n`invite` \n`support`"))
+          return msg.channel.send(new discord.MessageEmbed().setTitle("BIDOME BOT HELP").addField("⮞ **Commands [3]:**", "`ping` \n`invite` \n`support` \n`info` \n`status`"))
           break;
         default:
           msg.channel.send(new discord.MessageEmbed().setTitle("BIDOME BOT HELP").setDescription("I couldn't find that category! See my categories at `" + msgprefix + "help`"))
@@ -55,8 +55,20 @@ async function commands(msg, bot, command, db, prefix) {
         { name: "Servers", value: bot.guilds.cache.size, inline: true },
         { name: "Roles", value: rolesfromeachserver, inline: true }
       ))
-
-      break;
+    break;
+    case "status":
+      msg.channel.send(new discord.MessageEmbed().setTitle("Bidome bot statuses").setDescription("You can suggest statuses to be added to bidome bot [**Here**](https://github.com/LukasmanMHdude/BIDOME)"))
+    break;
+    case "serverinfo":
+      msg.channel.send(new discord.MessageEmbed().setTitle("Bidome bot server info").addFields(
+        { name: "Accounts", value: msg.guild.memberCount, inline: true },
+        { name: "Humans", value: msg.guild.members.cache.filter(member => !member.user.bot).size, inline: true },
+        { name: "Bots", value: msg.guild.members.cache.filter(member => member.user.bot).size, inline: true },
+        { name: "Channels", value: msg.guild.channels.cache.size, inline: true },
+        { name: "Owner", value: msg.guild.owner.user.tag, inline: true },
+        { name: "Roles", value: msg.guild.roles.cache.size, inline: true }
+      ))
+    break;
     /*--------
     Admin
     --------*/

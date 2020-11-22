@@ -5,4 +5,4 @@ function status(){
     "people memeing BIDOME",
     "!status"
   ]
-}
+} exports.status = status;

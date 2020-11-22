@@ -3,7 +3,7 @@ const bot = new discord.Client();
 const fs = require("fs")
 const prefix = "!";
 const commandmanager = require("./commands.js");
-const {status} = require("./status.js");
+const status = require("./status.js");
 const Database = require("@replit/database")
 const db = new Database()
 
@@ -26,7 +26,7 @@ bot.on("ready", async () => {
   console.log("Bot loaded");
   bot.user.setPresence({status:"idle", activity:{name:"Bidome bot wake up", type:"WATCHING"}})
   setInterval(function() {
-    let statuses = status()
+    let statuses = status.status();
      bot.user.setPresence({status:"idle", activity:{name:statuses[Math.floor(Math.random() * statuses.length)], type:"WATCHING"}})
   }, 60000)
 });
