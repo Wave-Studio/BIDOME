@@ -5,6 +5,8 @@ const prefix = "!";
 const commandmanager = require("./commands.js");
 const status = require("./status.js");
 const Database = require("@replit/database")
+const ytdl = require("ytdl-core")
+const opus = require("@discordjs/opus")
 const db = new Database()
 
 const http = require("http");
@@ -28,7 +30,7 @@ bot.on("ready", async () => {
   setInterval(function() {
     let statuses = status.status();
      bot.user.setPresence({status:"idle", activity:{name:statuses[Math.floor(Math.random() * statuses.length)], type:"WATCHING"}})
-  }, 60000)
+  }, 30000)
 });
 
 bot.on("guildCreate", async guild => {

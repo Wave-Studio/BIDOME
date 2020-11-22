@@ -2,6 +2,9 @@ const discord = require("discord.js");
 const fs = require("fs");
 const Database = require("@replit/database")
 const botdevs = ["423258218035150849", "314166178144583682"]
+const ytdl = require("ytdl-core")
+const opus = require("@discordjs/opus")
+var musicqueue = new Map();
 
 const pvideos = ["./assets/pvideos/vid1.mp4", "./assets/pvideos/vid2.mp4", "./assets/pvideos/vid3.mp4", "./assets/pvideos/vid4.mp4", "./assets/pvideos/vid5.mp4"]
 
@@ -97,5 +100,40 @@ async function commands(msg, bot, command, db, prefix) {
     case "porn":
       msg.channel.send("*Enjoy*  😉", { files: [{ attachment: pvideos[Math.floor(Math.random() * pvideos.length)], name: "SPOILER_porn.mp4" }] })
       break;
+    /*--------
+    Music
+    --------*/
+    case "play":
+      let vc = msg.member.voice.channel;
+      if(!vc) return msg.channel.send("You are not currently connected to a voice channel!")
+      if(!args[1]) return msg.channel.send("You have not provided a song!");
+      let q = musicqueue.get(msg.guild.id)
+      let song = args[1]
+      if(q == null || q == undefined) musicqueue.set(msg.guild.id, {"songs":[], "dispatcher":[]})
+      q = musicqueue.get(msg.guild.id)
+      q.songs.push(song);
+      if(q.songs.length < 2) return playMusic(vc, msg);
+      let info = await ytdl.getBasicInfo(song)
+      msg.channel.send(new discord.MessageEmbed().setTitle("Bidome bot music").setDescription("Added song `"+info.videoDetails.title+"` to queue"))
+    break;
   }
 } exports.commands = commands
+
+async function playMusic(vc, msg){
+  let q = musicqueue.get(msg.guild.id)
+  let connection = await vc.join();
+  let song = await ytdl(q.songs[0], { filter: 'audioonly' })
+  let info = await ytdl.getBasicInfo(q.songs[0])
+
+  msg.channel.send(new discord.MessageEmbed().setTitle("Bidome bot music").setDescription("Started playing `"+info.videoDetails.title+"`").setThumbnail(info.videoDetails.thumbnail.thumbnails[0].url))
+
+  let dispatcher = connection.play(song);
+  q.dispatcher.splice(0, 1, dispatcher)
+  dispatcher.on('finish', () =>{
+    q.songs.splice(0, 1);
+    if(q.songs.length > 0) return playMusic(vc, msg);
+    vc.leave();
+    musicqueue.delete(msg.guild.id)
+    msg.channel.send(new discord.MessageEmbed().setTitle("Bidome bot music").setDescription("I have finished my queue and have left the channel"))
+  })
+}
