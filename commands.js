@@ -109,22 +109,39 @@ async function commands(msg, bot, command, db, prefix) {
       if(!msg.guild.me.voice.channel) return msg.channel.send("I am not currently connected to a voice channel!");
       if(msg.guild.me.voice.channel.members.filter(m => !m.user.bot).size > 0 && !msg.member.hasPermission("ADMINISTRATOR")) return msg.channel.send("There are currently users using me!")
       msg.guild.me.voice.channel.leave();
+      musicqueue.get(msg.guild.id).dispatcher[0].destroy();
       msg.channel.send("I have left the voice channel!");
       musicqueue.delete(msg.guild.id);
     break;
     case "play":
-      if(msg.guild.me.voice.channel.members.filter(m => !m.user.bot).size > 0 && msg.member.voice.channel.id !== msg.guild.me.voice.channel.id && !msg.member.hasPermission("ADMINISTRATOR")) return msg.channel.send("I am currently connected to another channel!")
+      if(msg.guild.me.voice.channel){ if(msg.guild.me.voice.channel.members.filter(m => !m.user.bot).size > 0 && msg.member.voice.channel.id !== msg.guild.me.voice.channel.id && !msg.member.hasPermission("ADMINISTRATOR")) return msg.channel.send("I am currently connected to another channel!")
+      }
       let vc = msg.member.voice.channel;
       if(!vc) return msg.channel.send("You are not currently connected to a voice channel!")
       if(!args[1]) return msg.channel.send("You have not provided a song!");
       let q = musicqueue.get(msg.guild.id)
       let song = args[1]
-      if(q == null || q == undefined) musicqueue.set(msg.guild.id, {"songs":[], "dispatcher":[]})
+      if(q == null || q == undefined) musicqueue.set(msg.guild.id, {"songs":[], "dispatcher":[], "paused":[false]})
       q = musicqueue.get(msg.guild.id)
       q.songs.push(song);
       if(q.songs.length < 2) return playMusic(vc, msg);
       let info = await ytdl.getBasicInfo(song)
       msg.channel.send(new discord.MessageEmbed().setTitle("Bidome bot music").setDescription("Added song `"+info.videoDetails.title+"` to queue"))
+    break;
+    case "pause":
+    case "resume":
+      if(!msg.guild.me.voice.channel) return msg.channel.send("I am not currently connected to a voice channel!");
+      if(msg.guild.me.voice.channel.members.filter(m => !m.user.bot).size > 0 && msg.member.voice.channel.id !== msg.guild.me.voice.channel.id && !msg.member.hasPermission("ADMINISTRATOR")) return msg.channel.send("You don't have permission to pause/play at this time, being alone with the bot works.")
+      let isconnected = musicqueue.get(msg.guild.id)
+      if(isconnected.paused[0]){
+        msg.channel.send("The player is no longer paused")
+        isconnected.dispatcher[0].resume()
+        isconnected.paused.splice(0, 1, false)
+      }else{
+        msg.channel.send("I have paused the player");
+        isconnected.dispatcher[0].pause();
+        isconnected.paused.splice(0, 1, true)
+      }
     break;
   }
 } exports.commands = commands
