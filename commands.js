@@ -103,7 +103,17 @@ async function commands(msg, bot, command, db, prefix) {
     /*--------
     Music
     --------*/
+    case "stop":
+    case "fuckoff":
+    case "dc":
+      if(!msg.guild.me.voice.channel) return msg.channel.send("I am not currently connected to a voice channel!");
+      if(msg.guild.me.voice.channel.members.filter(m => !m.user.bot).size > 0 && !msg.member.hasPermission("ADMINISTRATOR")) return msg.channel.send("There are currently users using me!")
+      msg.guild.me.voice.channel.leave();
+      msg.channel.send("I have left the voice channel!");
+      musicqueue.delete(msg.guild.id);
+    break;
     case "play":
+      if(msg.guild.me.voice.channel.members.filter(m => !m.user.bot).size > 0 && msg.member.voice.channel.id !== msg.guild.me.voice.channel.id && !msg.member.hasPermission("ADMINISTRATOR")) return msg.channel.send("I am currently connected to another channel!")
       let vc = msg.member.voice.channel;
       if(!vc) return msg.channel.send("You are not currently connected to a voice channel!")
       if(!args[1]) return msg.channel.send("You have not provided a song!");
@@ -132,6 +142,7 @@ async function playMusic(vc, msg){
   dispatcher.on('finish', () =>{
     q.songs.splice(0, 1);
     if(q.songs.length > 0) return playMusic(vc, msg);
+    if(!msg.guild.me.voice.channel) return;
     vc.leave();
     musicqueue.delete(msg.guild.id)
     msg.channel.send(new discord.MessageEmbed().setTitle("Bidome bot music").setDescription("I have finished my queue and have left the channel"))
