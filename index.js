@@ -43,10 +43,10 @@ bot.on("ready", async () => {
 });
 
 bot.on("guildCreate", async (guild) => {
-  let p = await db.get("prefix." + msg.guild.id);
+  let p = await db.get("prefix." + guild.id);
   if (p == null || p == undefined) {
     p = prefix;
-    db.set("prefix." + msg.guild.id, prefix);
+    db.set("prefix." + guild.id, prefix);
   }
 });
 

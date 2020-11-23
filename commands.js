@@ -126,24 +126,22 @@ async function commands(msg, bot, command, db, prefix) {
         rolesfromeachserver = rolesfromeachserver + g.roles.cache.size;
       });
       msg.channel.send(
-        new discord.MessageEmbed()
-          .setTitle("Bidome bot info")
-          .addFields(
-            { name: "Accounts", value: bot.users.cache.size, inline: true },
-            {
-              name: "Humans",
-              value: bot.users.cache.filter((member) => !member.bot).size,
-              inline: true,
-            },
-            {
-              name: "Bots",
-              value: bot.users.cache.filter((member) => member.bot).size,
-              inline: true,
-            },
-            { name: "Channels", value: bot.channels.cache.size, inline: true },
-            { name: "Servers", value: bot.guilds.cache.size, inline: true },
-            { name: "Roles", value: rolesfromeachserver, inline: true }
-          )
+        new discord.MessageEmbed().setTitle("Bidome bot info").addFields(
+          { name: "Accounts", value: bot.users.cache.size, inline: true },
+          {
+            name: "Humans",
+            value: bot.users.cache.filter((member) => !member.bot).size,
+            inline: true,
+          },
+          {
+            name: "Bots",
+            value: bot.users.cache.filter((member) => member.bot).size,
+            inline: true,
+          },
+          { name: "Channels", value: bot.channels.cache.size, inline: true },
+          { name: "Servers", value: bot.guilds.cache.size, inline: true },
+          { name: "Roles", value: rolesfromeachserver, inline: true }
+        )
       );
       break;
     case "status":
@@ -157,31 +155,28 @@ async function commands(msg, bot, command, db, prefix) {
       break;
     case "serverinfo":
       msg.channel.send(
-        new discord.MessageEmbed()
-          .setTitle("Bidome bot server info")
-          .addFields(
-            { name: "Accounts", value: msg.guild.memberCount, inline: true },
-            {
-              name: "Humans",
-              value: msg.guild.members.cache.filter(
-                (member) => !member.user.bot
-              ).size,
-              inline: true,
-            },
-            {
-              name: "Bots",
-              value: msg.guild.members.cache.filter((member) => member.user.bot)
-                .size,
-              inline: true,
-            },
-            {
-              name: "Channels",
-              value: msg.guild.channels.cache.size,
-              inline: true,
-            },
-            { name: "Owner", value: msg.guild.owner.user.tag, inline: true },
-            { name: "Roles", value: msg.guild.roles.cache.size, inline: true }
-          )
+        new discord.MessageEmbed().setTitle("Bidome bot server info").addFields(
+          { name: "Accounts", value: msg.guild.memberCount, inline: true },
+          {
+            name: "Humans",
+            value: msg.guild.members.cache.filter((member) => !member.user.bot)
+              .size,
+            inline: true,
+          },
+          {
+            name: "Bots",
+            value: msg.guild.members.cache.filter((member) => member.user.bot)
+              .size,
+            inline: true,
+          },
+          {
+            name: "Channels",
+            value: msg.guild.channels.cache.size,
+            inline: true,
+          },
+          { name: "Owner", value: msg.guild.owner.user.tag, inline: true },
+          { name: "Roles", value: msg.guild.roles.cache.size, inline: true }
+        )
       );
       break;
     /*--------
@@ -376,6 +371,28 @@ async function commands(msg, bot, command, db, prefix) {
           )
           .setFooter("Total songs queued: " + musicq.songs.length)
       );
+      break;
+    case "skip":
+    case "s":
+      let queuedsongs = musicqueue.get(msg.guild.id);
+      if (queuedsongs == null || queuedsongs == undefined)
+        return msg.channel.send("I am not currently playing anything!");
+      if (
+        msg.guild.me.voice.channel.members.filter((m) => !m.user.bot).size >
+          0 &&
+        msg.member.voice.channel.id !== msg.guild.me.voice.channel.id &&
+        !msg.member.hasPermission("ADMINISTRATOR")
+      )
+        return msg.channel.send(
+          "You don't have permission to skip at this time, being alone with the bot works."
+        );
+      queuedsongs.songs.splice(0, 1);
+      msg.channel.send(
+        new discord.MessageEmbed()
+          .setTitle("Bidome bot music")
+          .setDescription("I have skipped the song")
+      );
+      playMusic(msg.member.voice.channel, msg);
       break;
   }
 }
