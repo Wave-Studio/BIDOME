@@ -5,6 +5,15 @@ const botdevs = ["423258218035150849", "314166178144583682"];
 const ytdl = require("ytdl-core");
 const opus = require("@discordjs/opus");
 var musicqueue = new Map();
+const ytapi = require("simple-youtube-api");
+
+const ytapikeys = [
+  process.env.ytapikey1,
+  process.env.ytapikey2,
+  process.env.ytapikey3,
+  process.env.ytapikey4,
+  process.env.ytapikey5,
+];
 
 const pvideos = [
   "./assets/pvideos/vid1.mp4",
@@ -15,6 +24,9 @@ const pvideos = [
 ];
 
 async function commands(msg, bot, command, db, prefix) {
+  const youtube = new ytapi(
+    ytapikeys[Math.floor(Math.random() * ytapikeys.length)]
+  );
   const args = msg.content.toString().split(" ");
   const msgprefix = await db.get("prefix." + msg.guild.id);
   switch (command) {
@@ -302,7 +314,10 @@ async function commands(msg, bot, command, db, prefix) {
         );
       if (!args[1]) return msg.channel.send("You have not provided a song!");
       let q = musicqueue.get(msg.guild.id);
-      let song = args[1];
+      let youtuberesult = await youtube.searchVideos(
+        msg.content.substring(args[0].length + 1)
+      );
+      let song = youtuberesult[0].url;
       if (q == null || q == undefined)
         musicqueue.set(msg.guild.id, {
           songs: [],

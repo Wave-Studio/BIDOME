@@ -6,6 +6,7 @@ const commandmanager = require("./commands.js");
 const status = require("./status.js");
 const Database = require("@replit/database");
 const ytdl = require("ytdl-core");
+const ytapi = require("simple-youtube-api")
 const opus = require("@discordjs/opus");
 const db = new Database();
 
