@@ -47,8 +47,12 @@ fs.readdir("./commands/", async (err, files) => {
 });
 
 bot.on("ready", async () => {
-  console.log("Loaded " + commands.size + " commands");
-  console.log("Bot loaded");
+  console.log("Bidome bot");
+  console.log("Starting loading . . .");
+  console.log("Loaded "+commands.size+" commands");
+  console.log("Registering commands");
+  console.log("Loading DB");
+  console.log("Bot started")
   bot.user.setPresence({
     status: "idle",
     activity: { name: "Bidome bot wake up", type: "WATCHING" },

@@ -39,6 +39,11 @@ exports.run = async function (bot, msg, args, prefix) {
   if (!args[1]) return msg.channel.send("You have not provided a song!");
   let q = musicqueue.get(msg.guild.id);
   let song = args[1];
+  let searchmsg = await msg.channel.send(
+    new discord.MessageEmbed()
+      .setTitle("Bidome bot music")
+      .setDescription("<a:typing:779775412829028373> Searching for `"+msg.content.substring(args[0].length + 1)+"`")
+  );
   if (
     !song.startsWith("http://youtube.com") &&
     !song.startsWith("https://youtube.com") &&
@@ -61,19 +66,26 @@ exports.run = async function (bot, msg, args, prefix) {
     });
   q = musicqueue.get(msg.guild.id);
   q.songs.push(song);
-  if (q.songs.length < 2) return playMusic(vc, msg);
-  msg.channel.send(
+  if (q.songs.length < 2) return playMusic(vc, msg, searchmsg);
+  searchmsg.edit(
     new discord.MessageEmbed()
       .setTitle("Bidome bot music")
       .setDescription("Added song `" + info.videoDetails.title + "` to queue")
   );
 };
 
-async function playMusic(vc, msg) {
+async function playMusic(vc, msg, deletme = null) {
   let q = musicqueue.get(msg.guild.id);
   let connection = await vc.join();
   let song = await ytdl(q.songs[0], { filter: "audioonly" });
   let info = await ytdl.getBasicInfo(q.songs[0]);
+  if(deletme) deletme.edit(
+    new discord.MessageEmbed()
+      .setTitle("Bidome bot music")
+      .setDescription("Started playing `" + info.videoDetails.title + "`")
+      .setThumbnail(info.videoDetails.thumbnail.thumbnails[0].url)
+  );
+  else
   msg.channel.send(
     new discord.MessageEmbed()
       .setTitle("Bidome bot music")
