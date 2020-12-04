@@ -2,13 +2,13 @@ const discord = require("discord.js");
 const bot = new discord.Client();
 const fs = require("fs");
 const prefix = "!";
-const commandmanager = require("./commands.js");
 const status = require("./status.js");
 const Database = require("@replit/database");
 const ytdl = require("ytdl-core");
-const ytapi = require("simple-youtube-api")
+const ytapi = require("simple-youtube-api");
 const opus = require("@discordjs/opus");
 const db = new Database();
+var commands = new Map();
 
 const http = require("http");
 const express = require("express");
@@ -25,7 +25,29 @@ const app = express();
   }, 280000);
 }
 
+fs.readdir("./commands/", async (err, files) => {
+  let dirs = files.filter((f) => !f.includes("."));
+  await dirs.forEach(async (f) => {
+    await fs.readdir("./commands/" + f + "/", async (err, files) => {
+      let jsf = files.filter((fi) => fi.endsWith(".js"));
+      await jsf.forEach(async (cmd) => {
+        try {
+          commands.set(
+            require("./commands/" + f + "/" + cmd).info.name,
+            "./commands/" + f + "/" + cmd
+          );
+          let alts = require("./commands/" + f + "/" + cmd).info.alts;
+          alts.forEach((a) => {
+            commands.set(a, "./commands/" + f + "/" + cmd);
+          });
+        } catch {}
+      });
+    });
+  });
+});
+
 bot.on("ready", async () => {
+  console.log("Loaded " + commands.size + " commands");
   console.log("Bot loaded");
   bot.user.setPresence({
     status: "idle",
@@ -95,9 +117,17 @@ bot.on("message", async (msg) => {
     return msg.channel.send("My current prefix in this server is `" + p + "`");
   }
   if (!msg.content.toLowerCase().startsWith(p.toLowerCase())) return;
-  const args = msg.content.toString().split(" ");
-  const command = args[0].toLowerCase().substring(p.length);
-  await commandmanager.commands(msg, bot, command, db, p);
+  let args = msg.content.toString().split(" ");
+  if (
+    !commands.has(msg.content.toLowerCase().split(" ")[0].substring(p.length))
+  )
+    return;
+  await require(commands.get(args[0].toLowerCase().substring(p.length))).run(
+    bot,
+    msg,
+    args,
+    p
+  );
 });
 
 bot.login(process.env.TOKEN);
