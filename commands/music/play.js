@@ -97,10 +97,16 @@ async function playMusic(vc, msg, deletme = null) {
   q.dispatcher.splice(0, 1, dispatcher);
   dispatcher.on("finish", () => {
     q.songs.splice(0, 1);
-    if (q.songs.length > 0) return playMusic(vc, msg);
+    if (q.songs.length > 0) return playMusic(vc, msg, deletme);
     if (!msg.guild.me.voice.channel) return;
     vc.leave();
     musicqueue.delete(msg.guild.id);
+    if(deletme) deletme.edit(
+      new discord.MessageEmbed()
+        .setTitle("Bidome bot music")
+        .setDescription("I have finished my queue and have left the channel")
+    )
+    else
     msg.channel.send(
       new discord.MessageEmbed()
         .setTitle("Bidome bot music")

@@ -20,7 +20,7 @@ exports.run = async function (bot, msg, args, prefix) {
     new discord.MessageEmbed()
       .setTitle("Bidome bot music")
       .setDescription(
-        "**Now playing: **\n- `" +
+        "**Now playing: ** `" +
           (await ytdl.getBasicInfo(musicqu.songs[0])).videoDetails.title +
           "`"
       )

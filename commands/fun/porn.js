@@ -5,14 +5,14 @@ exports.info = {
   name: "porn",
   alts: [],
   description: "😉",
-};
+}
 
 const pvideos = [
-  "../../assets/pvideos/vid1.mp4",
-  "../../assets/pvideos/vid2.mp4",
-  "../../assets/pvideos/vid3.mp4",
-  "../../assets/pvideos/vid4.mp4",
-  "../../assets/pvideos/vid5.mp4",
+  "./assets/pvideos/vid1.mp4",
+  "./assets/pvideos/vid2.mp4",
+  "./assets/pvideos/vid3.mp4",
+  "./assets/pvideos/vid4.mp4",
+  "./assets/pvideos/vid5.mp4",
 ];
 
 exports.run = async function (bot, msg, args, prefix) {

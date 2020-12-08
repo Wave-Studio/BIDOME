@@ -50,24 +50,29 @@ bot.on("ready", async () => {
   console.log("Bidome bot");
   console.log("Starting loading . . .");
   console.log("Loaded "+commands.size+" commands");
-  console.log("Registering commands");
+  console.log("Registering commands in "+bot.guilds.cache.size+" servers");
   console.log("Loading DB");
   console.log("Bot started")
   bot.user.setPresence({
     status: "idle",
-    activity: { name: "Bidome bot wake up", type: "WATCHING" },
+    activity: { name: "Bidome bot start up | !help", type: "WATCHING" },
   });
-  setInterval(function () {
+  setInterval(async function () {
     let statuses = status.status();
     bot.user.setPresence({
       status: "idle",
       activity: {
-        name: statuses[Math.floor(Math.random() * statuses.length)],
+        name: await Placeholders(statuses[Math.floor(Math.random() * statuses.length)]),
         type: "WATCHING",
       },
     });
   }, 30000);
 });
+
+async function Placeholders(status){
+  status = status.replace(/{servers}/, bot.guilds.cache.size+"");
+  return status;
+}
 
 bot.on("guildCreate", async (guild) => {
   let p = await db.get("prefix." + guild.id);
