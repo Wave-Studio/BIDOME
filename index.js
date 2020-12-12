@@ -139,4 +139,13 @@ bot.on("message", async (msg) => {
   );
 });
 
+bot.on('message', message => {
+  if (message.channel.id === "754104963210149959") {
+      message.react('<:yes:760606436777656391>')
+          .then(() => { 
+              message.react('<:no:760606447666069604>')
+          });
+  }
+});
+
 bot.login(process.env.TOKEN);
