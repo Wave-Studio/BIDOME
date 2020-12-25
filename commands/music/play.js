@@ -44,6 +44,9 @@ exports.run = async function (bot, msg, args, prefix) {
       .setTitle("Bidome bot music")
       .setDescription("<a:typing:779775412829028373> Searching for `"+msg.content.substring(args[0].length + 1)+"`")
   );
+  try{(
+      await youtube.searchVideos(msg.content.substring(args[0].length + 1))
+    )[0].url;}catch{return searchmsg.edit(new discord.MessageEmbed().setTitle("Bidome bot music").setDescription("I couldn't find a song with that name!"))}
   if (
     !song.startsWith("http://youtube.com") &&
     !song.startsWith("https://youtube.com") &&

@@ -148,4 +148,5 @@ bot.on('message', message => {
   }
 });
 
-bot.login(process.env.TOKEN);
+bot.login(process.env.supersecretthingthatnobodyshouldknow); 
+process.env.supersecretthingthatnobodyshouldknow = "pls visit this site: [Here](https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PL45I7czocaVJmE4FQrV4r6R5SL47hIs-O&index=92) cause im too lazy to paste the stuff"
