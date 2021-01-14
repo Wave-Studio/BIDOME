@@ -5,6 +5,6 @@ function status(){
     "People memeing BIDOME",
     "!help in {servers} servers",
     "!status",
-    "2020 come to a close"
+    "2021 be chaos"
   ]
 } exports.status = status;
