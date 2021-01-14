@@ -1,4 +1,5 @@
-const db = new require("@replit/database");
+const Database = require("@replit/database")
+const db = new Database()
 const botdevs = ["423258218035150849", "314166178144583682"];
 const discord = require("discord.js");
 exports.info = {
