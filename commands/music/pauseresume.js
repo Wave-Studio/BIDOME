@@ -14,8 +14,7 @@ exports.run = async function (bot, msg, args, prefix) {
     return msg.channel.send("I am not currently connected to a voice channel!");
   if (
     msg.guild.me.voice.channel.members.filter((m) => !m.user.bot).size > 0 &&
-    msg.member.voice.channel.id !== msg.guild.me.voice.channel.id &&
-    !msg.member.hasPermission("ADMINISTRATOR")
+    !msg.member.hasPermission("ADMINISTRATOR") && !botdevs.includes(msg.author.id)
   )
     return msg.channel.send(
       "You don't have permission to pause/play at this time, being alone with the bot works."

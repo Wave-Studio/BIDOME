@@ -16,12 +16,9 @@ exports.run = async function (bot, msg, args, prefix) {
     return msg.channel.send("I am not currently playing anything!");
   if (
     msg.guild.me.voice.channel.members.filter((m) => !m.user.bot).size > 0 &&
-    msg.member.voice.channel.id !== msg.guild.me.voice.channel.id &&
-    !msg.member.hasPermission("ADMINISTRATOR")
+    !msg.member.hasPermission("ADMINISTRATOR") && !botdevs.includes(msg.author.id)
   )
-    return msg.channel.send(
-      "You don't have permission to skip at this time, being alone with the bot works."
-    );
+    return msg.channel.send("Voting to skip 1/idfk (im too lazy to kode this rn)!");
   queuedsongs.songs.splice(0, 1);
   msg.channel.send(
     new discord.MessageEmbed()
