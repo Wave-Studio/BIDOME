@@ -28,14 +28,14 @@ exports.run = async function (bot, msg, args, prefix) {
       return msg.channel.send(
         new discord.MessageEmbed()
           .setTitle("BIDOME BOT HELP")
-          .addField("⮞ **Commands [1]:**", "`joe`")
+          .addField("⮞ **Commands [1]:**", "`joe`\n`mhmeme`")
       );
       break;
     case "admin":
       return msg.channel.send(
         new discord.MessageEmbed()
           .setTitle("BIDOME BOT HELP")
-          .addField("⮞ **Commands [1]:**", "`prefix`")
+          .addField("⮞ **Commands [1]:**", "`config`")
       );
       break;
     case "misc":
@@ -44,7 +44,7 @@ exports.run = async function (bot, msg, args, prefix) {
           .setTitle("BIDOME BOT HELP")
           .addField(
             "⮞ **Commands [5]:**",
-            "`ping` \n`invite` \n`support` \n`info` \n`status`"
+            "`ping` \n`invite` \n`support` \n`info` \n`status` \n`serverinfo`"
           )
       );
       break;
