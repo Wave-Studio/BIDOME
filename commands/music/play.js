@@ -17,6 +17,11 @@ const ytapikeys = [
   process.env.ytapikey3,
   process.env.ytapikey4,
   process.env.ytapikey5,
+  process.env.ytapikey6,
+  process.env.ytapikey7,
+  process.env.ytapikey8,
+  process.env.ytapikey9,
+  process.env.ytapikey10,
 ];
 
 exports.run = async function(bot, msg, args, prefix) {
@@ -60,10 +65,12 @@ exports.run = async function(bot, msg, args, prefix) {
     !song.startsWith("http://www.youtu.be") &&
     !song.startsWith("https://www.youtu.be")
   )
-    song = (
-      await youtube.searchVideos(msg.content.substring(args[0].length + 1))
-    )[0].url;
-  let info = await ytdl.getBasicInfo(song);
+    try {
+      song = (
+        await youtube.searchVideos(msg.content.substring(args[0].length + 1))
+      )[0].url;
+    } catch{ return searchmsg.edit(new discord.MessageEmbed().setTitle("Bidome bot music").setDescription("An error occured while searching! \nThis is likely caused by that video not being found!")) }
+  try{let info = await ytdl.getBasicInfo(song);}catch(e){if(e+"".includes("Error: Status code: 429")) return searchmsg.edit(new discord.MessageEmbed().setTitle("Bidome bot music").setDescription("An error occured while getting that song! \nERR: 429! Please report this to the developers using `"+prefix+"support`"))}
   if (q == null || q == undefined)
     musicqueue.set(msg.guild.id, {
       songs: [],
