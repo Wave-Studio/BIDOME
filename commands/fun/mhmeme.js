@@ -8,7 +8,7 @@ exports.info = {
   description: "Get a dank mh meme",
 }
 
-const memes = fs.readFileSync("./assets/memes/mhmemes.txt", "utf8").split("\n")
+const memes = fs.readFileSync("./assets/memes/mhmemes.txt", "utf8").split("\n").filter(l=>l!=="");
 
 exports.run = async function (bot, msg, args, prefix) {
   msg.channel.send(
