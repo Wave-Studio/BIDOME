@@ -25,6 +25,7 @@ const ytapikeys = [
 ];
 
 exports.run = async function(bot, msg, args, prefix) {
+  if(!botdevs.includes(botdevs) && !true) return msg.channel.send(new discord.MessageEmbed().setTitle("Command disabled!").setDescription("Sorry but this command is currently disabled for maintenence! Please check back later"))
   const youtube = new ytapi(
     ytapikeys[Math.floor(Math.random() * ytapikeys.length)]
   );
@@ -90,7 +91,7 @@ exports.run = async function(bot, msg, args, prefix) {
 async function playMusic(vc, msg, deletme = null) {
   let q = musicqueue.get(msg.guild.id);
   let connection = await vc.join();
-  let song = await ytdl(q.songs[0], { filter: "audioonly" });
+  let song = await ytdl(q.songs[0], { filter: "audioonly", dlChunkSize:0 });
   let info = await ytdl.getBasicInfo(q.songs[0]);
   if (deletme) deletme.edit(
     new discord.MessageEmbed()
