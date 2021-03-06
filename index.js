@@ -48,8 +48,10 @@ fs.readdir("./commands/", async (err, files) => {
 
 bot.on('voiceStateUpdate', (oldState, newState) => {
   if (oldState.channel !== null && newState.channel === null) {
-    if(newState.member.id === bot.user.id)
+    if(newState.member.id === bot.user.id){
     require("./commands/music/play.js").musicqueue.delete(newState.guild.id)
+    require("./commands/music/play.js").get(newState.guild.id).dispatcher[0].destroy();
+    }
   }
 });
 
