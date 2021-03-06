@@ -24,7 +24,7 @@ const ytapikeys = [
   process.env.ytapikey10,
 ];
 
-exports.run = async function(bot, msg, args, prefix) {
+exports.run = async function (bot, msg, args, prefix) {
   //if(!botdevs.includes(msg.author.id)) return msg.channel.send(new discord.MessageEmbed().setTitle("Command disabled!").setDescription("Sorry but this command is currently disabled for maintenence! Please check back later"))
   const youtube = new ytapi(
     ytapikeys[Math.floor(Math.random() * ytapikeys.length)]
@@ -49,13 +49,22 @@ exports.run = async function(bot, msg, args, prefix) {
   let searchmsg = await msg.channel.send(
     new discord.MessageEmbed()
       .setTitle("Bidome bot music")
-      .setDescription("<a:typing:779775412829028373> Searching for `" + msg.content.substring(args[0].length + 1) + "`")
+      .setDescription(
+        "<a:typing:779775412829028373> Searching for `" +
+          msg.content.substring(args[0].length + 1) +
+          "`"
+      )
   );
   try {
-    (
-      await youtube.searchVideos(msg.content.substring(args[0].length + 1))
-    )[0].url;
-  } catch{ return searchmsg.edit(new discord.MessageEmbed().setTitle("Bidome bot music").setDescription("I couldn't find a song with that name!")) }
+    (await youtube.searchVideos(msg.content.substring(args[0].length + 1)))[0]
+      .url;
+  } catch {
+    return searchmsg.edit(
+      new discord.MessageEmbed()
+        .setTitle("Bidome bot music")
+        .setDescription("I couldn't find a song with that name!")
+    );
+  }
   if (
     !song.startsWith("http://youtube.com") &&
     !song.startsWith("https://youtube.com") &&
@@ -70,8 +79,31 @@ exports.run = async function(bot, msg, args, prefix) {
       song = (
         await youtube.searchVideos(msg.content.substring(args[0].length + 1))
       )[0].url;
-    } catch{ return searchmsg.edit(new discord.MessageEmbed().setTitle("Bidome bot music").setDescription("An error occured while searching! \nThis is likely caused by that video not being found!")) }
-  try{let info = await ytdl.getBasicInfo(song);}catch(e){if(e+"".includes("Error: Status code: 429")) return searchmsg.edit(new discord.MessageEmbed().setTitle("Bidome bot music").setDescription("An error occured while getting that song! \nERR: 429! Please report this to the developers using `"+prefix+"support`"))}
+    } catch {
+      return searchmsg.edit(
+        new discord.MessageEmbed()
+          .setTitle("Bidome bot music")
+          .setDescription(
+            "An error occured while searching! \nThis is likely caused by that video not being found!"
+          )
+      );
+    }
+  try {
+    let info = await ytdl.getBasicInfo(song);
+  } catch (e) {
+    if (e + "".includes("Error: Status code: 429")) {
+      bot.channels.cache.get("763454590489329724").send("<@!314166178144583682> Error 429 has occured!")
+      return searchmsg.edit(
+        new discord.MessageEmbed()
+          .setTitle("Bidome bot music")
+          .setDescription(
+            "An error occured while getting that song! \nERR: 429! Please report this to the developers using `" +
+              prefix +
+              "support`"
+          )
+      );
+    }
+  }
   if (q == null || q == undefined)
     musicqueue.set(msg.guild.id, {
       songs: [],
@@ -91,14 +123,15 @@ exports.run = async function(bot, msg, args, prefix) {
 async function playMusic(vc, msg, deletme = null) {
   let q = musicqueue.get(msg.guild.id);
   let connection = await vc.join();
-  let song = await ytdl(q.songs[0], { filter: "audioonly", dlChunkSize:0 });
+  let song = await ytdl(q.songs[0], { filter: "audioonly", dlChunkSize: 0 });
   let info = await ytdl.getBasicInfo(q.songs[0]);
-  if (deletme) deletme.edit(
-    new discord.MessageEmbed()
-      .setTitle("Bidome bot music")
-      .setDescription("Started playing `" + info.videoDetails.title + "`")
-      .setThumbnail(info.videoDetails.thumbnails[0].url)
-  );
+  if (deletme)
+    deletme.edit(
+      new discord.MessageEmbed()
+        .setTitle("Bidome bot music")
+        .setDescription("Started playing `" + info.videoDetails.title + "`")
+        .setThumbnail(info.videoDetails.thumbnails[0].url)
+    );
   else
     msg.channel.send(
       new discord.MessageEmbed()
@@ -115,11 +148,12 @@ async function playMusic(vc, msg, deletme = null) {
     if (!msg.guild.me.voice.channel) return;
     vc.leave();
     musicqueue.delete(msg.guild.id);
-    if (deletme) deletme.edit(
-      new discord.MessageEmbed()
-        .setTitle("Bidome bot music")
-        .setDescription("I have finished my queue and have left the channel")
-    )
+    if (deletme)
+      deletme.edit(
+        new discord.MessageEmbed()
+          .setTitle("Bidome bot music")
+          .setDescription("I have finished my queue and have left the channel")
+      );
     else
       msg.channel.send(
         new discord.MessageEmbed()
@@ -127,4 +161,5 @@ async function playMusic(vc, msg, deletme = null) {
           .setDescription("I have finished my queue and have left the channel")
       );
   });
-} exports.playMusic = playMusic;
+}
+exports.playMusic = playMusic;
