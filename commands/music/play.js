@@ -88,8 +88,9 @@ exports.run = async function (bot, msg, args, prefix) {
           )
       );
     }
+    let info;
   try {
-    let info = await ytdl.getBasicInfo(song);
+    info = await ytdl.getBasicInfo(song);
   } catch (e) {
     if (e + "".includes("Error: Status code: 429")) {
       bot.channels.cache.get("763454590489329724").send("<@!314166178144583682> Error 429 has occured!")

@@ -1,5 +1,5 @@
 const discord = require("discord.js");
-const bot = new discord.Client();
+const bot = new discord.Client({"partials":["CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION", "USER"]});
 const fs = require("fs");
 const prefix = "!";
 const status = require("./status.js");
@@ -46,7 +46,12 @@ fs.readdir("./commands/", async (err, files) => {
   });
 });
 
-
+bot.on('voiceStateUpdate', (oldState, newState) => {
+  if (oldState.channel !== null && newState.channel === null) {
+    if(newState.member.id === bot.user.id)
+    require("./commands/music/play.js").musicqueue.delete(newState.guild.id)
+  }
+});
 
 bot.on("ready", async () => {
   process.env.supersecretthingthatnobodyshouldknow = "pls visit this site: [Here](https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PL45I7czocaVJmE4FQrV4r6R5SL47hIs-O&index=92) cause im too lazy to paste the stuff"
