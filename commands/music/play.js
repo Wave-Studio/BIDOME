@@ -25,7 +25,7 @@ const ytapikeys = [
 ];
 
 exports.run = async function(bot, msg, args, prefix) {
-  if(!botdevs.includes(msg.author.id)) return msg.channel.send(new discord.MessageEmbed().setTitle("Command disabled!").setDescription("Sorry but this command is currently disabled for maintenence! Please check back later"))
+  //if(!botdevs.includes(msg.author.id)) return msg.channel.send(new discord.MessageEmbed().setTitle("Command disabled!").setDescription("Sorry but this command is currently disabled for maintenence! Please check back later"))
   const youtube = new ytapi(
     ytapikeys[Math.floor(Math.random() * ytapikeys.length)]
   );
@@ -97,14 +97,14 @@ async function playMusic(vc, msg, deletme = null) {
     new discord.MessageEmbed()
       .setTitle("Bidome bot music")
       .setDescription("Started playing `" + info.videoDetails.title + "`")
-      .setThumbnail(info.videoDetails.thumbnail.thumbnails[0].url)
+      .setThumbnail(info.videoDetails.thumbnails[0].url)
   );
   else
     msg.channel.send(
       new discord.MessageEmbed()
         .setTitle("Bidome bot music")
         .setDescription("Started playing `" + info.videoDetails.title + "`")
-        .setThumbnail(info.videoDetails.thumbnail.thumbnails[0].url)
+        .setThumbnail(info.videoDetails.thumbnails[0].url)
     );
 
   let dispatcher = connection.play(song);
