@@ -12,7 +12,7 @@ exports.run = async function (bot, msg, args, prefix) {
     new discord.MessageEmbed()
       .setTitle("Bidome bot statuses")
       .setDescription(
-        "You can suggest statuses to be added to bidome bot [**Here**](https://github.com/LukasmanMHdude/BIDOME)"
+        "You can suggest statuses to be added to bidome bot [**Here**](https://github.com/quick007YT/BIDOME)"
       )
   );
 };
