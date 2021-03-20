@@ -20,7 +20,7 @@ exports.run = async function (bot, msg, args, prefix) {
         .addField("**🎵 Music**", "`Listen to jams` \n`on discord`")
         .addField("**👮‍♂️ Admin**", "`Admin commands` \n`and configs.`")
         .setAuthor(
-          "Use " + prefix + "help <fun/admin/misc> to view commands!"
+          "Use " + prefix + "help <fun/admin/misc/music> to view commands!"
         )
     );
   switch (args[1].toLowerCase()) {
