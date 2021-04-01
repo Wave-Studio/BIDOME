@@ -47,6 +47,7 @@ fs.readdir("./commands/", async (err, files) => {
 });
 
 bot.on('voiceStateUpdate', async (oldState, newState) => {
+  try{
   if (oldState.channel !== null && newState.channel === null) {
     if(newState.member.id === bot.user.id){
       if(!require("./commands/music/play.js").musicqueue.has(newState.guild.id)) return;
@@ -54,6 +55,7 @@ bot.on('voiceStateUpdate', async (oldState, newState) => {
     require("./commands/music/play.js").musicqueue.delete(newState.guild.id)
     }
   }
+  }catch{}
 });
 
 bot.on("ready", async () => {
