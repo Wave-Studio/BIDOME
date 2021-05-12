@@ -5,6 +5,7 @@ function status(){
     "!help in {servers} servers",
     "!status",
     "2021 be chaos",
-    "Biden get the vaccine"
+    "Biden get the vaccine",
+    "ur mom"
   ]
 } exports.status = status;
