@@ -4,10 +4,10 @@ const discord = require("discord.js");
 exports.info = {
   name: "status",
   alts: [],
-  description: "Bot statuses",
+  description: "Bot statuses"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   msg.channel.send(
     new discord.MessageEmbed()
       .setTitle("Bidome bot statuses")

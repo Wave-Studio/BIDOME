@@ -4,10 +4,10 @@ const discord = require("discord.js");
 exports.info = {
   name: "invite",
   alts: [],
-  description: "Bot invite",
+  description: "Bot invite"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   msg.channel.send(
     new discord.MessageEmbed()
       .setTitle("Bidome bot Invite")

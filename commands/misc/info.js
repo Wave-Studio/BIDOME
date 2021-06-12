@@ -4,12 +4,12 @@ const discord = require("discord.js");
 exports.info = {
   name: "info",
   alts: [],
-  description: "Bot info",
+  description: "Bot info"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   let rolesfromeachserver = 0;
-  await bot.guilds.cache.forEach((g) => {
+  await bot.guilds.cache.forEach(g => {
     rolesfromeachserver = rolesfromeachserver + g.roles.cache.size;
   });
   msg.channel.send(
@@ -17,13 +17,13 @@ exports.run = async function (bot, msg, args, prefix) {
       { name: "Accounts", value: bot.users.cache.size, inline: true },
       {
         name: "Humans",
-        value: bot.users.cache.filter((member) => !member.bot).size,
-        inline: true,
+        value: bot.users.cache.filter(member => !member.bot).size,
+        inline: true
       },
       {
         name: "Bots",
-        value: bot.users.cache.filter((member) => member.bot).size,
-        inline: true,
+        value: bot.users.cache.filter(member => member.bot).size,
+        inline: true
       },
       { name: "Channels", value: bot.channels.cache.size, inline: true },
       { name: "Servers", value: bot.guilds.cache.size, inline: true },

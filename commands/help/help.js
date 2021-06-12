@@ -4,10 +4,10 @@ const discord = require("discord.js");
 exports.info = {
   name: "help",
   alts: [],
-  description: "Provide help messages",
+  description: "Provide help messages"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   if (!args[1])
     return msg.channel.send(
       new discord.MessageEmbed()

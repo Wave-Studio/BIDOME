@@ -1,14 +1,14 @@
-const Database = require("@replit/database")
-const db = new Database()
+const Database = require("@replit/database");
+const db = new Database();
 const botdevs = ["423258218035150849", "314166178144583682"];
 const discord = require("discord.js");
 exports.info = {
   name: "config",
   alts: ["setting", "configs", "settings"],
-  description: "Configure bot",
+  description: "Configure bot"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   if (
     !msg.member.hasPermission("ADMINISTRATOR") &&
     !botdevs.includes(msg.author.id)

@@ -1,5 +1,7 @@
 const discord = require("discord.js");
-const bot = new discord.Client({"partials":["CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION", "USER"]});
+const bot = new discord.Client({
+  partials: ["CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION", "USER"]
+});
 const fs = require("fs");
 const prefix = "!";
 const status = require("./status.js");
@@ -26,18 +28,18 @@ const app = express();
 }
 
 fs.readdir("./commands/", async (err, files) => {
-  let dirs = files.filter((f) => !f.includes("."));
-  await dirs.forEach(async (f) => {
+  let dirs = files.filter(f => !f.includes("."));
+  await dirs.forEach(async f => {
     await fs.readdir("./commands/" + f + "/", async (err, files) => {
-      let jsf = files.filter((fi) => fi.endsWith(".js"));
-      await jsf.forEach(async (cmd) => {
+      let jsf = files.filter(fi => fi.endsWith(".js"));
+      await jsf.forEach(async cmd => {
         try {
           commands.set(
             require("./commands/" + f + "/" + cmd).info.name,
             "./commands/" + f + "/" + cmd
           );
           let alts = require("./commands/" + f + "/" + cmd).info.alts;
-          alts.forEach((a) => {
+          alts.forEach(a => {
             commands.set(a, "./commands/" + f + "/" + cmd);
           });
         } catch {}
@@ -46,48 +48,58 @@ fs.readdir("./commands/", async (err, files) => {
   });
 });
 
-bot.on('voiceStateUpdate', async (oldState, newState) => {
-  try{
-  if (oldState.channel !== null && newState.channel === null) {
-    if(newState.member.id === bot.user.id){
-      if(!require("./commands/music/play.js").musicqueue.has(newState.guild.id)) return;
-    await require("./commands/music/play.js").musicqueue.get(newState.guild.id).dispatcher[0].destroy();
-    require("./commands/music/play.js").musicqueue.delete(newState.guild.id)
+bot.on("voiceStateUpdate", async (oldState, newState) => {
+  try {
+    if (oldState.channel !== null && newState.channel === null) {
+      if (newState.member.id === bot.user.id) {
+        if (
+          !require("./commands/music/play.js").musicqueue.has(newState.guild.id)
+        )
+          return;
+        await require("./commands/music/play.js")
+          .musicqueue.get(newState.guild.id)
+          .dispatcher[0].destroy();
+        require("./commands/music/play.js").musicqueue.delete(
+          newState.guild.id
+        );
+      }
     }
-  }
-  }catch{}
+  } catch {}
 });
 
 bot.on("ready", async () => {
-  process.env.supersecretthingthatnobodyshouldknow = "pls visit this site: [Here](https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PL45I7czocaVJmE4FQrV4r6R5SL47hIs-O&index=92) cause im too lazy to paste the stuff"
+  process.env.supersecretthingthatnobodyshouldknow =
+    "pls visit this site: [Here](https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PL45I7czocaVJmE4FQrV4r6R5SL47hIs-O&index=92) cause im too lazy to paste the stuff";
   console.log("Bidome bot");
   console.log("Starting loading . . .");
-  console.log("Loaded "+commands.size+" commands");
-  console.log("Registering commands in "+bot.guilds.cache.size+" servers");
+  console.log("Loaded " + commands.size + " commands");
+  console.log("Registering commands in " + bot.guilds.cache.size + " servers");
   console.log("Loading DB");
-  console.log("Bot started")
   bot.user.setPresence({
     status: "idle",
-    activity: { name: "Bidome bot start up | !help", type: "WATCHING" },
+    activity: { name: "Bidome bot start up | !help", type: "WATCHING" }
   });
-  setInterval(async function () {
+  console.log("Bot started");
+  setInterval(async function() {
     let statuses = status.status();
     bot.user.setPresence({
       status: "idle",
       activity: {
-        name: await Placeholders(statuses[Math.floor(Math.random() * statuses.length)]),
-        type: "WATCHING",
-      },
+        name: await Placeholders(
+          statuses[Math.floor(Math.random() * statuses.length)]
+        ),
+        type: "WATCHING"
+      }
     });
   }, 30000);
 });
 
-async function Placeholders(status){
-  status = status.replace(/{servers}/, bot.guilds.cache.size+"");
+async function Placeholders(status) {
+  status = status.replace(/{servers}/, bot.guilds.cache.size + "");
   return status;
 }
 
-bot.on("guildCreate", async (guild) => {
+bot.on("guildCreate", async guild => {
   let p = await db.get("prefix." + guild.id);
   if (p == null || p == undefined) {
     p = prefix;
@@ -95,7 +107,7 @@ bot.on("guildCreate", async (guild) => {
   }
 });
 
-bot.on("message", async (msg) => {
+bot.on("message", async msg => {
   if (msg.author.bot) return;
   if (msg.content.toLowerCase().includes("bidome"))
     msg.react("776908944240541706");
@@ -141,7 +153,12 @@ bot.on("message", async (msg) => {
   if (!msg.content.toLowerCase().startsWith(p.toLowerCase())) return;
   let args = msg.content.toString().split(" ");
   if (
-    !commands.has(msg.content.toLowerCase().split(" ")[0].substring(p.length))
+    !commands.has(
+      msg.content
+        .toLowerCase()
+        .split(" ")[0]
+        .substring(p.length)
+    )
   )
     return;
   await require(commands.get(args[0].toLowerCase().substring(p.length))).run(
@@ -152,13 +169,24 @@ bot.on("message", async (msg) => {
   );
 });
 
-bot.on('message', message => {
-  if (message.channel.id === "754104963210149959") {
-      message.react('<:yes:760606436777656391>')
-          .then(() => { 
-              message.react('<:no:760606447666069604>')
-          });
-  }
+bot.on("message", async msg => {
+  if (msg.channel.type === "dm") return;
+  if (msg.channel.id !== "754104963210149959") return;
+  if (
+    msg.author.id === "331179093447933963" &&
+    msg.content.toLowerCase().includes("server")
+  )
+    return msg.react("⛔");
+  await msg.react("<:yes:760606436777656391>");
+  await msg.react("<:no:760606447666069604>");
 });
 
-bot.login(process.env.supersecretthingthatnobodyshouldknow); 
+bot.on("message", async msg => {
+  if (msg.channel.id !== "839181518228291624") return;
+  await msg.react("<:yes:760606436777656391>");
+  await msg.react("<:no:760606447666069604>");
+});
+
+
+
+bot.login(process.env.supersecretthingthatnobodyshouldknow);

@@ -4,10 +4,10 @@ const discord = require("discord.js");
 exports.info = {
   name: "joe",
   alts: [],
-  description: "Get joe bidomed",
+  description: "Get joe bidomed"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   msg.channel.send(
     new discord.MessageEmbed()
       .setTitle("BIDOME")

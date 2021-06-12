@@ -6,15 +6,16 @@ const ytdl = require("ytdl-core");
 exports.info = {
   name: "stop",
   alts: ["dc", "disconnect", "fuckoff"],
-  description: "Stop playing music",
+  description: "Stop playing music"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   if (!msg.guild.me.voice.channel)
     return msg.channel.send("I am not currently connected to a voice channel!");
   if (
-    msg.guild.me.voice.channel.members.filter((m) => !m.user.bot).size > 0 &&
-    !msg.member.hasPermission("ADMINISTRATOR") && !botdevs.includes(msg.author.id)
+    msg.guild.me.voice.channel.members.filter(m => !m.user.bot).size > 1 &&
+    !msg.member.hasPermission("ADMINISTRATOR") &&
+    !botdevs.includes(msg.author.id)
   )
     return msg.channel.send("There are currently users using me!");
   msg.guild.me.voice.channel.leave();

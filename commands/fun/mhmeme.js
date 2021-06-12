@@ -5,13 +5,20 @@ const fs = require("fs");
 exports.info = {
   name: "mhmeme",
   alts: ["minehutmeme"],
-  description: "Get a dank mh meme",
-}
+  description: "Get a dank mh meme"
+};
 
-const memes = fs.readFileSync("./assets/memes/mhmemes.txt", "utf8").split("\n").filter(l=>l!=="");
+const memes = fs
+  .readFileSync("./assets/memes/mhmemes.txt", "utf8")
+  .split("\n")
+  .filter(l => l !== "");
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   msg.channel.send(
-    new discord.MessageEmbed().setTitle("Minehut meme").setDescription("Enjoy!").setImage(memes[Math.floor(Math.random() * memes.length)]).setFooter("Adxm#7477 made me")
-  )
+    new discord.MessageEmbed()
+      .setTitle("Minehut meme")
+      .setDescription("Enjoy!")
+      .setImage(memes[Math.floor(Math.random() * memes.length)])
+      .setFooter("Adxm#7477 made me")
+  );
 };

@@ -4,10 +4,10 @@ const discord = require("discord.js");
 exports.info = {
   name: "ping",
   alts: [],
-  description: "Ping pong",
+  description: "Ping pong"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   let m = await msg.channel.send(
     new discord.MessageEmbed()
       .setTitle("Bidome bot ping")

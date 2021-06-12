@@ -4,9 +4,7 @@ const discord = require("discord.js");
 exports.info = {
   name: "command",
   alts: [],
-  description: "Command description",
+  description: "Command description"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
-
-}
+exports.run = async function(bot, msg, args, prefix) {};

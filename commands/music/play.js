@@ -5,6 +5,7 @@ var musicqueue = new Map();
 exports.musicqueue = musicqueue;
 const ytapi = require("simple-youtube-api");
 const ytdl = require("ytdl-core");
+const fs = require("fs");
 exports.info = {
   name: "play",
   alts: ["p"],
@@ -24,7 +25,7 @@ const ytapikeys = [
   process.env.ytapikey10,
 ];
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   //if(!botdevs.includes(msg.author.id)) return msg.channel.send(new discord.MessageEmbed().setTitle("Command disabled!").setDescription("Sorry but this command is currently disabled for maintenence! Please check back later"))
   const youtube = new ytapi(
     ytapikeys[Math.floor(Math.random() * ytapikeys.length)]
@@ -36,7 +37,7 @@ exports.run = async function (bot, msg, args, prefix) {
     );
   if (msg.guild.me.voice.channel) {
     if (
-      msg.guild.me.voice.channel.members.filter((m) => !m.user.bot).size > 0 &&
+      msg.guild.me.voice.channel.members.filter((m) => !m.user.bot).size > 1 &&
       msg.member.voice.channel.id !== msg.guild.me.voice.channel.id &&
       !msg.member.hasPermission("ADMINISTRATOR") &&
       botdevs.includes(msg.author.id)
@@ -51,19 +52,30 @@ exports.run = async function (bot, msg, args, prefix) {
       .setTitle("Bidome bot music")
       .setDescription(
         "<a:typing:779775412829028373> Searching for `" +
-          msg.content.substring(args[0].length + 1) +
-          "`"
+        msg.content.substring(args[0].length + 1) +
+        "`"
       )
   );
-  try {
-    (await youtube.searchVideos(msg.content.substring(args[0].length + 1)))[0]
-      .url;
-  } catch {
-    return searchmsg.edit(
-      new discord.MessageEmbed()
-        .setTitle("Bidome bot music")
-        .setDescription("I couldn't find a song with that name!")
-    );
+  if (
+    !song.startsWith("http://youtube.com") &&
+    !song.startsWith("https://youtube.com") &&
+    !song.startsWith("http://www.youtube.com") &&
+    !song.startsWith("https://www.youtube.com") &&
+    !song.startsWith("http://youtu.be") &&
+    !song.startsWith("https://youtu.be") &&
+    !song.startsWith("http://www.youtu.be") &&
+    !song.startsWith("https://www.youtu.be")
+  ) {
+    try {
+      (await youtube.searchVideos(msg.content.substring(args[0].length + 1)))[0]
+        .url;
+    } catch {
+      return searchmsg.edit(
+        new discord.MessageEmbed()
+          .setTitle("Bidome bot music")
+          .setDescription("I couldn't find a song with that name!")
+      );
+    }
   }
   if (
     !song.startsWith("http://youtube.com") &&
@@ -84,28 +96,31 @@ exports.run = async function (bot, msg, args, prefix) {
         new discord.MessageEmbed()
           .setTitle("Bidome bot music")
           .setDescription(
-            "An error occured while searching! \nThis is likely caused by that video not being found!"
+            "An error occured while searching! \nMake sure the video isn't age restricted!"
           )
       );
     }
-    let info;
+  let info;
   try {
     info = await ytdl.getBasicInfo(song);
   } catch (e) {
     if (e + "".includes("Error: Status code: 429")) {
-      bot.channels.cache.get("763454590489329724").send("<@!314166178144583682> Error 429 has occured!")
+      bot.channels.cache
+        .get("763454590489329724")
+        .send("<@!314166178144583682> Error 429 has occured!");
       return searchmsg.edit(
         new discord.MessageEmbed()
           .setTitle("Bidome bot music")
           .setDescription(
             "An error occured while getting that song! \nERR: 429! Please report this to the developers using `" +
-              prefix +
-              "support`"
+            prefix +
+            "support`"
           )
       );
     }
   }
-  if (q == null || q == undefined)
+
+  if (q == null || q.songs == undefined)
     musicqueue.set(msg.guild.id, {
       songs: [],
       dispatcher: [],

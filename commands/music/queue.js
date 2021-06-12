@@ -6,10 +6,10 @@ const ytdl = require("ytdl-core");
 exports.info = {
   name: "queue",
   alts: ["q"],
-  description: "Music queue",
+  description: "Music queue"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   let musicq = musicqueue.get(msg.guild.id);
   if (musicq == null || musicq == undefined)
     return msg.channel.send("I am not currently playing anything!");
@@ -17,7 +17,7 @@ exports.run = async function (bot, msg, args, prefix) {
   if (musicq.songs.length < maxsongs) maxsongs = musicq.songs.length;
   let desc = "";
   for (let i = 1; i < maxsongs; i++) {
-    console.log(i)
+    console.log(i);
     let songinfo = await ytdl.getBasicInfo(musicq.songs[i]);
     desc = desc + "**[" + i + "]** - `" + songinfo.videoDetails.title + "` \n";
   }

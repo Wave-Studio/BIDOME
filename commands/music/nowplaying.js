@@ -6,10 +6,10 @@ const ytdl = require("ytdl-core");
 exports.info = {
   name: "nowplaying",
   alts: ["np"],
-  description: "Get current song being played",
+  description: "Get current song being played"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   let musicqu = musicqueue.get(msg.guild.id);
   if (
     musicqueue.get(msg.guild.id) == null ||

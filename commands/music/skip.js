@@ -3,22 +3,25 @@ const botdevs = ["423258218035150849", "314166178144583682"];
 const discord = require("discord.js");
 var musicqueue = require("./play.js").musicqueue;
 const ytdl = require("ytdl-core");
-const playMusic = require("./play.js").playMusic
+const playMusic = require("./play.js").playMusic;
 exports.info = {
   name: "skip",
   alts: ["s"],
-  description: "Skip current song",
+  description: "Skip current song"
 };
 
-exports.run = async function (bot, msg, args, prefix) {
+exports.run = async function(bot, msg, args, prefix) {
   let queuedsongs = musicqueue.get(msg.guild.id);
   if (queuedsongs == null || queuedsongs == undefined)
     return msg.channel.send("I am not currently playing anything!");
   if (
-    msg.guild.me.voice.channel.members.filter((m) => !m.user.bot).size > 0 &&
-    !msg.member.hasPermission("ADMINISTRATOR") && !botdevs.includes(msg.author.id)
+    msg.guild.me.voice.channel.members.filter(m => !m.user.bot).size > 1 &&
+    !msg.member.hasPermission("ADMINISTRATOR") &&
+    !botdevs.includes(msg.author.id)
   )
-    return msg.channel.send("Voting to skip 1/idfk (im too lazy to kode this rn)!");
+    return msg.channel.send(
+      "Unable to skip! You need the `ADMINISTRATOR` permission. (Being alone with the bot also works)"
+    );
   queuedsongs.songs.splice(0, 1);
   msg.channel.send(
     new discord.MessageEmbed()
