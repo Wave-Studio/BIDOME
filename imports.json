@@ -1,0 +1,10 @@
+{
+	"imports": {
+		"import/": "./imports/",
+		"harmony": "./imports/harmony.ts",
+		"dotenv": "./imports/dotenv.ts",
+		"env": "./imports/env.ts",
+		"replitdb": "./imports/replitdb.ts",
+		"tools": "./imports/tools.ts"
+	}
+}
