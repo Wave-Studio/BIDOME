@@ -1,0 +1,10 @@
+{
+	"nodes": [
+		{
+			"host": "localhost",
+			"password": "PointlessCauseBotIsOpenSource",
+			"port": 42069,
+			"id": "main"
+		}
+	]
+}

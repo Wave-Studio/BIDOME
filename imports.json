@@ -5,6 +5,8 @@
 		"dotenv": "./imports/dotenv.ts",
 		"env": "./imports/env.ts",
 		"replitdb": "./imports/replitdb.ts",
-		"tools": "./imports/tools.ts"
+		"tools": "./imports/tools.ts",
+		"lavalink": "./imports/lavalink.ts",
+		"types/music": "./typings/music.ts"
 	}
 }

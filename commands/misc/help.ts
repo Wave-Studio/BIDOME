@@ -173,7 +173,7 @@ export class command extends Command {
 								? "I couldn't seem to find that category!"
 								: '```\n - ' + description + '\n```',
 						footer: {
-							text: 'Need help with something? Check out our discord using the discord command!',
+							text: `Need help with something? Check out our discord using ${ctx.prefix}discord`,
 						},
 					}).setColor('random'),
 				});
