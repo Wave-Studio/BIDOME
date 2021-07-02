@@ -1,9 +1,10 @@
-import { CommandClient, GatewayIntents, GatewayResponse } from 'harmony';
+import { CommandClient, GatewayIntents } from 'harmony';
 import { ReplitDB } from 'replitdb';
 import { token } from 'env';
+import { Manager } from 'lavalink';
 
 Deno.run({
-	cmd: ['cmd', '/c', 'java -jar lavalink.jar'],
+	cmd: ['cmd', '/c', 'java -jar assets/lavalink.jar'],
 });
 
 const bot = new CommandClient({
@@ -66,11 +67,16 @@ bot.on('ready', async () => {
 	console.log(`Loaded ${await bot.commands.list.size} commands!`);
 
 	// Jank fix for lavalink
-	const lavalinkSend = (_: unknown, payload: GatewayResponse) => {
-		bot.gateway.send(payload);
-	};
-	(await import('./commands/music/play.ts')).lavalinkManager.send =
-		lavalinkSend;
+	(await import('./commands/music/join.ts')).lavalinkManagers.push(
+		new Manager(
+			JSON.parse(await Deno.readTextFile('./assets/music.json')).nodes,
+			{
+				send(_, payload) {
+					bot.gateway.send(payload);
+				},
+			}
+		)
+	);
 	console.log('Loaded bot!');
 });
 

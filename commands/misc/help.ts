@@ -94,11 +94,12 @@ export class command extends Command {
 
 			const components: MessageComponentData[] = [];
 
-			for (let i = 0; i < Math.ceil((categories.length + 1) / 5); i++) {
+			for (let i = 0; i < Math.ceil(categories.length / 5); i++) {
 				const row: MessageComponentData[] = [];
 				for (let b = 0; b < 5; b++) {
 					const button = categories[b + i * 5];
-					if (typeof button === 'undefined') continue;
+					if (typeof button === 'undefined' || button === '')
+						continue;
 					row.push({
 						type: 2,
 						label: format(button),

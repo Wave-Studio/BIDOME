@@ -3,12 +3,8 @@ import { Manager } from 'lavalink';
 import { GuildQueue } from 'types/music';
 
 export const queue = new Map<string, GuildQueue>();
-export const lavalink = new Manager(
-	JSON.parse(await Deno.readTextFile('./assets/music.json')).nodes,
-	{
-		send(_, _payload) {},
-	}
-);
+export const lavalinkManagers: Manager[] = [];
+export const lavalink: Manager = lavalinkManagers[0];
 
 export class command extends Command {
 	name = 'summon';
@@ -20,7 +16,8 @@ export class command extends Command {
 		if (!ctx.guild?.id) return;
 		if (
 			queue.has(ctx.guild.id) &&
-			!ctx.message.member?.permissions.serialize().ADMINISTRATOR
+			!ctx.message.member?.permissions.serialize().ADMINISTRATOR &&
+			(queue.get(ctx.guild.id)?.songs?.length as number) > 1
 		) {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
