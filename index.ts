@@ -3,9 +3,9 @@ import { ReplitDB } from 'replitdb';
 import { token } from 'env';
 import { Manager } from 'lavalink';
 
-Deno.run({
-	cmd: ['cmd', '/c', 'java -jar assets/lavalink.jar'],
-});
+// Deno.run({
+// 	cmd: ['cmd', '/c', 'java -jar assets/lavalink.jar'],
+// });
 
 const bot = new CommandClient({
 	prefix: [],

@@ -21,6 +21,7 @@ export class command extends Command {
 				description: 'Executing code!',
 			}).setColor('random'),
 		});
+		
 		try {
 			const executed = await eval(code);
 			console.log(
