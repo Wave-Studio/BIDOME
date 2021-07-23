@@ -109,7 +109,7 @@ bot.on("guildCreate", async guild => {
 
 bot.on("message", async msg => {
   if (msg.author.bot) return;
-  if (msg.content.toLowerCase().includes("bidome"))
+  if (msg.content.toLowerCase().includes(":bidome:"))
     msg.react("776908944240541706");
   if (msg.channel.type === "dm") {
     if (

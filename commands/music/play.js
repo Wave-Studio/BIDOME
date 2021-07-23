@@ -104,7 +104,9 @@ exports.run = async function(bot, msg, args, prefix) {
   try {
     info = await ytdl.getBasicInfo(song);
   } catch (e) {
-    if (e + "".includes("Error: Status code: 429")) {
+    e = require("util").inspect(e);
+    if (e.includes("Error: Status code: 429")) {
+      console.log(e);
       bot.channels.cache
         .get("763454590489329724")
         .send("<@!314166178144583682> Error 429 has occured!");
@@ -115,6 +117,15 @@ exports.run = async function(bot, msg, args, prefix) {
             "An error occured while getting that song! \nERR: 429! Please report this to the developers using `" +
             prefix +
             "support`"
+          )
+      );
+    } else {
+			console.log(e);
+      return searchmsg.edit(
+        new discord.MessageEmbed()
+          .setTitle("Bidome bot music")
+          .setDescription(
+            "An error occured while getting that song. Try again later!"
           )
       );
     }
