@@ -12,7 +12,7 @@ exports.run = async function(bot, msg, args, prefix) {
     new discord.MessageEmbed()
       .setTitle("Bidome bot Support")
       .setDescription(
-        "Get bot support [**here**](https://discord.gg/Y4USEwV) by joining this server and dming me."
+        "Get bot support [**here**](https://discord.gg/Y4USEwV) by joining this server and dming me `!verify`."
       )
   );
 };

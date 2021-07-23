@@ -12,7 +12,7 @@ const opus = require("@discordjs/opus");
 const db = new Database();
 var commands = new Map();
 
-const http = require("http");
+const http = require("http"); 
 const express = require("express");
 const app = express();
 {
@@ -112,6 +112,7 @@ bot.on("message", async msg => {
   if (msg.content.toLowerCase().includes(":bidome:"))
     msg.react("776908944240541706");
   if (msg.channel.type === "dm") {
+		if (!msg.content.toLowerCase().startsWith("!verify")) return;
     if (
       bot.guilds.cache
         .get("763454459208400897")
