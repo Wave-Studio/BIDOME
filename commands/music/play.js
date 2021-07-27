@@ -151,7 +151,6 @@ async function playMusic(vc, msg, deletme = null) {
 	try {
   let q = musicqueue.get(msg.guild.id);
   let connection = await vc.join();
-  let song = await ytdl(q.songs[0], { filter: "audioonly", dlChunkSize: 0 });
   let info = await ytdl.getBasicInfo(q.songs[0]);
   if (deletme)
     deletme.edit(
@@ -168,7 +167,7 @@ async function playMusic(vc, msg, deletme = null) {
         .setThumbnail(info.videoDetails.thumbnails[0].url)
     );
 
-  let dispatcher = connection.play(song);
+  let dispatcher = connection.play(ytdl(q.songs[0], { filter: "audioonly", dlChunkSize: 0 }));
   q.dispatcher.splice(0, 1, dispatcher);
   dispatcher.on("finish", () => {
     q.songs.splice(0, 1);
