@@ -10,7 +10,9 @@ const ytdl = require("ytdl-core");
 const ytapi = require("simple-youtube-api");
 const opus = require("@discordjs/opus");
 const db = new Database();
+const botdevs = ["423258218035150849", "314166178144583682"];
 var commands = new Map();
+var cooldown = new Map();
 
 const http = require("http"); 
 const express = require("express");
@@ -162,6 +164,16 @@ bot.on("message", async msg => {
     )
   )
     return;
+	if (cooldown.has(msg.author.id)) {
+		msg.channel.send(new discord.MessageEmbed().setTitle("Slow down!").setDescription("Please wait `"+(5 -((Date.now() - cooldown.get(msg.author.id))/1000)).toFixed(1)+"` second(s) before running another command!"))
+		return;
+	}
+	if (!botdevs.includes(msg.author.id)){
+	cooldown.set(msg.author.id, Date.now())
+	setTimeout(()=>{
+		cooldown.delete(msg.author.id)
+	}, 5 * 1000)
+	}
   await require(commands.get(args[0].toLowerCase().substring(p.length))).run(
     bot,
     msg,
@@ -188,6 +200,14 @@ bot.on("message", async msg => {
   await msg.react("<:no:760606447666069604>");
 });
 
+require("process").on('uncaughtException', (err, origin) => {
+  console.log("An error has occured! Below is the stacktrace");
+	console.log(err);
+});
+
+bot.on("error", (err) =>{
+	console.log("An error has occured: ", err);
+})
 
 
 bot.login(process.env.supersecretthingthatnobodyshouldknow);

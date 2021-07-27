@@ -148,6 +148,7 @@ exports.run = async function(bot, msg, args, prefix) {
 };
 
 async function playMusic(vc, msg, deletme = null) {
+	try {
   let q = musicqueue.get(msg.guild.id);
   let connection = await vc.join();
   let song = await ytdl(q.songs[0], { filter: "audioonly", dlChunkSize: 0 });
@@ -188,5 +189,12 @@ async function playMusic(vc, msg, deletme = null) {
           .setDescription("I have finished my queue and have left the channel")
       );
   });
+	}catch{
+		msg.channel.send(
+        new discord.MessageEmbed()
+          .setTitle("Bidome bot music")
+          .setDescription("An error has occured while playing/searching! This has been reported to the devs")
+      );
+	}
 }
 exports.playMusic = playMusic;
