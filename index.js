@@ -164,11 +164,12 @@ bot.on("message", async msg => {
     )
   )
     return;
+	if (msg.channel.id === "847264775582122024") return;
 	if (cooldown.has(msg.author.id)) {
 		msg.channel.send(new discord.MessageEmbed().setTitle("Slow down!").setDescription("Please wait `"+(5 -((Date.now() - cooldown.get(msg.author.id))/1000)).toFixed(1)+"` second(s) before running another command!"))
 		return;
 	}
-	if (!botdevs.includes(msg.author.id)){
+	if (!botdevs.includes(msg.author.id) && !msg.member.hasPermission("ADMINISTRATOR")){
 	cooldown.set(msg.author.id, Date.now())
 	setTimeout(()=>{
 		cooldown.delete(msg.author.id)
