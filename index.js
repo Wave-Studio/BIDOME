@@ -29,6 +29,10 @@ const app = express();
   }, 280000);
 }
 
+if (!fs.existsSync("./audio")) {
+	fs.mkdirSync("./audio");
+}
+
 fs.readdir("./commands/", async (err, files) => {
   let dirs = files.filter(f => !f.includes("."));
   await dirs.forEach(async f => {
