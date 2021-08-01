@@ -162,29 +162,19 @@ async function playMusic(vc, msg, deletme = null) {
       if (!msg.guild.me.voice.channel) return;
       vc.leave();
       musicqueue.delete(msg.guild.id);
-			const embed = new discord.MessageEmbed()
-            .setTitle("Bidome bot music")
-            .setDescription(
-              "I have finished my queue and have left the channel"
-            )
-      if (deletme)
-        deletme.edit(
-          embed
-        );
-      else
-        msg.channel.send(
-          new discord.MessageEmbed()
-            .setTitle("Bidome bot music")
-            .setDescription(
-              "I have finished my queue and have left the channel"
-            )
-        );
+      const embed = new discord.MessageEmbed()
+        .setTitle("Bidome bot music")
+        .setDescription("I have finished my queue and have left the channel");
+      if (deletme) deletme.edit(embed);
+      else msg.channel.send(embed);
     });
-  } catch (e){
-		console.log(e);
-		bot.channels.cache
-        .get("763454590489329724")
-        .send("<@!314166178144583682> An error has occured! Please check console");
+  } catch (e) {
+    console.log(e);
+    bot.channels.cache
+      .get("763454590489329724")
+      .send(
+        "<@!314166178144583682> An error has occured! Please check console"
+      );
     msg.channel.send(
       new discord.MessageEmbed()
         .setTitle("Bidome bot music")
