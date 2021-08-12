@@ -56,7 +56,7 @@ exports.run = async function (bot, msg, args, prefix) {
           "`"
       )
   );
-  if (!/(?:http(?:s)?:\/\/)?(youtu.be|youtube.com\/watch)\//gi.test(song))
+  if (!/(?:http(?:s)?:\/\/)?(youtu.be|youtube.com\/watch)/gi.test(song))
     try {
       song = (
         await youtube.searchVideos(msg.content.substring(args[0].length + 1))
