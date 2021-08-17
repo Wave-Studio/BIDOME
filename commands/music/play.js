@@ -38,11 +38,10 @@ exports.run = async function (bot, msg, args, prefix) {
   if (msg.guild.me.voice.channel) {
     if (
       msg.guild.me.voice.channel.members.filter((m) => !m.user.bot).size > 1 &&
-      msg.member.voice.channel.id !== msg.guild.me.voice.channel.id &&
-      !msg.member.hasPermission("ADMINISTRATOR") &&
-      botdevs.includes(msg.author.id)
-    )
+      msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
+    ) {
       return msg.channel.send("I am currently connected to another channel!");
+    }
   }
   if (!args[1]) return msg.channel.send("You have not provided a song!");
   let q = musicqueue.get(msg.guild.id);
