@@ -1,3 +1,5 @@
 .env
 temp/
 run.bat
+lava example.ts
+lavalink/

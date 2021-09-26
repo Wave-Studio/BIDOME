@@ -1,11 +1,12 @@
-import { CommandClient, GatewayIntents } from 'harmony';
+import {
+	CommandClient,
+	GatewayIntents,
+	CommandContext,
+	Embed,
+} from 'harmony';
 import { ReplitDB } from 'replitdb';
-import { token } from 'env';
-import { Manager } from 'lavalink';
 
-// Deno.run({
-// 	cmd: ['cmd', '/c', 'java -jar assets/lavalink.jar'],
-// });
+import 'https://deno.land/x/dotenv@v3.0.0/load.ts';
 
 const bot = new CommandClient({
 	prefix: [],
@@ -64,20 +65,49 @@ bot.on('ready', async () => {
 			}
 		}
 	}
-	console.log(`Loaded ${await bot.commands.list.size} commands!`);
 
-	// Jank fix for lavalink
-	(await import('./commands/music/join.ts')).lavalinkManagers.push(
-		new Manager(
-			JSON.parse(await Deno.readTextFile('./assets/music.json')).nodes,
-			{
-				send(_, payload) {
-					bot.gateway.send(payload);
-				},
-			}
-		)
+	for await (const extension of Deno.readDir('./extensions')) {
+		if (
+			extension.isFile &&
+			(extension.name.endsWith('.ts') || extension.name.endsWith('.tsx'))
+		) {
+			bot.extensions.load(
+				(await import(`./extensions/${extension.name}`)).extension
+			);
+		}
+	}
+
+	console.log(
+		`Loaded ${await bot.commands.list.size} command${
+			bot.commands.list.size == 1 ? '' : 's'
+		} and ${await bot.extensions.list.size} extension${
+			bot.extensions.list.size == 1 ? '' : 's'
+		}!`
 	);
 	console.log('Loaded bot!');
+
+	setInterval(() => {}, 30000);
 });
 
-bot.connect(token, [GatewayIntents.GUILDS, GatewayIntents.GUILD_MESSAGES]);
+bot.on('commandError', async (ctx: CommandContext, err: Error) => {
+	console.log(
+		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`
+	);
+	console.log(err);
+	await ctx.message.reply(undefined, {
+		embed: new Embed({
+			author: {
+				name: 'Bidome bot',
+				icon_url: ctx.message.client.user?.avatarURL(),
+			},
+			title: 'An error occured!',
+			description:
+				'An error occured while executing this command! If this command continues erroring please alert a developer!',
+		}).setColor('random'),
+	});
+});
+
+bot.connect(Deno.env.get('token'), [
+	GatewayIntents.GUILDS,
+	GatewayIntents.GUILD_MESSAGES,
+]);

@@ -1,6 +1,4 @@
 //import { Client } from 'https://deno.land/x/replit_database@v1.1/mod.ts';
-import { replitdb } from "env";
-
 class fordev{
 	constructor(_replitdb: string){}
 	get(_key: string){
@@ -12,5 +10,5 @@ class fordev{
 }
 
 export const ReplitDB = new fordev( // Replace with Client when not in dev
-	replitdb
+	Deno.env.get("replitdb") as string
 );

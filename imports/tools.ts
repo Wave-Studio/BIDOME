@@ -1,4 +1,4 @@
-export const formatMs = (ms: number): string =>{
+export const formatMs = (ms: number): string => {
 	let seconds = Math.floor(ms / 1000);
 	let minutes = Math.floor(seconds / 60);
 	seconds -= minutes * 60;
@@ -17,8 +17,18 @@ export const formatMs = (ms: number): string =>{
 	]
 		.join('')
 		.substring(1);
-}
+};
 
 export const format = (name: string): string => {
-    return `${name.substring(0, 1).toUpperCase()}${name.substring(1).toLowerCase()}`;
-}
+	return `${name.substring(0, 1).toUpperCase()}${name
+		.substring(1)
+		.toLowerCase()}`;
+};
+
+export const removeDiscordFormatting = (text: string): string => {
+	return text
+		.replace(/\_/, '\\_')
+		.replace(/\*/, '\\*')
+		.replace(/\`/, '\\`')
+		.replace(/\~/, '\\~');
+};

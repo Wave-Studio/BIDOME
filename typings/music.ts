@@ -1,15 +1,20 @@
-import { Player } from "lavalink";
+import { Player } from 'lavadeno';
+import { Message } from 'harmony';
 
 export interface GuildQueue {
-    dj: string;
-    songs: Song[];
-    player: Player
+	startedby: string;
+	connection: Player;
+	channel: string;
+	songs: Song[];
+	voteskip: string[];
+	message: Message | null;
 }
 
 export interface Song {
-    name: string;
-    image: string;
-    requestedBy: string;
-    url: string;
-    secondLength: number;
+	name: string;
+	image: string | null;
+	requestedBy: string;
+	url: string;
+	secondLength: number;
+	track: string;
 }

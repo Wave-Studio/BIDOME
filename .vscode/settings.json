@@ -3,7 +3,6 @@
     "deno.lint": true,
     "deno.unstable": true,
     "deno.importMap": "./imports.json",
-    "deno.config": "./tsconfig.json",
     "deno.suggest.imports.hosts": {
         "https://deno.land": true
     }
