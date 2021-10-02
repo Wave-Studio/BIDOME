@@ -30,5 +30,9 @@ export const removeDiscordFormatting = (text: string): string => {
 		.replace(/\_/, '\\_')
 		.replace(/\*/, '\\*')
 		.replace(/\`/, '\\`')
+		.replace(/\[/, '\\[')
+		.replace(/\]/, '\\]')
+		.replace(/\)/, '\\)')
+		.replace(/\(/, '\\(')
 		.replace(/\~/, '\\~');
 };

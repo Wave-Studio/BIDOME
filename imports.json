@@ -5,7 +5,6 @@
 		"replitdb": "./imports/replitdb.ts",
 		"tools": "./imports/tools.ts",
 		"lavadeno": "./imports/lavadeno.ts",
-
-		"types/music": "./typings/music.ts"
+		"queue": "./imports/queue.ts"
 	}
 }

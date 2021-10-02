@@ -1,12 +1,11 @@
-import {
-	CommandClient,
-	GatewayIntents,
-	CommandContext,
-	Embed,
-} from 'harmony';
+import { CommandClient, GatewayIntents, CommandContext, Embed } from 'harmony';
 import { ReplitDB } from 'replitdb';
 
 import 'https://deno.land/x/dotenv@v3.0.0/load.ts';
+
+// Deno.run({
+// 	cmd: ['cmd', '/c', 'java -jar lavalink/Lavalink.jar'],
+// });
 
 const bot = new CommandClient({
 	prefix: [],
@@ -110,4 +109,6 @@ bot.on('commandError', async (ctx: CommandContext, err: Error) => {
 bot.connect(Deno.env.get('token'), [
 	GatewayIntents.GUILDS,
 	GatewayIntents.GUILD_MESSAGES,
+	GatewayIntents.GUILD_VOICE_STATES,
+	GatewayIntents.GUILD_PRESENCES,
 ]);
