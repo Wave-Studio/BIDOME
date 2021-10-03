@@ -32,10 +32,7 @@ export class Queue {
 		this.player.connect(BigInt(channel), {
 			deafen: true,
 		});
-		// TODO: Fix bot breaking on channel move
-		let moved = false;
 		this.player.on('channelMove', (_from, to) => {
-			moved = true;
 			this.channel = to.toString();
 		});
 		this.player.on('channelLeave', () => {
@@ -43,31 +40,26 @@ export class Queue {
 		});
 
 		const onTrackEnd = () => {
-			setTimeout(() => {
-				if (!moved) {
-					this.queue.shift();
-				} else {
-					moved = false;
+			this.queue.shift();
+
+			if (this.queue.length < 1) {
+				if (this.message) {
+					this.message.edit(
+						new Embed({
+							author: {
+								name: 'Bidome bot',
+								icon_url: this.client.user?.avatarURL(),
+							},
+							title: 'Music',
+							description: `I have finished my queue!`,
+						}).setColor('random')
+					);
 				}
-				if (this.queue.length < 1) {
-					if (this.message) {
-						this.message.edit(
-							new Embed({
-								author: {
-									name: 'Bidome bot',
-									icon_url: this.client.user?.avatarURL(),
-								},
-								title: 'Music',
-								description: `I have finished my queue!`,
-							}).setColor('random')
-						);
-					}
-					this.player.destroy();
-					this.queueInstances.delete(this.server);
-					return;
-				}
-				this.playSong();
-			}, 500);
+				this.player.destroy();
+				this.queueInstances.delete(this.server);
+				return;
+			}
+			this.playSong();
 		};
 
 		this.player.on('trackEnd', onTrackEnd);
