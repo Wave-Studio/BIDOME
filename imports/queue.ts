@@ -26,9 +26,10 @@ export class Queue {
 		private queueInstances: Map<string, Queue>,
 		private message?: Message
 	) {
+		this.voteSkip = [this.client.user?.id as string];
+
 		this.player =
-			node.players.get(BigInt(server)) ??
-			node.createPlayer(BigInt(server));
+			node.players.get(BigInt(server)) ?? node.createPlayer(BigInt(server));
 		this.player.connect(BigInt(channel), {
 			deafen: true,
 		});
@@ -39,32 +40,32 @@ export class Queue {
 			this.deleteQueue();
 		});
 
-		const onTrackEnd = () => {
-			this.queue.shift();
+		this.player.on('trackEnd', this.onTrackEnd);
+		this.player.on('trackStuck', this.onTrackEnd);
+		this.player.on('trackException', this.onTrackEnd);
+	}
 
-			if (this.queue.length < 1) {
-				if (this.message) {
-					this.message.edit(
-						new Embed({
-							author: {
-								name: 'Bidome bot',
-								icon_url: this.client.user?.avatarURL(),
-							},
-							title: 'Music',
-							description: `I have finished my queue!`,
-						}).setColor('random')
-					);
-				}
-				this.player.destroy();
-				this.queueInstances.delete(this.server);
-				return;
+	onTrackEnd() {
+		if (this == undefined) return;
+		this.queue.shift();
+
+		if (this.queue.length < 1) {
+			if (this.message) {
+				this.message.edit(
+					new Embed({
+						author: {
+							name: 'Bidome bot',
+							icon_url: this.client.user?.avatarURL(),
+						},
+						title: 'Music',
+						description: `I have finished my queue!`,
+					}).setColor('random')
+				);
 			}
-			this.playSong();
-		};
-
-		this.player.on('trackEnd', onTrackEnd);
-		this.player.on('trackStuck', onTrackEnd);
-		this.player.on('trackException', onTrackEnd);
+			this.deleteQueue();
+			return;
+		}
+		this.playSong();
 	}
 
 	addSong(song: Song) {
@@ -79,54 +80,72 @@ export class Queue {
 	}
 
 	private playSong() {
-		this.player.stop();
+		this.voteSkip = [this.client.user?.id as string];
 		const song = this.queue[0];
-		if (this.message) {
-			this.message.edit({
-				embed: new Embed({
-					author: {
-						name: 'Bidome bot',
-						icon_url: this.client.user?.avatarURL(),
-					},
-					title: 'Playing song',
-					fields: [
-						{
-							name: 'Song',
-							value: `\`${(song.name.length > 197
-								? `${song.name.substring(0, 197)}...`
-								: song.name
-							)
-								.replace(/`/gi, '\\`')
-								.replace(/\\/, '\\')}\``,
-							inline: true,
+		if (song == undefined) {
+			this.deleteQueue();
+		} else {
+			if (this.message) {
+				this.message.edit({
+					embed: new Embed({
+						author: {
+							name: 'Bidome bot',
+							icon_url: this.client.user?.avatarURL(),
 						},
-						{
-							name: 'Author',
-							value: `${removeDiscordFormatting(song.author)}`,
-							inline: true,
+						title: 'Playing song',
+						fields: [
+							{
+								name: 'Song',
+								value: `\`${(song.name.length > 197
+									? `${song.name.substring(0, 197)}...`
+									: song.name
+								)
+									.replace(/`/gi, '\\`')
+									.replace(/\\/, '\\')}\``,
+								inline: true,
+							},
+							{
+								name: 'Author',
+								value: `${removeDiscordFormatting(song.author)}`,
+								inline: true,
+							},
+							{
+								name: 'Length',
+								value: `${formatMs(song.msLength)}`,
+								inline: true,
+							},
+						],
+						thumbnail: {
+							url: song.image ?? undefined,
 						},
-						{
-							name: 'Length',
-							value: `${formatMs(song.msLength)}`,
-							inline: true,
-						},
-					],
-					thumbnail: {
-						url: song.image ?? undefined,
-					},
-				}).setColor('random'),
-				components: [],
+					}).setColor('random'),
+					components: [],
+				});
+			}
+			this.player.play(song.track, {
+				volume: this.volume,
 			});
 		}
-		this.player.play(song.track, {
-			volume: this.volume,
-		});
 	}
 
-	deleteQueue() {
+	async deleteQueue() {
 		this.queue = [];
-		this.player.stop();
-		this.player.destroy();
+		await this.player.destroy();
 		this.queueInstances.delete(this.server);
+	}
+
+	shouldBotVoteskip(users: string[]): boolean {
+		const voteSkipUsers: string[] = [];
+		for (const user of users) {
+			if (this.voteSkip.includes(user)) {
+				voteSkipUsers.push(user);
+			}
+		}
+		const neededToSkip =
+			users.length == 1
+				? 0
+				: Math.floor(users.length / 2) + 1;
+		if (voteSkipUsers.length >= neededToSkip) return true;
+		else return false;
 	}
 }

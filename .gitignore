@@ -1,5 +1,12 @@
+# Ignore ENV vars
 .env
+
+# Ignore temporary files (for dev)
 temp/
-run.bat
-lava example.ts
-lavalink/
+
+# Ignore run files
+run.sh
+
+# Ignore lavalink
+lavalink/Lavalink.jar
+lavalink/logs

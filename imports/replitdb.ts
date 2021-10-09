@@ -10,5 +10,5 @@ class fordev{
 }
 
 export const ReplitDB = new fordev( // Replace with Client when not in dev
-	Deno.env.get("replitdb") as string
+	(Deno.env.get("REPLIT_DB_URL") ?? "") as string
 );
