@@ -2,7 +2,7 @@
 class fordev{
 	constructor(_replitdb: string){}
 	get(_key: string){
-		return ">";
+		return ">>";
 	}
 	set(_key: string, _value: unknown){
 		return;

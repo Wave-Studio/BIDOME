@@ -15,7 +15,7 @@ const bot = new CommandClient({
 			prefix = '!';
 			await ReplitDB.set('prefix.' + guildid, prefix);
 		}
-		return prefix + '>';
+		return prefix;
 	},
 	allowBots: false,
 	allowDMs: false,
