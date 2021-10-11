@@ -1,5 +1,5 @@
 import { CommandClient, GatewayIntents, CommandContext, Embed } from 'harmony';
-import { ReplitDB } from 'replitdb';
+import { Database } from 'database';
 
 import 'https://deno.land/x/dotenv@v3.0.0/load.ts';
 
@@ -10,10 +10,10 @@ import 'https://deno.land/x/dotenv@v3.0.0/load.ts';
 const bot = new CommandClient({
 	prefix: [],
 	async getGuildPrefix(guildid: string): Promise<string> {
-		let prefix = await ReplitDB.get('prefix.' + guildid);
+		let prefix = await Database.get('prefix.' + guildid);
 		if (typeof prefix === 'undefined') {
 			prefix = '!';
-			await ReplitDB.set('prefix.' + guildid, prefix);
+			await Database.set('prefix.' + guildid, prefix);
 		}
 		return prefix;
 	},

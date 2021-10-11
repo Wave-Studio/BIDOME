@@ -10,3 +10,6 @@ run.sh
 # Ignore lavalink
 lavalink/Lavalink.jar
 lavalink/logs
+
+# Ignore database
+database.json

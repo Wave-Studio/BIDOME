@@ -5,7 +5,7 @@ import {
 	isMessageComponentInteraction,
 	InteractionResponseType,
 } from 'harmony';
-import { ReplitDB } from 'replitdb';
+import { Database } from 'database';
 
 export class command extends Command {
 	name = 'config';
@@ -88,7 +88,7 @@ export class command extends Command {
 						},
 						description:
 							'Current prefix: `' +
-							(await ReplitDB.get(
+							(await Database.get(
 								'prefix.' + ctx.message.guild?.id
 							)) +
 							'`',
@@ -207,7 +207,7 @@ export class command extends Command {
 							}
 						}
 						if (!shouldChangePrefix) return;
-						await ReplitDB.set(
+						await Database.set(
 							'prefix.' + ctx.message.guild?.id,
 							prefix.content.toLowerCase()
 						);
