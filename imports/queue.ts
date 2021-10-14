@@ -33,8 +33,9 @@ export class Queue {
 		this.player.connect(BigInt(channel), {
 			deafen: true,
 		});
-		this.player.on('channelMove', (_from, to) => {
-			this.channel = to.toString();
+		this.player.on('channelMove', (_from, _to) => {
+			// Bug with lavadeno
+			this.deleteQueue();
 		});
 		this.player.on('channelLeave', () => {
 			this.deleteQueue();
@@ -46,7 +47,6 @@ export class Queue {
 	}
 
 	onTrackEnd() {
-		if (this == undefined) return;
 		this.queue.shift();
 
 		if (this.queue.length < 1) {
@@ -112,6 +112,20 @@ export class Queue {
 							{
 								name: 'Length',
 								value: `${formatMs(song.msLength)}`,
+								inline: true,
+							},
+							{
+								name: 'Requested by',
+								value: `<@!${song.requestedBy}>`,
+								inline: true,
+							},
+							{
+								name: 'Progress:',
+								value: `\`${formatMs(
+									(this.player.position ?? 1000) < 1000
+										? 1000
+										: this.player.position ?? 1000, true
+								)}\`/\`${formatMs(song.msLength, true)}\``,
 								inline: true,
 							},
 						],

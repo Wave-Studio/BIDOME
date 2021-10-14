@@ -479,7 +479,8 @@ export class extension extends Extension {
 				}).setColor('random'),
 			});
 		} else {
-			const song = (queue.get(ctx.guild.id) as Queue).queue[0];
+			const serverQueue = queue.get(ctx.guild.id) as Queue;
+			const song = serverQueue.queue[0];
 			ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
@@ -506,6 +507,20 @@ export class extension extends Extension {
 						{
 							name: 'Length',
 							value: `${formatMs(song.msLength)}`,
+							inline: true,
+						},
+						{
+							name: 'Requested by',
+							value: `<@!${song.requestedBy}>`,
+							inline: true,
+						},
+						{
+							name: 'Progress:',
+							value: `\`${formatMs(
+								(serverQueue.player.position ?? 1000) < 1000
+									? 1000
+									: serverQueue.player.position ?? 1000, true
+							)}\`/\`${formatMs(song.msLength, true)}\``,
 							inline: true,
 						},
 					],
@@ -682,7 +697,6 @@ export class extension extends Extension {
 						serverQueue.voteSkip.push(ctx.author.id);
 
 						if (serverQueue.shouldBotVoteskip(connectedUsers)) {
-							serverQueue.queue.shift();
 							serverQueue.onTrackEnd();
 							await message.edit({
 								embed: new Embed({

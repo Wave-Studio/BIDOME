@@ -1,4 +1,4 @@
-export const formatMs = (ms: number): string => {
+export const formatMs = (ms: number, nontext = false): string => {
 	let seconds = Math.floor(ms / 1000);
 	let minutes = Math.floor(seconds / 60);
 	seconds -= minutes * 60;
@@ -8,15 +8,35 @@ export const formatMs = (ms: number): string => {
 	hours -= days * 24;
 	const weeks = Math.floor(days / 7);
 	days -= weeks * 7;
-	return [
-		`${weeks > 0 ? ` ${weeks} Week${weeks > 1 ? 's' : ''}` : ''}`,
-		`${days > 0 ? ` ${days} Day${days > 1 ? 's' : ''}` : ''}`,
-		`${hours > 0 ? ` ${hours} Hour${hours > 1 ? 's' : ''}` : ''}`,
-		`${minutes > 0 ? ` ${minutes} Minute${minutes > 1 ? 's' : ''}` : ''}`,
-		`${seconds > 0 ? ` ${seconds} Second${seconds > 1 ? 's' : ''}` : ''}`,
-	]
-		.join('')
-		.substring(1);
+	if (!nontext) {
+		return [
+			`${weeks > 0 ? ` ${weeks} Week${weeks > 1 ? 's' : ''}` : ''}`,
+			`${days > 0 ? ` ${days} Day${days > 1 ? 's' : ''}` : ''}`,
+			`${hours > 0 ? ` ${hours} Hour${hours > 1 ? 's' : ''}` : ''}`,
+			`${minutes > 0 ? ` ${minutes} Minute${minutes > 1 ? 's' : ''}` : ''}`,
+			`${seconds > 0 ? ` ${seconds} Second${seconds > 1 ? 's' : ''}` : ''}`,
+		]
+			.join('')
+			.substring(1);
+	} else {
+		// TODO: Might need to fix
+		return [
+			`${areGreaterThan0(days, hours) && weeks > 0 ? `${weeks}:` : ''}`,
+			`${areGreaterThan0(hours) && days > 0 ? `${days}:` : ''}`,
+			`${hours > 0 ? `${(hours) < 10 ? `0${hours}` : hours}:` : ''}`,
+			`${(minutes) < 10 ? `0${minutes}` : minutes}:`,
+			`${(seconds) < 10 ? `0${seconds}` : seconds}`,
+		].join('');
+	}
+};
+
+export const areGreaterThan0 = (...args: number[]): boolean => {
+	for (const arg of args) {
+		if (arg ?? 0 > 0) {
+			return true;
+		}
+	}
+	return false;
 };
 
 export const format = (name: string): string => {
