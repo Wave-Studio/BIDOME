@@ -8,4 +8,3 @@ To contribute to the bot:
 | --- | --- |
 | Statuses | Status.js |
 | MhMeme | Assets/memes/mhmemes.txt |
-
