@@ -17,6 +17,11 @@ export class Queue {
 	public queue: Song[] = [];
 	public voteSkip: string[] = [];
 	public volume = 100;
+	public queueloop = false;
+	public songloop = false;
+
+	private instance: Queue = this;
+
 	constructor(
 		private node: Cluster,
 		public channel: string,
@@ -41,15 +46,25 @@ export class Queue {
 			this.deleteQueue();
 		});
 
-		this.player.on('trackEnd', this.onTrackEnd);
-		this.player.on('trackStuck', this.onTrackEnd);
-		this.player.on('trackException', this.onTrackEnd);
+		this.player.on('trackEnd', () => this.onTrackEnd.call(this.instance));
+		this.player.on('trackStuck', () => this.onTrackEnd.call(this.instance));
+		this.player.on('trackException', () => this.onTrackEnd.call(this.instance));
 	}
 
 	onTrackEnd() {
-		this.queue.shift();
+		// Fix bugs somehow? idk
+		if (this.queueloop) {
+			this.queue.push(this.queue[0]);
+			this.queue.shift();
+		} else {
+			if (!this.songloop) {
+				this.queue.shift();
+			}
+		}
 
 		if (this.queue.length < 1) {
+			this.queueloop = false;
+			this.songloop = false;
 			if (this.message) {
 				this.message.edit(
 					new Embed({

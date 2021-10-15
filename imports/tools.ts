@@ -19,24 +19,33 @@ export const formatMs = (ms: number, nontext = false): string => {
 			.join('')
 			.substring(1);
 	} else {
-		// TODO: Might need to fix
 		return [
-			`${areGreaterThan0(days, hours) && weeks > 0 ? `${weeks}:` : ''}`,
-			`${areGreaterThan0(hours) && days > 0 ? `${days}:` : ''}`,
-			`${hours > 0 ? `${(hours) < 10 ? `0${hours}` : hours}:` : ''}`,
-			`${(minutes) < 10 ? `0${minutes}` : minutes}:`,
-			`${(seconds) < 10 ? `0${seconds}` : seconds}`,
+			`${weeks > 0 ? `${weeks}:` : ''}`,
+			`${weeks > 0 || days > 0 ? `${days}:` : ''}`,
+			`${hours > 0 ? `${hours < 10 ? `0${hours}` : hours}:` : ''}`,
+			`${minutes < 10 ? `0${minutes}` : minutes}:`,
+			`${seconds < 10 ? `0${seconds}` : seconds}`,
 		].join('');
 	}
 };
 
-export const areGreaterThan0 = (...args: number[]): boolean => {
+export const isOneGreaterThan0 = (...args: number[]): boolean => {
 	for (const arg of args) {
 		if (arg ?? 0 > 0) {
 			return true;
 		}
 	}
 	return false;
+};
+
+export const areAllGreaterThan0 = (...args: number[]): boolean => {
+	let validNums = 0;
+	for (const arg of args) {
+		if (arg ?? 0 > 0) {
+			validNums++;
+		}
+	}
+	return validNums == args.length;
 };
 
 export const format = (name: string): string => {

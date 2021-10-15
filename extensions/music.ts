@@ -83,6 +83,7 @@ export class extension extends Extension {
 	@command({
 		aliases: ['summon'],
 		category: 'music',
+		description: 'Join the voice channel',
 	})
 	async join(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -148,6 +149,7 @@ export class extension extends Extension {
 	@command({
 		aliases: ['enqueue', 'p'],
 		category: 'music',
+		description: 'Play a song',
 	})
 	async play(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -417,6 +419,7 @@ export class extension extends Extension {
 	@command({
 		aliases: ['q', 'serverqueue'],
 		category: 'music',
+		description: 'See the current queue',
 	})
 	async queue(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -456,6 +459,9 @@ export class extension extends Extension {
 									.replace(/\\/, '\\')}** (${formatMs(song.msLength)})`
 						)
 						.join('\n'),
+					footer: {
+						text: `Total length: ${songs.length}`,
+					},
 				}).setColor('random'),
 			});
 		}
@@ -464,6 +470,7 @@ export class extension extends Extension {
 	@command({
 		aliases: ['np'],
 		category: 'music',
+		description: 'See what song is currently playing',
 	})
 	async nowplaying(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -519,7 +526,8 @@ export class extension extends Extension {
 							value: `\`${formatMs(
 								(serverQueue.player.position ?? 1000) < 1000
 									? 1000
-									: serverQueue.player.position ?? 1000, true
+									: serverQueue.player.position ?? 1000,
+								true
 							)}\`/\`${formatMs(song.msLength, true)}\``,
 							inline: true,
 						},
@@ -535,6 +543,7 @@ export class extension extends Extension {
 	@command({
 		aliases: ['dc', 'fuckoff', 'stop'],
 		category: 'music',
+		description: 'Disconnect the bot',
 	})
 	async disconnect(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -619,6 +628,7 @@ export class extension extends Extension {
 	@command({
 		aliases: ['s'],
 		category: 'music',
+		description: 'Vote to skip the current song',
 	})
 	async skip(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -697,6 +707,9 @@ export class extension extends Extension {
 						serverQueue.voteSkip.push(ctx.author.id);
 
 						if (serverQueue.shouldBotVoteskip(connectedUsers)) {
+							if (serverQueue.songloop) {
+								serverQueue.queue.shift();
+							}
 							serverQueue.onTrackEnd();
 							await message.edit({
 								embed: new Embed({
@@ -719,6 +732,7 @@ export class extension extends Extension {
 	@command({
 		aliases: ['fs'],
 		category: 'music',
+		description: 'Force skip the current song',
 	})
 	async forceskip(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -801,6 +815,7 @@ export class extension extends Extension {
 
 	@command({
 		category: 'music',
+		description: 'Pause the music',
 	})
 	async pause(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -895,6 +910,7 @@ export class extension extends Extension {
 
 	@command({
 		category: 'music',
+		description: 'Resume the music',
 	})
 	async resume(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -990,6 +1006,7 @@ export class extension extends Extension {
 	@command({
 		aliases: ['vol'],
 		category: 'music',
+		description: 'Change music volume',
 	})
 	async volume(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -1105,6 +1122,337 @@ export class extension extends Extension {
 														? '\nVolume above 100 may reduce the quality of the audio or cause hearing damage. Be cautious'
 														: '',
 											},
+										}).setColor('random'),
+									});
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@command({
+		aliases: ['qloop', 'ql'],
+		category: 'music',
+		description: 'Toggle loop on the queue',
+	})
+	async queueloop(ctx: CommandContext) {
+		if (!ctx.guild || !ctx.guild.id) return;
+		if (!queue.has(ctx.guild.id)) {
+			await ctx.message.reply(undefined, {
+				embed: new Embed({
+					author: {
+						name: 'Bidome bot',
+						icon_url: ctx.client.user?.avatarURL(),
+					},
+					title: 'Music',
+					description: 'I am not currently playing anything!',
+				}).setColor('random'),
+			});
+		} else {
+			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
+			const botvc = await ctx.guild.voiceStates.get(
+				ctx.client.user?.id as string
+			);
+			if (!botvc) {
+				await ctx.message.reply(undefined, {
+					embed: new Embed({
+						author: {
+							name: 'Bidome bot',
+							icon_url: ctx.client.user?.avatarURL(),
+						},
+						title: 'Music',
+						description: 'I am not currently connected to a channel!',
+					}).setColor('random'),
+				});
+			} else {
+				if (!vc || botvc.channel?.id != vc.channel?.id) {
+					await ctx.message.reply(undefined, {
+						embed: new Embed({
+							author: {
+								name: 'Bidome bot',
+								icon_url: ctx.client.user?.avatarURL(),
+							},
+							title: 'Music',
+							description: 'You are not currently connected to my channel!',
+						}).setColor('random'),
+					});
+				} else {
+					if (
+						((await vc.channel?.voiceStates.array()) ?? []).filter(
+							(d) => !d.user.bot
+						).length > 2 &&
+						!ctx.member?.permissions.has('ADMINISTRATOR')
+					) {
+						await ctx.message.reply(undefined, {
+							embed: new Embed({
+								author: {
+									name: 'Bidome bot',
+									icon_url: ctx.client.user?.avatarURL(),
+								},
+								title: 'Music',
+								description:
+									'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
+							}).setColor('random'),
+						});
+					} else {
+						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+						if (serverQueue.songloop) {
+							await ctx.message.reply(undefined, {
+								embed: new Embed({
+									author: {
+										name: 'Bidome bot',
+										icon_url: ctx.client.user?.avatarURL(),
+									},
+									title: 'Music',
+									description:
+										'Song loop is currently enabled! Please disable it before enabing queue loop',
+								}).setColor('random'),
+							});
+						} else {
+							serverQueue.queueloop = !serverQueue.queueloop;
+							await ctx.message.reply(undefined, {
+								embed: new Embed({
+									author: {
+										name: 'Bidome bot',
+										icon_url: ctx.client.user?.avatarURL(),
+									},
+									title: 'Music',
+									description: `Togged Queue loop ${
+										serverQueue.queueloop ? 'On' : 'Off'
+									}`,
+								}).setColor('random'),
+							});
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@command({
+		aliases: ['songloop', 'l', 'sl'],
+		category: 'music',
+		description: 'Toggle loop on the current song',
+	})
+	async loop(ctx: CommandContext) {
+		if (!ctx.guild || !ctx.guild.id) return;
+		if (!queue.has(ctx.guild.id)) {
+			await ctx.message.reply(undefined, {
+				embed: new Embed({
+					author: {
+						name: 'Bidome bot',
+						icon_url: ctx.client.user?.avatarURL(),
+					},
+					title: 'Music',
+					description: 'I am not currently playing anything!',
+				}).setColor('random'),
+			});
+		} else {
+			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
+			const botvc = await ctx.guild.voiceStates.get(
+				ctx.client.user?.id as string
+			);
+			if (!botvc) {
+				await ctx.message.reply(undefined, {
+					embed: new Embed({
+						author: {
+							name: 'Bidome bot',
+							icon_url: ctx.client.user?.avatarURL(),
+						},
+						title: 'Music',
+						description: 'I am not currently connected to a channel!',
+					}).setColor('random'),
+				});
+			} else {
+				if (!vc || botvc.channel?.id != vc.channel?.id) {
+					await ctx.message.reply(undefined, {
+						embed: new Embed({
+							author: {
+								name: 'Bidome bot',
+								icon_url: ctx.client.user?.avatarURL(),
+							},
+							title: 'Music',
+							description: 'You are not currently connected to my channel!',
+						}).setColor('random'),
+					});
+				} else {
+					if (
+						((await vc.channel?.voiceStates.array()) ?? []).filter(
+							(d) => !d.user.bot
+						).length > 2 &&
+						!ctx.member?.permissions.has('ADMINISTRATOR')
+					) {
+						await ctx.message.reply(undefined, {
+							embed: new Embed({
+								author: {
+									name: 'Bidome bot',
+									icon_url: ctx.client.user?.avatarURL(),
+								},
+								title: 'Music',
+								description:
+									'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
+							}).setColor('random'),
+						});
+					} else {
+						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+						if (serverQueue.queueloop) {
+							await ctx.message.reply(undefined, {
+								embed: new Embed({
+									author: {
+										name: 'Bidome bot',
+										icon_url: ctx.client.user?.avatarURL(),
+									},
+									title: 'Music',
+									description:
+										'Queue loop is currently enabled! Please disable it before enabing regular loop',
+								}).setColor('random'),
+							});
+						} else {
+							serverQueue.songloop = !serverQueue.songloop;
+							await ctx.message.reply(undefined, {
+								embed: new Embed({
+									author: {
+										name: 'Bidome bot',
+										icon_url: ctx.client.user?.avatarURL(),
+									},
+									title: 'Music',
+									description: `Togged Song loop ${
+										serverQueue.songloop ? 'On' : 'Off'
+									}`,
+								}).setColor('random'),
+							});
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@command({
+		aliases: ['rm', 'removesong'],
+		category: 'music',
+		description: 'Remove a specific song',
+	})
+	async remove(ctx: CommandContext) {
+		if (!ctx.guild || !ctx.guild.id) return;
+		if (!queue.has(ctx.guild.id)) {
+			await ctx.message.reply(undefined, {
+				embed: new Embed({
+					author: {
+						name: 'Bidome bot',
+						icon_url: ctx.client.user?.avatarURL(),
+					},
+					title: 'Music',
+					description: 'I am not currently playing anything!',
+				}).setColor('random'),
+			});
+		} else {
+			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
+			const botvc = await ctx.guild.voiceStates.get(
+				ctx.client.user?.id as string
+			);
+			if (!botvc) {
+				await ctx.message.reply(undefined, {
+					embed: new Embed({
+						author: {
+							name: 'Bidome bot',
+							icon_url: ctx.client.user?.avatarURL(),
+						},
+						title: 'Music',
+						description: 'I am not currently connected to a channel!',
+					}).setColor('random'),
+				});
+			} else {
+				if (!vc || botvc.channel?.id != vc.channel?.id) {
+					await ctx.message.reply(undefined, {
+						embed: new Embed({
+							author: {
+								name: 'Bidome bot',
+								icon_url: ctx.client.user?.avatarURL(),
+							},
+							title: 'Music',
+							description: 'You are not currently connected to my channel!',
+						}).setColor('random'),
+					});
+				} else {
+					if (ctx.argString == '') {
+						await ctx.message.reply(undefined, {
+							embed: new Embed({
+								author: {
+									name: 'Bidome bot',
+									icon_url: ctx.client.user?.avatarURL(),
+								},
+								title: 'Music',
+								description: 'You need to provide a song position!',
+							}).setColor('random'),
+						});
+					} else {
+						const number = parseInt(ctx.argString);
+						if (isNaN(number)) {
+							await ctx.message.reply(undefined, {
+								embed: new Embed({
+									author: {
+										name: 'Bidome bot',
+										icon_url: ctx.client.user?.avatarURL(),
+									},
+									title: 'Music',
+									description: 'Invalid number provided!',
+								}).setColor('random'),
+							});
+						} else {
+							const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+							if (number < 1 || number >= serverQueue.queue.length) {
+								await ctx.message.reply(undefined, {
+									embed: new Embed({
+										author: {
+											name: 'Bidome bot',
+											icon_url: ctx.client.user?.avatarURL(),
+										},
+										title: 'Music',
+										description: `You must provide a value between \`${
+											serverQueue.queue.length == 1
+												? '0 Songs to remove'
+												: `1-${serverQueue.queue.length - 1}`
+										}\``,
+									}).setColor('random'),
+								});
+							} else {
+								if (
+									((await vc.channel?.voiceStates.array()) ?? []).filter(
+										(d) => !d.user.bot
+									).length > 2 &&
+									!ctx.member?.permissions.has('ADMINISTRATOR') &&
+									serverQueue.queue[number].requestedBy != ctx.author.id
+								) {
+									await ctx.message.reply(undefined, {
+										embed: new Embed({
+											author: {
+												name: 'Bidome bot',
+												icon_url: ctx.client.user?.avatarURL(),
+											},
+											title: 'Music',
+											description:
+												'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
+										}).setColor('random'),
+									});
+								} else {
+									const [removedSong] = serverQueue.queue.splice(number, 1);
+									await ctx.message.reply(undefined, {
+										embed: new Embed({
+											author: {
+												name: 'Bidome bot',
+												icon_url: ctx.client.user?.avatarURL(),
+											},
+											title: 'Music',
+											description: `Removed \`${(removedSong.name.length > 197
+												? `${removedSong.name.substring(0, 197)}...`
+												: removedSong.name
+											)
+												.replace(/`/gi, '\\`')
+												.replace(/\\/, '\\')}\` from queue!`,
 										}).setColor('random'),
 									});
 								}
