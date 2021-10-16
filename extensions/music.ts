@@ -9,7 +9,7 @@ import {
 	isMessageComponentInteraction,
 } from 'harmony';
 import { Cluster, UpdateVoiceStatus } from 'lavadeno';
-import { removeDiscordFormatting, formatMs } from 'tools';
+import { removeDiscordFormatting, formatMs, shuffleArray } from 'tools';
 import { Queue, Song } from 'queue';
 
 // Deno says to use let here instead of var so ok ig
@@ -795,7 +795,9 @@ export class extension extends Extension {
 						});
 					} else {
 						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
-						serverQueue.queue.shift();
+						if (serverQueue.songloop) {
+							serverQueue.queue.shift();
+						}
 						serverQueue.onTrackEnd();
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
@@ -1458,6 +1460,101 @@ export class extension extends Extension {
 								}
 							}
 						}
+					}
+				}
+			}
+		}
+	}
+
+	@command({
+		aliases: ['mix'],
+		category: 'music'
+	})
+	async shuffle(ctx: CommandContext) {
+		if (!ctx.guild || !ctx.guild.id) return;
+		if (!queue.has(ctx.guild.id)) {
+			await ctx.message.reply(undefined, {
+				embed: new Embed({
+					author: {
+						name: 'Bidome bot',
+						icon_url: ctx.client.user?.avatarURL(),
+					},
+					title: 'Music',
+					description: 'I am not currently playing anything!',
+				}).setColor('random'),
+			});
+		} else {
+			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
+			const botvc = await ctx.guild.voiceStates.get(
+				ctx.client.user?.id as string
+			);
+			if (!botvc) {
+				await ctx.message.reply(undefined, {
+					embed: new Embed({
+						author: {
+							name: 'Bidome bot',
+							icon_url: ctx.client.user?.avatarURL(),
+						},
+						title: 'Music',
+						description: 'I am not currently connected to a channel!',
+					}).setColor('random'),
+				});
+			} else {
+				if (!vc || botvc.channel?.id != vc.channel?.id) {
+					await ctx.message.reply(undefined, {
+						embed: new Embed({
+							author: {
+								name: 'Bidome bot',
+								icon_url: ctx.client.user?.avatarURL(),
+							},
+							title: 'Music',
+							description: 'You are not currently connected to my channel!',
+						}).setColor('random'),
+					});
+				} else {
+					if (
+						((await vc.channel?.voiceStates.array()) ?? []).filter(
+							(d) => !d.user.bot
+						).length > 2 &&
+						!ctx.member?.permissions.has('ADMINISTRATOR')
+					) {
+						await ctx.message.reply(undefined, {
+							embed: new Embed({
+								author: {
+									name: 'Bidome bot',
+									icon_url: ctx.client.user?.avatarURL(),
+								},
+								title: 'Music',
+								description:
+									'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
+							}).setColor('random'),
+						});
+					} else {
+						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+
+						const newQueue = [...serverQueue.queue];
+						newQueue.shift();
+						
+						shuffleArray(newQueue);
+						
+						const monkeyPatch = [serverQueue.queue[0]];
+
+						for (const track of newQueue) {
+							monkeyPatch.push(track);
+						}
+
+						serverQueue.queue = monkeyPatch;
+
+						await ctx.message.reply(undefined, {
+							embed: new Embed({
+								author: {
+									name: 'Bidome bot',
+									icon_url: ctx.client.user?.avatarURL(),
+								},
+								title: 'Music',
+								description: 'I have shuffled the queue!',
+							}).setColor('random'),
+						});
 					}
 				}
 			}

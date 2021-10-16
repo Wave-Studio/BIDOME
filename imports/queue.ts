@@ -52,6 +52,7 @@ export class Queue {
 	}
 
 	onTrackEnd() {
+		this.player.stop();
 		// Fix bugs somehow? idk
 		if (this.queueloop) {
 			this.queue.push(this.queue[0]);
