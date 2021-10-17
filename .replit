@@ -1,2 +1,0 @@
-language = "deno"
-run = "deno run --import-map=imports.json --allow-net --allow-env --allow-read --allow-run --allow-write index.ts"

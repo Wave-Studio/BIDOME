@@ -1,10 +1,10 @@
 {
 	"imports": {
-		"import/": "./imports/",
 		"harmony": "./imports/harmony.ts",
 		"database": "./imports/database.ts",
 		"tools": "./imports/tools.ts",
 		"lavadeno": "./imports/lavadeno.ts",
-		"queue": "./imports/queue.ts"
+		"queue": "./imports/queue.ts",
+		"status": "./imports/status.ts"
 	}
 }

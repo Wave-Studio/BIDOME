@@ -52,7 +52,7 @@ export class Queue {
 	}
 
 	onTrackEnd() {
-		this.player.stop();
+		this.voteSkip = [this.client.user?.id as string];
 		// Fix bugs somehow? idk
 		if (this.queueloop) {
 			this.queue.push(this.queue[0]);

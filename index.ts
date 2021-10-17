@@ -1,11 +1,16 @@
 import { CommandClient, GatewayIntents, CommandContext, Embed } from 'harmony';
 import { Database } from 'database';
+import { getRandomStatus } from 'status';
 
 import 'https://deno.land/x/dotenv@v3.0.0/load.ts';
 
-// Deno.run({
-// 	cmd: ['cmd', '/c', 'java -jar lavalink/Lavalink.jar'],
-// });
+if (!Deno.args.includes('--no-lava')) {
+	Deno.run({
+		cmd: ['java', '-jar', 'lavalink/Lavalink.jar'],
+	});
+} else {
+	console.log("Flag '--no-lava' detected, not launching lavalink");
+}
 
 const bot = new CommandClient({
 	prefix: [],
@@ -41,24 +46,18 @@ bot.on('ready', async () => {
 			commands.isFile &&
 			(commands.name.endsWith('.ts') || commands.name.endsWith('.tsx'))
 		) {
-			bot.commands.add(
-				(await import(`./commands/${commands.name}`)).command
-			);
+			bot.commands.add((await import(`./commands/${commands.name}`)).command);
 		} else {
 			for await (const subcommand of Deno.readDir(
 				`./commands/${commands.name}`
 			)) {
 				if (
 					subcommand.isFile &&
-					(subcommand.name.endsWith('.ts') ||
-						subcommand.name.endsWith('.tsx'))
+					(subcommand.name.endsWith('.ts') || subcommand.name.endsWith('.tsx'))
 				) {
 					bot.commands.add(
-						(
-							await import(
-								`./commands/${commands.name}/${subcommand.name}`
-							)
-						).command
+						(await import(`./commands/${commands.name}/${subcommand.name}`))
+							.command
 					);
 				}
 			}
@@ -85,7 +84,9 @@ bot.on('ready', async () => {
 	);
 	console.log('Loaded bot!');
 
-	setInterval(() => {}, 30000);
+	setInterval(() => {
+		nextStatus();
+	}, 30000);
 });
 
 bot.on('commandError', async (ctx: CommandContext, err: Error) => {
@@ -106,9 +107,24 @@ bot.on('commandError', async (ctx: CommandContext, err: Error) => {
 	});
 });
 
-bot.connect(Deno.env.get('token'), [
-	GatewayIntents.GUILDS,
-	GatewayIntents.GUILD_MESSAGES,
-	GatewayIntents.GUILD_VOICE_STATES,
-	GatewayIntents.GUILD_PRESENCES,
-]);
+const nextStatus = async () => {
+	const { type, name, status } = await getRandomStatus(bot);
+	bot.setPresence({
+		activity: {
+			name,
+			type,
+		},
+		status: status ?? 'idle',
+	});
+};
+
+// Prevent console spam from lavalink
+// not being ready
+setTimeout(() => {
+	bot.connect(Deno.env.get('token'), [
+		GatewayIntents.GUILDS,
+		GatewayIntents.GUILD_MESSAGES,
+		GatewayIntents.GUILD_VOICE_STATES,
+		GatewayIntents.GUILD_PRESENCES,
+	]);
+}, 1.5 * 1000);

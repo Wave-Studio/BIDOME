@@ -4,12 +4,9 @@
 # Ignore temporary files (for dev)
 temp/
 
-# Ignore run files
-run.sh
-
 # Ignore lavalink
 lavalink/Lavalink.jar
-lavalink/logs
+logs/
 
 # Ignore database
 database.json
