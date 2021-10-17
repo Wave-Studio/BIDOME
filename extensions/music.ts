@@ -1468,7 +1468,8 @@ export class extension extends Extension {
 
 	@command({
 		aliases: ['mix'],
-		category: 'music'
+		category: 'music',
+		description: 'Shuffle the music queue'
 	})
 	async shuffle(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
