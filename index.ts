@@ -15,7 +15,7 @@ if (!Deno.args.includes('--no-lava')) {
 const bot = new CommandClient({
 	prefix: [],
 	async getGuildPrefix(guildid: string): Promise<string> {
-		let prefix = await Database.get('prefix.' + guildid);
+		let prefix = (await Database.get('prefix.' + guildid)) as string;
 		if (typeof prefix === 'undefined') {
 			prefix = '!';
 			await Database.set('prefix.' + guildid, prefix);

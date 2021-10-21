@@ -2,7 +2,7 @@
 
 class JsonDB {
 	private data: {
-		[key: string]: string;
+		[key: string]: unknown;
 	};
 	constructor() {
 		try {
@@ -26,12 +26,38 @@ class JsonDB {
 	}
 
 	set(key: string, value: string) {
-		this.data[key] = value;
+		let object = this.data;
+		const parts = key.split(".");
+		const dbKey = parts[parts.length - 1];
+		for (const part of parts.reverse().slice(1).reverse()) {
+			if (object == undefined){
+				object = {};
+			}
+			if (object[part] == undefined){
+				object[part] = {};
+			}
+			// @ts-ignore - TS doesn't know that object[part] is a JSON object
+			object = object[part];
+		}
+		object[dbKey] = value;
 		this.saveDatabase()
 	}
 
 	get(key: string) {
-		return this.data[key];
+		let object = this.data;
+		const parts = key.split(".");
+		const dbKey = parts[parts.length - 1];
+		for (const part of parts.reverse().slice(1).reverse()) {
+			if (object == undefined){
+				object = {};
+			}
+			if (object[part] == undefined){
+				object[part] = {};
+			}
+			// @ts-ignore - TS doesn't know that object[part] is a JSON object
+			object = object[part];
+		}
+		return object[dbKey];
 	}
 }
 

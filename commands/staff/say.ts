@@ -5,7 +5,7 @@ export class command extends Command {
 	aliases = ['echo'];
 	permissions = 'ADMINISTRATOR';
 	description = 'Make the bot say something';
-	category = 'staff'
+	category = 'staff';
 	usage = 'Say <message>';
 	async execute(ctx: CommandContext) {
 		if (ctx.argString === '') {
@@ -21,7 +21,9 @@ export class command extends Command {
 			});
 		} else {
 			await ctx.message.reply(ctx.argString, {
-				allowedMentions: {},
+				allowedMentions: {
+					parse: [],
+				},
 			});
 		}
 	}
