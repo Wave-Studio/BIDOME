@@ -1,4 +1,4 @@
-// TODO: Write proper database
+import { initializeEco } from "eco";
 
 class JsonDB {
 	private data: {
@@ -25,7 +25,7 @@ class JsonDB {
 		Deno.writeTextFileSync("./database.json", JSON.stringify(this.data, null, "\t"))
 	}
 
-	set(key: string, value: string) {
+	set(key: string, value: unknown) {
 		let object = this.data;
 		const parts = key.split(".");
 		const dbKey = parts[parts.length - 1];
@@ -59,6 +59,15 @@ class JsonDB {
 		}
 		return object[dbKey];
 	}
+
+	reload() {
+		this.data = JSON.parse(Deno.readTextFileSync("./database.json"));
+	}
 }
 
 export const Database = new JsonDB();
+
+export const initDatabases = () => {
+	Database.set("database.version", "1.0.0");
+	initializeEco();
+}

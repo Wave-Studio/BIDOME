@@ -5,6 +5,7 @@
 		"tools": "./imports/tools.ts",
 		"lavadeno": "./imports/lavadeno.ts",
 		"queue": "./imports/queue.ts",
-		"status": "./imports/status.ts"
+		"status": "./imports/status.ts",
+		"eco": "./imports/eco.ts"
 	}
 }

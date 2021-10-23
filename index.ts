@@ -1,5 +1,5 @@
 import { CommandClient, GatewayIntents, CommandContext, Embed } from 'harmony';
-import { Database } from 'database';
+import { Database, initDatabases } from 'database';
 import { getRandomStatus } from 'status';
 
 import 'https://deno.land/x/dotenv@v3.0.0/load.ts';
@@ -40,6 +40,8 @@ const bot = new CommandClient({
 
 bot.on('ready', async () => {
 	console.log(`Logged in as ${bot.user?.tag}`);
+	console.log('Loading Database');
+	initDatabases();
 	console.log('Loading all commands!');
 	for await (const commands of Deno.readDir('./commands/')) {
 		if (
