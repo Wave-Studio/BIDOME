@@ -122,11 +122,15 @@ const nextStatus = async () => {
 
 // Prevent console spam from lavalink
 // not being ready
-setTimeout(() => {
-	bot.connect(Deno.env.get('token'), [
-		GatewayIntents.GUILDS,
-		GatewayIntents.GUILD_MESSAGES,
-		GatewayIntents.GUILD_VOICE_STATES,
-		GatewayIntents.GUILD_PRESENCES,
-	]);
-}, 1.5 * 1000);
+setTimeout(
+	() => {
+		bot.connect(Deno.env.get('token'), [
+			GatewayIntents.GUILDS,
+			GatewayIntents.GUILD_MESSAGES,
+			GatewayIntents.GUILD_VOICE_STATES,
+			GatewayIntents.GUILD_PRESENCES,
+		]);
+	},
+	// Prevent users from waiting when lavalink isn't being launched
+	Deno.args.includes('--no-lava') ? 1 : 1.5 * 1000
+);

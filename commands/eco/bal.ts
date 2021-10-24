@@ -5,7 +5,9 @@ export class command extends Command {
     name = 'bal';
     aliases = ['balance'];
     description = 'Check your balance.';
+    category = 'eco';
     async execute(ctx: CommandContext) {
+        if (!ctx.guild?.id) return;
         let user = ctx.author;
         if (await ctx.message.mentions.users.first() != undefined) {
             user = await ctx.message.mentions.users.first() as User;
@@ -22,7 +24,7 @@ export class command extends Command {
 				}).setColor('random'),
 			});
         } else {
-            const userProfile = await getProfileFromDatabase(user.id);
+            const userProfile = await getProfileFromDatabase(ctx.guild.id, user.id, user.tag);
             await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {

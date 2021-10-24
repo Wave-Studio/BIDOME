@@ -9,4 +9,4 @@ lavalink/Lavalink.jar
 logs/
 
 # Ignore database
-database.json
+database/

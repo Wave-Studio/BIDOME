@@ -66,6 +66,10 @@ export const removeDiscordFormatting = (text: string): string => {
 		.replace(/\~/, '\\~');
 };
 
+export const removeDiscordCodeBlocks = (text: string): string => {
+	return text.replace(/`/gi, '\\`');
+}
+
 export const getRandomInteger = (min: number, max: number): number => {
 	min = Math.ceil(min);
     max = Math.floor(max);

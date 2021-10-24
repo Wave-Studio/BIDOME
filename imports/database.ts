@@ -1,20 +1,40 @@
-import { initializeEco } from "eco";
+import { initializeEco } from 'eco';
 
-class JsonDB {
+export class JsonDB {
 	private data: {
 		[key: string]: unknown;
 	};
-	constructor() {
-		try {
-			Deno.lstatSync("./database.json");
-		  } catch (err) {
-			if (err instanceof Deno.errors.NotFound) {
-				Deno.writeTextFileSync("./database.json", "{}");
-			}
-		  }
-		this.data = JSON.parse(Deno.readTextFileSync("./database.json"));
+	constructor(private path = './database/core.json') {
+		const dirCheck = path.startsWith('./')
+			? path.substring(2)
+			: path.startsWith('/')
+			? path.substring(1)
+			: path;
 
-		  // Auto save database every 5 minutes
+		const directories = dirCheck.split('/').reverse().slice(1).reverse();
+
+		if (directories.length > 0) {
+			let currentPath = '.';
+			for (const directory of directories) {
+				currentPath += `/${directory}`;
+				try {
+					Deno.lstatSync(currentPath);
+				} catch {
+					Deno.mkdirSync(currentPath);
+				}
+			}
+		}
+
+		try {
+			Deno.lstatSync(path);
+		} catch (err) {
+			if (err instanceof Deno.errors.NotFound) {
+				Deno.writeTextFileSync(path, '{}');
+			}
+		}
+		this.data = JSON.parse(Deno.readTextFileSync(path));
+
+		// Auto save database every 5 minutes
 
 		setInterval(() => {
 			this.saveDatabase();
@@ -22,36 +42,36 @@ class JsonDB {
 	}
 
 	private saveDatabase() {
-		Deno.writeTextFileSync("./database.json", JSON.stringify(this.data, null, "\t"))
+		Deno.writeTextFileSync(this.path, JSON.stringify(this.data, null, '\t'));
 	}
 
 	set(key: string, value: unknown) {
 		let object = this.data;
-		const parts = key.split(".");
+		const parts = key.split('.');
 		const dbKey = parts[parts.length - 1];
 		for (const part of parts.reverse().slice(1).reverse()) {
-			if (object == undefined){
+			if (object == undefined) {
 				object = {};
 			}
-			if (object[part] == undefined){
+			if (object[part] == undefined) {
 				object[part] = {};
 			}
 			// @ts-ignore - TS doesn't know that object[part] is a JSON object
 			object = object[part];
 		}
 		object[dbKey] = value;
-		this.saveDatabase()
+		this.saveDatabase();
 	}
 
 	get(key: string) {
 		let object = this.data;
-		const parts = key.split(".");
+		const parts = key.split('.');
 		const dbKey = parts[parts.length - 1];
 		for (const part of parts.reverse().slice(1).reverse()) {
-			if (object == undefined){
+			if (object == undefined) {
 				object = {};
 			}
-			if (object[part] == undefined){
+			if (object[part] == undefined) {
 				object[part] = {};
 			}
 			// @ts-ignore - TS doesn't know that object[part] is a JSON object
@@ -61,13 +81,14 @@ class JsonDB {
 	}
 
 	reload() {
-		this.data = JSON.parse(Deno.readTextFileSync("./database.json"));
+		this.data = JSON.parse(Deno.readTextFileSync(this.path));
 	}
 }
 
 export const Database = new JsonDB();
+export const GlobalEco = new JsonDB('./database/eco/global.json');
+export const ServerEco = new JsonDB('./database/eco/server.json');
 
 export const initDatabases = () => {
-	Database.set("database.version", "1.0.0");
 	initializeEco();
-}
+};
