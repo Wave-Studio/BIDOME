@@ -1,4 +1,5 @@
 import { GlobalEco, ServerEco, Database } from 'database';
+import { getRandomInteger } from "tools";
 
 export interface EcoUserDBObject {
 	userid: string;
@@ -11,6 +12,9 @@ export interface EcoUserDBObject {
 	inventory: EcoInventoryDBObject[];
 	level: number;
     lastKnownUsername: string;
+	bank: number;
+	maxBankSpace: number;
+	levelXp: number;
 }
 
 export interface EcoInventoryDBObject {
@@ -30,8 +34,11 @@ export const createOrFetchProfile = (
 		userid,
 		balance: 0,
 		inventory: [],
-		level: 0,
-        lastKnownUsername: userTag
+		level: 1,
+        lastKnownUsername: userTag,
+		bank: 0,
+		maxBankSpace: 1000,
+		levelXp: 0
 	};
 
 	if (isServerEco(guildID)) {
@@ -116,3 +123,21 @@ export const isServerEco = (guildid: string): boolean => {
 export const isGlobalEco = (guildid: string): boolean => {
 	return !isServerEco(guildid);
 };
+
+export const calculateXPToNextLevel = (level: number): number => {
+	level = level + 1;
+	return level * level * 100;
+}
+
+export const shouldLevelUp = (level: number, xp: number): boolean => {
+	return calculateXPToNextLevel(level) <= xp;
+}
+
+export const onLevelUp = (profile: EcoUserDBObject) => {
+	profile.levelXp -= calculateXPToNextLevel(profile.level);
+	profile.level += 1;
+	profile.maxBankSpace += getRandomInteger(100, 500);
+	if (shouldLevelUp(profile.level, profile.levelXp)) {
+		onLevelUp(profile);
+	}
+}

@@ -157,7 +157,7 @@ export class command extends Command {
 					choice.toLowerCase() === 'uncategorized'
 						? uncategorizedCmds
 						: ctx.client.commands.category(choice).array();
-				const description = categorydata
+				const description = categorydata.sort()
 					.map((cmd) => `${format(cmd.name)}`)
 					.join('\n - ');
 

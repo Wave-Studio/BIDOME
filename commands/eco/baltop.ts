@@ -1,6 +1,6 @@
 import { Command, CommandContext, Embed } from 'harmony';
 import { getAllProfiles, isServerEco, EcoUserDBObject } from 'eco';
-import {removeDiscordCodeBlocks} from "tools";
+import { removeDiscordCodeBlocks } from 'tools';
 
 export class command extends Command {
 	name = 'baltop';
@@ -11,11 +11,12 @@ export class command extends Command {
 		if (!ctx.guild?.id) return;
 		let ecoWorth = 0;
 		const sortedProfiles = (getAllProfiles(ctx.guild.id) ?? [])
-			.filter(({ balance }) => balance !== 0)
-			.sort((a, b) => b.balance - a.balance);
+			.filter(({ balance, bank }) => balance !== 0 || bank !== 0)
+			.sort((a, b) => b.balance + b.bank - (a.balance + a.bank));
 
 		for (const profile of sortedProfiles) {
 			ecoWorth += profile.balance;
+			ecoWorth += profile.bank;
 		}
 
 		if (sortedProfiles.length === 0) {
@@ -50,14 +51,20 @@ export class command extends Command {
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: 'Bidome Eco',
-					description: `Economy worth: \`$${ecoWorth}\`${top10Users.map(
-						({ position, data }) =>
-							`\n\n#${position} <@!${data.userid}>\n  - Balance: \`$${data.balance}\` \n  - User: \`${removeDiscordCodeBlocks(data.lastKnownUsername)}\``
-					).join("")}`,
+					description: `Economy worth: \`$${ecoWorth}\`${top10Users
+						.map(
+							({ position, data }) =>
+								`\n\n#${position} <@!${data.userid}>\n  - Balance: \`$${
+									data.balance + data.bank
+								}\` \n  - User: \`${removeDiscordCodeBlocks(
+									data.lastKnownUsername
+								)}\``
+						)
+						.join('')}`,
 					footer: {
 						text: `Top ${
 							sortedProfiles.length > 10 ? 10 : sortedProfiles.length
-						} users for ${
+						}/${sortedProfiles.length} users for ${
 							isServerEco(ctx.guild.id) ? 'this server' : 'all bidome users'
 						}`,
 					},

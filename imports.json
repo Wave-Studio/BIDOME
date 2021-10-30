@@ -6,6 +6,7 @@
 		"lavadeno": "./imports/lavadeno.ts",
 		"queue": "./imports/queue.ts",
 		"status": "./imports/status.ts",
-		"eco": "./imports/eco.ts"
+		"eco": "./imports/eco.ts",
+		"jobs": "./imports/jobs.ts"
 	}
 }

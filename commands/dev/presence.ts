@@ -71,6 +71,7 @@ export class command extends Command {
 				| 'invisible';
 			ctx.client.setPresence({
 				status: type,
+				activity: ctx.client.presence.activity,
 			});
 			await message.edit(undefined, {
 				embed: new Embed({
