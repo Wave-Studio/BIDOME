@@ -12,7 +12,7 @@ exports.run = async function(bot, msg, args, prefix) {
     new discord.MessageEmbed()
       .setTitle("Bidome bot Invite")
       .setDescription(
-        "Add the bot to your server [**here**](https://discord.com/api/oauth2/authorize?client_id=778670182956531773&permissions=8&scope=bot)."
+        "Add the bot to your server [**here**](https://discord.com/api/oauth2/authorize?client_id=778670182956531773&permissions=8&scope=applications.commands%20bot)."
       )
   );
 };
