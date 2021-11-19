@@ -50,6 +50,7 @@ bot.on('ready', async () => {
 		) {
 			bot.commands.add((await import(`./commands/${commands.name}`)).command);
 		} else {
+			if (commands.name == "eco") continue;
 			for await (const subcommand of Deno.readDir(
 				`./commands/${commands.name}`
 			)) {
