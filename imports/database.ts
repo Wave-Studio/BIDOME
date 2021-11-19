@@ -4,7 +4,7 @@ export class JsonDB {
 	private data: {
 		[key: string]: unknown;
 	};
-	constructor(private path = './database/core.json') {
+	constructor(private path = './database/core.json', autoSave = true) {
 		const dirCheck = path.startsWith('./')
 			? path.substring(2)
 			: path.startsWith('/')
@@ -35,10 +35,11 @@ export class JsonDB {
 		this.data = JSON.parse(Deno.readTextFileSync(path));
 
 		// Auto save database every 5 minutes
-
+		if (autoSave) {
 		setInterval(() => {
 			this.saveDatabase();
 		}, 5 * 60 * 1000);
+	}
 	}
 
 	private saveDatabase() {
