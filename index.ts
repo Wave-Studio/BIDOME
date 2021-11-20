@@ -44,13 +44,13 @@ bot.on('ready', async () => {
 	initDatabases();
 	console.log('Loading all commands!');
 	for await (const commands of Deno.readDir('./commands/')) {
+		if (commands.name.startsWith('-')) continue;
 		if (
 			commands.isFile &&
 			(commands.name.endsWith('.ts') || commands.name.endsWith('.tsx'))
 		) {
 			bot.commands.add((await import(`./commands/${commands.name}`)).command);
 		} else {
-			if (commands.name == "eco") continue;
 			for await (const subcommand of Deno.readDir(
 				`./commands/${commands.name}`
 			)) {
@@ -58,6 +58,7 @@ bot.on('ready', async () => {
 					subcommand.isFile &&
 					(subcommand.name.endsWith('.ts') || subcommand.name.endsWith('.tsx'))
 				) {
+					if (subcommand.name.startsWith('-')) continue;
 					bot.commands.add(
 						(await import(`./commands/${commands.name}/${subcommand.name}`))
 							.command
@@ -72,6 +73,7 @@ bot.on('ready', async () => {
 			extension.isFile &&
 			(extension.name.endsWith('.ts') || extension.name.endsWith('.tsx'))
 		) {
+			if (extension.name.startsWith('-')) continue;
 			bot.extensions.load(
 				(await import(`./extensions/${extension.name}`)).extension
 			);

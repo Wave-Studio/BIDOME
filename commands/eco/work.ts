@@ -87,14 +87,8 @@ export class command extends Command {
 	}
 
 	@subcommand({
-		name: 'list',
-	})
-	// Bug with harmony
-	@subcommand({
-		name: 'jobs',
-	})
-	@subcommand({
-		name: 'l',
+		name: "list",
+		aliases: ['listjobs', "jobs", "l"],
 	})
 	async listJobs(ctx: CommandContext) {
 		await ctx.message.reply(undefined, {
@@ -120,16 +114,8 @@ export class command extends Command {
 	}
 
 	@subcommand({
-		name: 'apply',
-	})
-	@subcommand({
-		name: 'join',
-	})
-	@subcommand({
-		name: 'j',
-	})
-	@subcommand({
-		name: 'a',
+		name: "join",
+		aliases: ['a', "j", "joinjob", "apply"],
 	})
 	async joinJob(ctx: CommandContext) {
 		if (!ctx.guild?.id) return;
@@ -149,7 +135,7 @@ export class command extends Command {
 							icon_url: ctx.message.client.user?.avatarURL(),
 						},
 						title: 'Bidome eco',
-						description: `That's an invalid job! Use ${ctx.prefix}job list to see all jobs`,
+						description: `That's an invalid job! Use ${ctx.prefix}job listjobs to see all jobs`,
 					}).setColor('random'),
 				});
 			} else {
@@ -216,10 +202,8 @@ export class command extends Command {
 	}
 
 	@subcommand({
-		name: 'leave',
-	})
-	@subcommand({
-		name: 'resign',
+		name: "quit",
+		aliases: [ 'resign', 'leave', 'leavejob' ],
 	})
 	async leaveJob(ctx: CommandContext) {
 		if (!ctx.guild?.id) return;
