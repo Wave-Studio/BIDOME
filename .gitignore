@@ -10,3 +10,8 @@ logs/
 
 # Ignore database
 database/
+
+# Ignore replit files
+.deno/
+.replit
+lock.json
