@@ -12,9 +12,12 @@ if (!Deno.args.includes('--no-lava')) {
 	console.log("Flag '--no-lava' detected, not launching lavalink");
 }
 
+const isProdTesting = true;
+
 const bot = new CommandClient({
 	prefix: [],
 	async getGuildPrefix(guildid: string): Promise<string> {
+		if (isProdTesting) return "<@!778670182956531773>";
 		let prefix = (await Database.get('prefix.' + guildid)) as string;
 		if (typeof prefix === 'undefined') {
 			prefix = '!';
