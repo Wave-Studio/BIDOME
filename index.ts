@@ -135,6 +135,7 @@ setTimeout(
 			GatewayIntents.GUILD_MESSAGES,
 			GatewayIntents.GUILD_VOICE_STATES,
 			GatewayIntents.GUILD_PRESENCES,
+			GatewayIntents.GUILD_MEMBERS,
 		]);
 	},
 	// Prevent users from waiting when lavalink isn't being launched

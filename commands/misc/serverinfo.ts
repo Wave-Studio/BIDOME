@@ -1,64 +1,74 @@
-import { Command, CommandContext, Embed } from 'harmony';
+import { Command, CommandContext, Embed } from "harmony";
 
 export class command extends Command {
-	name = 'serverinfo';
-	category = 'misc';
-	description = 'Get information regarding this server';
-	usage = 'Serverinfo';
+	name = "serverinfo";
+	category = "misc";
+	description = "Get information regarding this server";
+	usage = "Serverinfo";
 	async execute(ctx: CommandContext) {
+		const data = {
+			accounts: ctx.message.guild?.memberCount ?? 0,
+			humans:
+				(await ctx.message.guild?.members.fetchList())?.filter(
+					(m) => !m.user.bot
+				).length ?? 0,
+			bots:
+				(await ctx.message.guild?.members.fetchList())?.filter(
+					(m) => m.user.bot
+				).length ?? 1,
+			channels: (await ctx.message.guild?.channels.size()) ?? 0,
+			roles: (await ctx.message.guild?.roles.size()) ?? 0,
+			owner:
+				(
+					await ctx.message.client.users.get(
+						ctx.message.guild?.ownerID as string
+					)
+				)?.tag ?? "Unknown",
+		};
+
+		const isCachedUsers = data.accounts != data.humans + data.bots;
 		await ctx.message.reply(undefined, {
 			embed: new Embed({
 				author: {
-					name: 'Bidome bot',
+					name: "Bidome bot",
 					icon_url: ctx.message.client.user?.avatarURL(),
 				},
 				fields: [
 					{
-						name: 'Accounts',
-						value: `\`${ctx.message.guild?.memberCount}\``,
+						name: `Accounts`,
+						value: `\`${data.accounts}\``,
 						inline: true,
 					},
 					{
-						name: 'Humans',
-						value: `\`${
-							(
-								await ctx.message.guild?.members.array()
-							)?.filter((m) => !m.user.bot).length
-						}\``,
+						name: `Humans${isCachedUsers ? "*" : ""}`,
+						value: `\`${data.humans}\``,
 						inline: true,
 					},
 					{
-						name: 'Bots',
-						value: `\`${
-							(
-								await ctx.message.guild?.members.array()
-							)?.filter((m) => m.user.bot).length
-						}\``,
+						name: `Bots${isCachedUsers ? "*" : ""}`,
+						value: `\`${data.bots}\``,
 						inline: true,
 					},
 					{
-						name: 'Channels',
-						value: `\`${await ctx.message.guild?.channels.size()}\``,
+						name: "Channels",
+						value: `\`${data.channels}\``,
 						inline: true,
 					},
 					{
-						name: 'Roles',
-						value: `\`${await ctx.message.guild?.roles.size()}\``,
+						name: "Roles",
+						value: `\`${data.roles}\``,
 						inline: true,
 					},
 					{
-						name: 'Owner',
-						value: `\`${
-							(
-								await ctx.message.client.users.get(
-									ctx.message.guild?.ownerID as string
-								)
-							)?.tag
-						}\``,
+						name: "Owner",
+						value: `\`${data.owner}\``,
 						inline: true,
 					},
 				],
-			}).setColor('random'),
+				footer: {
+					text: `${isCachedUsers ? "* Cached users" : ""}`,
+				},
+			}).setColor("random"),
 		});
 	}
 }
