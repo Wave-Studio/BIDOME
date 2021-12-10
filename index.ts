@@ -116,9 +116,13 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 		});
 	} catch {
 		try {
-			await ctx.message.addReaction("❗");
+			ctx.message.reply("I am missing the `EMBED_LINKS` permission which is required for embeds! Please contact an administrator to enable this permission.");
 		} catch {
-			return;
+			try {
+				await ctx.message.addReaction("❗");
+			} catch {
+				return;
+			}
 		}
 	}
 });
