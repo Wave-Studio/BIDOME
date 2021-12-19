@@ -9,6 +9,7 @@ exports.info = {
 };
 
 exports.run = async function(bot, msg, args, prefix) {
+	return msg.channel.send("Hey, there's a new music system being tested in Bidome! Access it by mentioning me.");
 	if (
 		!botdevs.includes(msg.author.id) &&
 		!msg.member.hasPermission("ADMINISTRATOR")

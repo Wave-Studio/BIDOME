@@ -166,7 +166,6 @@ bot.on("message", async msg => {
 		)
 	)
 		return;
-	if (msg.channel.id === "847264775582122024") return;
 	if (cooldown.has(msg.author.id)) {
 		msg.channel.send(new discord.MessageEmbed().setTitle("Slow down!").setDescription("Please wait `" + (5 - ((Date.now() - cooldown.get(msg.author.id)) / 1000)).toFixed(1) + "` second(s) before running another command!"))
 		return;
@@ -177,6 +176,7 @@ bot.on("message", async msg => {
 			cooldown.delete(msg.author.id)
 		}, 5 * 1000)
 	}
+	
 	await require(commands.get(args[0].toLowerCase().substring(p.length))).run(
 		bot,
 		msg,

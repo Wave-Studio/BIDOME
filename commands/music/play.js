@@ -26,7 +26,7 @@ const ytapikeys = [
 ];
 
 exports.run = async function (bot, msg, args, prefix) {
-  //if(!botdevs.includes(msg.author.id)) return msg.channel.send(new discord.MessageEmbed().setTitle("Command disabled!").setDescription("Sorry but this command is currently disabled for maintenence! Please check back later"))
+	return msg.channel.send("Hey, there's a new music system being tested in Bidome! Access it by mentioning me.");
   const youtube = new ytapi(
     ytapikeys[Math.floor(Math.random() * ytapikeys.length)]
   );
