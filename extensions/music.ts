@@ -7,10 +7,10 @@ import {
 	CommandClient as CmdClient,
 	MessageComponentData,
 	isMessageComponentInteraction,
-} from 'harmony';
-import { Cluster, UpdateVoiceStatus } from 'lavadeno';
-import { removeDiscordFormatting, formatMs, shuffleArray } from 'tools';
-import { Queue, Song } from 'queue';
+} from "harmony";
+import { Cluster, UpdateVoiceStatus } from "lavadeno";
+import { removeDiscordFormatting, formatMs, shuffleArray } from "tools";
+import { Queue, Song } from "queue";
 
 // Deno says to use let here instead of var so ok ig
 let lavalink: Cluster;
@@ -32,12 +32,12 @@ export class extension extends Extension {
 		lavalink = new Cluster({
 			nodes: [
 				{
-					host: '127.0.0.1',
+					host: "127.0.0.1",
 					port: 2333,
-					password: 'youshallnotpass',
-					id: '1',
+					password: "youshallnotpass",
+					id: "1",
 					reconnect: {
-						type: 'basic',
+						type: "basic",
 						tries: -1,
 						delay: 5 * 1000,
 					},
@@ -46,32 +46,32 @@ export class extension extends Extension {
 			sendGatewayPayload,
 		});
 
-		lavalink.on('nodeConnect', (node, took, reconnect) => {
+		lavalink.on("nodeConnect", (node, took, reconnect) => {
 			console.log(
 				`[Lavalink]: Node ${
 					node.id
 				} Connected! Took: ${took}ms Auto-Reconnect: ${
-					reconnect ? 'Yes' : 'No'
+					reconnect ? "Yes" : "No"
 				}`
 			);
 		});
 
-		lavalink.on('nodeError', (node, error) => {
+		lavalink.on("nodeError", (node, error) => {
 			console.log(`[Lavalink]: Node ${node.id} had an error!\n`, error);
 		});
 
-		lavalink.on('nodeDisconnect', (node, code, reason) => {
+		lavalink.on("nodeDisconnect", (node, code, reason) => {
 			console.log(
 				`[Lavalink]: Node ${node.id} disconnected! Code: ${code} Reason: ${
-					reason ?? 'No reason given'
+					reason ?? "No reason given"
 				}`
 			);
 		});
 
-		this.client.on('raw', (evt: string, d: unknown) => {
+		this.client.on("raw", (evt: string, d: unknown) => {
 			switch (evt) {
-				case 'VOICE_SERVER_UPDATE':
-				case 'VOICE_STATE_UPDATE':
+				case "VOICE_SERVER_UPDATE":
+				case "VOICE_STATE_UPDATE":
 					// @ts-expect-error Typings
 					lavalink.handleVoiceUpdate(d);
 			}
@@ -81,9 +81,9 @@ export class extension extends Extension {
 	}
 
 	@command({
-		aliases: ['summon'],
-		category: 'music',
-		description: 'Join the voice channel',
+		aliases: ["summon"],
+		category: "music",
+		description: "Join the voice channel",
 	})
 	async join(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -93,12 +93,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'Please join a music channel!',
-				}).setColor('random'),
+					title: "Music",
+					description: "Please join a music channel!",
+				}).setColor("random"),
 			});
 		} else {
 			if (
@@ -108,12 +108,12 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'I am already connected to another channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "I am already connected to another channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (queue.has(ctx.guild.id)) {
@@ -133,36 +133,36 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
+						title: "Music",
 						description: `Joined **${removeDiscordFormatting(
 							vc.channel?.name as string
 						)}**`,
-					}).setColor('random'),
+					}).setColor("random"),
 				});
 			}
 		}
 	}
 
 	@command({
-		aliases: ['enqueue', 'p'],
-		category: 'music',
-		description: 'Play a song',
+		aliases: ["enqueue", "p"],
+		category: "music",
+		description: "Play a song",
 	})
 	async play(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
-		if (ctx.argString == '') {
+		if (ctx.argString == "") {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'Please provide a search query!',
-				}).setColor('random'),
+					title: "Music",
+					description: "Please provide a search query!",
+				}).setColor("random"),
 			});
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
@@ -171,12 +171,12 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'Please join a music channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "Please join a music channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (
@@ -186,23 +186,23 @@ export class extension extends Extension {
 					await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: 'I am currently playing in another channel!',
-						}).setColor('random'),
+							title: "Music",
+							description: "I am currently playing in another channel!",
+						}).setColor("random"),
 					});
 				} else {
 					const message = await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: '<a:typing:779775412829028373> Finding track',
-						}).setColor('random'),
+							title: "Music",
+							description: "<a:typing:779775412829028373> Finding track",
+						}).setColor("random"),
 					});
 
 					const isURL = /(((http|https):\/\/)|www.)/i.test(ctx.argString);
@@ -216,12 +216,12 @@ export class extension extends Extension {
 						message.edit(
 							new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
-								description: '❗ Unable to find a track with that name',
-							}).setColor('random')
+								title: "Music",
+								description: "❗ Unable to find a track with that name",
+							}).setColor("random")
 						);
 					} else {
 						const getImageFromURI = (_uri: string): string | null => {
@@ -241,7 +241,7 @@ export class extension extends Extension {
 						if (!isURL) {
 							const now = Date.now();
 							const buttons: MessageComponentData[] = [];
-							let options = '';
+							let options = "";
 							for (
 								let i = 0;
 								i < (tracks.length < 5 ? tracks.length : 5);
@@ -252,7 +252,7 @@ export class extension extends Extension {
 									type: 2,
 									label: `#${i + 1}`,
 									customID: `${now}-${i}`,
-									style: 'BLURPLE',
+									style: "BLURPLE",
 								});
 								options += `\n\`#${i + 1}\` - [${removeDiscordFormatting(
 									track.info.title.length > 197
@@ -266,15 +266,15 @@ export class extension extends Extension {
 							await message.edit({
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
+									title: "Music",
 									description: options,
 									footer: {
-										text: 'This will expire in 30 seconds!',
+										text: "This will expire in 30 seconds!",
 									},
-								}).setColor('random'),
+								}).setColor("random"),
 								components: [
 									{
 										type: 1,
@@ -285,8 +285,8 @@ export class extension extends Extension {
 										components: [
 											{
 												type: 2,
-												style: 'RED',
-												label: 'Cancel',
+												style: "RED",
+												label: "Cancel",
 												customID: `${now}-cancel`,
 											},
 										],
@@ -294,7 +294,7 @@ export class extension extends Extension {
 								],
 							});
 							const [response] = await ctx.client.waitFor(
-								'interactionCreate',
+								"interactionCreate",
 								(i) =>
 									i.user.id == ctx.author.id &&
 									isMessageComponentInteraction(i) &&
@@ -305,12 +305,12 @@ export class extension extends Extension {
 								message.edit({
 									embed: new Embed({
 										author: {
-											name: 'Bidome bot',
+											name: "Bidome bot",
 											icon_url: ctx.client.user?.avatarURL(),
 										},
-										title: 'Music',
-										description: 'Selection timed out',
-									}).setColor('random'),
+										title: "Music",
+										description: "Selection timed out",
+									}).setColor("random"),
 									components: [],
 								});
 								return;
@@ -320,12 +320,12 @@ export class extension extends Extension {
 									message.edit({
 										embed: new Embed({
 											author: {
-												name: 'Bidome bot',
+												name: "Bidome bot",
 												icon_url: ctx.client.user?.avatarURL(),
 											},
-											title: 'Music',
-											description: 'Canceled selection',
-										}).setColor('random'),
+											title: "Music",
+											description: "Canceled selection",
+										}).setColor("random"),
 										components: [],
 									});
 									return;
@@ -371,33 +371,33 @@ export class extension extends Extension {
 							message.edit({
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Added song to queue',
+									title: "Added song to queue",
 									fields: [
 										{
-											name: 'Song',
+											name: "Song",
 											value: `\`${(song.name.length > 197
 												? `${song.name.substring(0, 197)}...`
 												: song.name
 											)
-												.replace(/`/gi, '\\`')
-												.replace(/\\/, '\\')}\``,
+												.replace(/`/gi, "\\`")
+												.replace(/\\/, "\\")}\``,
 											inline: true,
 										},
 										{
-											name: 'Author',
+											name: "Author",
 											value: `${removeDiscordFormatting(song.author)}`,
 											inline: true,
 										},
 										{
-											name: 'Length',
+											name: "Length",
 											value: `${formatMs(song.msLength)}`,
 											inline: true,
 										},
 										{
-											name: 'Position',
+											name: "Position",
 											value: `${serverQueue.queue.length + 1}`,
 											inline: true,
 										},
@@ -405,7 +405,7 @@ export class extension extends Extension {
 									thumbnail: {
 										url: song.image ?? undefined,
 									},
-								}).setColor('random'),
+								}).setColor("random"),
 								components: [],
 							});
 						}
@@ -417,9 +417,9 @@ export class extension extends Extension {
 	}
 
 	@command({
-		aliases: ['q', 'serverqueue'],
-		category: 'music',
-		description: 'See the current queue',
+		aliases: ["q", "serverqueue"],
+		category: "music",
+		description: "See the current queue",
 	})
 	async queue(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -427,12 +427,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const songs = (queue.get(ctx.guild.id) as Queue).queue;
@@ -443,34 +443,34 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Up next',
+					title: "Up next",
 					description: info
 						.map(
 							({ pos, song }) =>
-								`\`${pos == 0 ? 'Now playing' : `#${pos + 1}`}\` - **${(song
+								`\`${pos == 0 ? "Now playing" : `#${pos + 1}`}\` - **${(song
 									.name.length > 197
 									? `${song.name.substring(0, 197)}...`
 									: song.name
 								)
-									.replace(/`/gi, '\\`')
-									.replace(/\\/, '\\')}** (${formatMs(song.msLength)})`
+									.replace(/`/gi, "\\`")
+									.replace(/\\/, "\\")}** (${formatMs(song.msLength)})`
 						)
-						.join('\n'),
+						.join("\n"),
 					footer: {
 						text: `Total length: ${songs.length}`,
 					},
-				}).setColor('random'),
+				}).setColor("random"),
 			});
 		}
 	}
 
 	@command({
-		aliases: ['np'],
-		category: 'music',
-		description: 'See what song is currently playing',
+		aliases: ["np"],
+		category: "music",
+		description: "See what song is currently playing",
 	})
 	async nowplaying(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -478,12 +478,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const serverQueue = queue.get(ctx.guild.id) as Queue;
@@ -491,38 +491,38 @@ export class extension extends Extension {
 			ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Playing song',
+					title: "Playing song",
 					fields: [
 						{
-							name: 'Song',
+							name: "Song",
 							value: `\`${(song.name.length > 197
 								? `${song.name.substring(0, 197)}...`
 								: song.name
 							)
-								.replace(/`/gi, '\\`')
-								.replace(/\\/, '\\')}\``,
+								.replace(/`/gi, "\\`")
+								.replace(/\\/, "\\")}\``,
 							inline: true,
 						},
 						{
-							name: 'Author',
+							name: "Author",
 							value: `${removeDiscordFormatting(song.author)}`,
 							inline: true,
 						},
 						{
-							name: 'Length',
+							name: "Length",
 							value: `${formatMs(song.msLength)}`,
 							inline: true,
 						},
 						{
-							name: 'Requested by',
+							name: "Requested by",
 							value: `<@!${song.requestedBy}>`,
 							inline: true,
 						},
 						{
-							name: 'Progress:',
+							name: "Progress:",
 							value: `\`${formatMs(
 								(serverQueue.player.position ?? 1000) < 1000
 									? 1000
@@ -535,15 +535,15 @@ export class extension extends Extension {
 					thumbnail: {
 						url: song.image ?? undefined,
 					},
-				}).setColor('random'),
+				}).setColor("random"),
 			});
 		}
 	}
 
 	@command({
-		aliases: ['dc', 'fuckoff', 'stop'],
-		category: 'music',
-		description: 'Disconnect the bot',
+		aliases: ["dc", "fuckoff", "stop"],
+		category: "music",
+		description: "Disconnect the bot",
 	})
 	async disconnect(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -551,12 +551,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
@@ -567,42 +567,42 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'I am not currently connected to a channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "I am not currently connected to a channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (!vc || botvc.channel?.id != vc.channel?.id) {
 					await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: 'You are not currently connected to my channel!',
-						}).setColor('random'),
+							title: "Music",
+							description: "You are not currently connected to my channel!",
+						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has('ADMINISTRATOR')
+						!ctx.member?.permissions.has("ADMINISTRATOR")
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
+								title: "Music",
 								description:
-									'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
-							}).setColor('random'),
+									"You are missing the permission `ADMINISTRATOR`! (Being alone also works)",
+							}).setColor("random"),
 						});
 					} else {
 						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
@@ -611,12 +611,12 @@ export class extension extends Extension {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
-								description: 'I have stopped the player!',
-							}).setColor('random'),
+								title: "Music",
+								description: "I have stopped the player!",
+							}).setColor("random"),
 						});
 						queue.delete(ctx.guild.id);
 					}
@@ -626,9 +626,9 @@ export class extension extends Extension {
 	}
 
 	@command({
-		aliases: ['s'],
-		category: 'music',
-		description: 'Vote to skip the current song',
+		aliases: ["s"],
+		category: "music",
+		description: "Vote to skip the current song",
 	})
 	async skip(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -636,12 +636,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
@@ -652,24 +652,24 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'I am not currently connected to a channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "I am not currently connected to a channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (!vc || botvc.channel?.id != vc.channel?.id) {
 					await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: 'You are not currently connected to my channel!',
-						}).setColor('random'),
+							title: "Music",
+							description: "You are not currently connected to my channel!",
+						}).setColor("random"),
 					});
 				} else {
 					const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
@@ -677,12 +677,12 @@ export class extension extends Extension {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
-								description: 'You have already voted to skip the song!',
-							}).setColor('random'),
+								title: "Music",
+								description: "You have already voted to skip the song!",
+							}).setColor("random"),
 						});
 					} else {
 						const connectedUsers = (
@@ -696,17 +696,22 @@ export class extension extends Extension {
 						const message = await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
-								description: 'You have voted to skip the queue!',
-							}).setColor('random'),
+								title: "Music",
+								description: "You have voted to skip the queue!",
+							}).setColor("random"),
 						});
 
 						serverQueue.voteSkip.push(ctx.author.id);
 
 						if (serverQueue.shouldBotVoteskip(connectedUsers)) {
+							// Freeze variables
+							const shouldEnableLoop = serverQueue.songloop ? true : false;
+
+							serverQueue.songloop = false;
+
 							if (serverQueue.songloop) {
 								serverQueue.queue.shift();
 							}
@@ -714,14 +719,18 @@ export class extension extends Extension {
 							await message.edit({
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
+									title: "Music",
 									description:
-										'Vote skip requirement met! I have skipped the track!',
-								}).setColor('random'),
+										"Vote skip requirement met! I have skipped the track!",
+								}).setColor("random"),
 							});
+							
+							if (serverQueue.queue.length > 0) {
+								serverQueue.songloop = shouldEnableLoop;
+							}
 						}
 					}
 				}
@@ -730,9 +739,9 @@ export class extension extends Extension {
 	}
 
 	@command({
-		aliases: ['fs'],
-		category: 'music',
-		description: 'Force skip the current song',
+		aliases: ["fs"],
+		category: "music",
+		description: "Force skip the current song",
 	})
 	async forceskip(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -740,12 +749,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
@@ -756,59 +765,69 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'I am not currently connected to a channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "I am not currently connected to a channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (!vc || botvc.channel?.id != vc.channel?.id) {
 					await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: 'You are not currently connected to my channel!',
-						}).setColor('random'),
+							title: "Music",
+							description: "You are not currently connected to my channel!",
+						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has('ADMINISTRATOR')
+						!ctx.member?.permissions.has("ADMINISTRATOR")
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
+								title: "Music",
 								description:
-									'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
-							}).setColor('random'),
+									"You are missing the permission `ADMINISTRATOR`! (Being alone also works)",
+							}).setColor("random"),
 						});
 					} else {
 						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+						// Freeze variables
+						const shouldEnableLoop = serverQueue.songloop ? true : false;
+
+						serverQueue.songloop = false;
+
 						if (serverQueue.songloop) {
 							serverQueue.queue.shift();
 						}
+
 						serverQueue.onTrackEnd();
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
-								description: 'I have skipped the song!',
-							}).setColor('random'),
+								title: "Music",
+								description: "I have skipped the song!",
+							}).setColor("random"),
 						});
+
+						if (serverQueue.queue.length > 0) {
+							serverQueue.songloop = shouldEnableLoop;
+						}
 					}
 				}
 			}
@@ -816,8 +835,8 @@ export class extension extends Extension {
 	}
 
 	@command({
-		category: 'music',
-		description: 'Pause the music',
+		category: "music",
+		description: "Pause the music",
 	})
 	async pause(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -825,12 +844,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
@@ -841,42 +860,42 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'I am not currently connected to a channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "I am not currently connected to a channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (!vc || botvc.channel?.id != vc.channel?.id) {
 					await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: 'You are not currently connected to my channel!',
-						}).setColor('random'),
+							title: "Music",
+							description: "You are not currently connected to my channel!",
+						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has('ADMINISTRATOR')
+						!ctx.member?.permissions.has("ADMINISTRATOR")
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
+								title: "Music",
 								description:
-									'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
-							}).setColor('random'),
+									"You are missing the permission `ADMINISTRATOR`! (Being alone also works)",
+							}).setColor("random"),
 						});
 					} else {
 						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
@@ -884,24 +903,24 @@ export class extension extends Extension {
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
-									description: 'The player is already paused!',
-								}).setColor('random'),
+									title: "Music",
+									description: "The player is already paused!",
+								}).setColor("random"),
 							});
 						} else {
 							serverQueue.player.pause();
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
-									description: 'I have paused the player!',
-								}).setColor('random'),
+									title: "Music",
+									description: "I have paused the player!",
+								}).setColor("random"),
 							});
 						}
 					}
@@ -911,8 +930,8 @@ export class extension extends Extension {
 	}
 
 	@command({
-		category: 'music',
-		description: 'Resume the music',
+		category: "music",
+		description: "Resume the music",
 	})
 	async resume(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -920,12 +939,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
@@ -936,42 +955,42 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'I am not currently connected to a channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "I am not currently connected to a channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (!vc || botvc.channel?.id != vc.channel?.id) {
 					await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: 'You are not currently connected to my channel!',
-						}).setColor('random'),
+							title: "Music",
+							description: "You are not currently connected to my channel!",
+						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has('ADMINISTRATOR')
+						!ctx.member?.permissions.has("ADMINISTRATOR")
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
+								title: "Music",
 								description:
-									'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
-							}).setColor('random'),
+									"You are missing the permission `ADMINISTRATOR`! (Being alone also works)",
+							}).setColor("random"),
 						});
 					} else {
 						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
@@ -979,24 +998,24 @@ export class extension extends Extension {
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
-									description: 'The player is already resumed!',
-								}).setColor('random'),
+									title: "Music",
+									description: "The player is already resumed!",
+								}).setColor("random"),
 							});
 						} else {
 							serverQueue.player.resume();
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
-									description: 'I have resumed the player!',
-								}).setColor('random'),
+									title: "Music",
+									description: "I have resumed the player!",
+								}).setColor("random"),
 							});
 						}
 					}
@@ -1006,9 +1025,9 @@ export class extension extends Extension {
 	}
 
 	@command({
-		aliases: ['vol'],
-		category: 'music',
-		description: 'Change music volume',
+		aliases: ["vol"],
+		category: "music",
+		description: "Change music volume",
 	})
 	async volume(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -1016,12 +1035,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
@@ -1032,54 +1051,54 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'I am not currently connected to a channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "I am not currently connected to a channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (!vc || botvc.channel?.id != vc.channel?.id) {
 					await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: 'You are not currently connected to my channel!',
-						}).setColor('random'),
+							title: "Music",
+							description: "You are not currently connected to my channel!",
+						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has('ADMINISTRATOR')
+						!ctx.member?.permissions.has("ADMINISTRATOR")
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
+								title: "Music",
 								description:
-									'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
-							}).setColor('random'),
+									"You are missing the permission `ADMINISTRATOR`! (Being alone also works)",
+							}).setColor("random"),
 						});
 					} else {
-						if (ctx.argString == '') {
+						if (ctx.argString == "") {
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
-									description: 'You need to provide a new volume!',
-								}).setColor('random'),
+									title: "Music",
+									description: "You need to provide a new volume!",
+								}).setColor("random"),
 							});
 						} else {
 							const number = parseInt(ctx.argString);
@@ -1087,12 +1106,12 @@ export class extension extends Extension {
 								await ctx.message.reply(undefined, {
 									embed: new Embed({
 										author: {
-											name: 'Bidome bot',
+											name: "Bidome bot",
 											icon_url: ctx.client.user?.avatarURL(),
 										},
-										title: 'Music',
-										description: 'Invalid number provided!',
-									}).setColor('random'),
+										title: "Music",
+										description: "Invalid number provided!",
+									}).setColor("random"),
 								});
 							} else {
 								const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
@@ -1100,12 +1119,12 @@ export class extension extends Extension {
 									await ctx.message.reply(undefined, {
 										embed: new Embed({
 											author: {
-												name: 'Bidome bot',
+												name: "Bidome bot",
 												icon_url: ctx.client.user?.avatarURL(),
 											},
-											title: 'Music',
+											title: "Music",
 											description: `You must provide a value between \`1-1000\``,
-										}).setColor('random'),
+										}).setColor("random"),
 									});
 								} else {
 									serverQueue.volume = number;
@@ -1113,18 +1132,18 @@ export class extension extends Extension {
 									await ctx.message.reply(undefined, {
 										embed: new Embed({
 											author: {
-												name: 'Bidome bot',
+												name: "Bidome bot",
 												icon_url: ctx.client.user?.avatarURL(),
 											},
-											title: 'Music',
+											title: "Music",
 											description: `I have set the volume to \`${ctx.argString}\``,
 											footer: {
 												text:
 													number > 100
-														? '\nVolume above 100 may reduce the quality of the audio or cause hearing damage. Be cautious'
-														: '',
+														? "\nVolume above 100 may reduce the quality of the audio or cause hearing damage. Be cautious"
+														: "",
 											},
-										}).setColor('random'),
+										}).setColor("random"),
 									});
 								}
 							}
@@ -1136,9 +1155,9 @@ export class extension extends Extension {
 	}
 
 	@command({
-		aliases: ['qloop', 'ql'],
-		category: 'music',
-		description: 'Toggle loop on the queue',
+		aliases: ["qloop", "ql"],
+		category: "music",
+		description: "Toggle loop on the queue",
 	})
 	async queueloop(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -1146,12 +1165,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
@@ -1162,42 +1181,42 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'I am not currently connected to a channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "I am not currently connected to a channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (!vc || botvc.channel?.id != vc.channel?.id) {
 					await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: 'You are not currently connected to my channel!',
-						}).setColor('random'),
+							title: "Music",
+							description: "You are not currently connected to my channel!",
+						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has('ADMINISTRATOR')
+						!ctx.member?.permissions.has("ADMINISTRATOR")
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
+								title: "Music",
 								description:
-									'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
-							}).setColor('random'),
+									"You are missing the permission `ADMINISTRATOR`! (Being alone also works)",
+							}).setColor("random"),
 						});
 					} else {
 						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
@@ -1205,27 +1224,27 @@ export class extension extends Extension {
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
+									title: "Music",
 									description:
-										'Song loop is currently enabled! Please disable it before enabing queue loop',
-								}).setColor('random'),
+										"Song loop is currently enabled! Please disable it before enabing queue loop",
+								}).setColor("random"),
 							});
 						} else {
 							serverQueue.queueloop = !serverQueue.queueloop;
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
+									title: "Music",
 									description: `Togged Queue loop ${
-										serverQueue.queueloop ? 'On' : 'Off'
+										serverQueue.queueloop ? "On" : "Off"
 									}`,
-								}).setColor('random'),
+								}).setColor("random"),
 							});
 						}
 					}
@@ -1235,9 +1254,9 @@ export class extension extends Extension {
 	}
 
 	@command({
-		aliases: ['songloop', 'l', 'sl'],
-		category: 'music',
-		description: 'Toggle loop on the current song',
+		aliases: ["songloop", "l", "sl"],
+		category: "music",
+		description: "Toggle loop on the current song",
 	})
 	async loop(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -1245,12 +1264,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
@@ -1261,42 +1280,42 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'I am not currently connected to a channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "I am not currently connected to a channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (!vc || botvc.channel?.id != vc.channel?.id) {
 					await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: 'You are not currently connected to my channel!',
-						}).setColor('random'),
+							title: "Music",
+							description: "You are not currently connected to my channel!",
+						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has('ADMINISTRATOR')
+						!ctx.member?.permissions.has("ADMINISTRATOR")
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
+								title: "Music",
 								description:
-									'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
-							}).setColor('random'),
+									"You are missing the permission `ADMINISTRATOR`! (Being alone also works)",
+							}).setColor("random"),
 						});
 					} else {
 						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
@@ -1304,27 +1323,27 @@ export class extension extends Extension {
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
+									title: "Music",
 									description:
-										'Queue loop is currently enabled! Please disable it before enabing regular loop',
-								}).setColor('random'),
+										"Queue loop is currently enabled! Please disable it before enabing regular loop",
+								}).setColor("random"),
 							});
 						} else {
 							serverQueue.songloop = !serverQueue.songloop;
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
+									title: "Music",
 									description: `Togged Song loop ${
-										serverQueue.songloop ? 'On' : 'Off'
+										serverQueue.songloop ? "On" : "Off"
 									}`,
-								}).setColor('random'),
+								}).setColor("random"),
 							});
 						}
 					}
@@ -1334,9 +1353,9 @@ export class extension extends Extension {
 	}
 
 	@command({
-		aliases: ['rm', 'removesong'],
-		category: 'music',
-		description: 'Remove a specific song',
+		aliases: ["rm", "removesong"],
+		category: "music",
+		description: "Remove a specific song",
 	})
 	async remove(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -1344,12 +1363,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
@@ -1360,36 +1379,36 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'I am not currently connected to a channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "I am not currently connected to a channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (!vc || botvc.channel?.id != vc.channel?.id) {
 					await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: 'You are not currently connected to my channel!',
-						}).setColor('random'),
+							title: "Music",
+							description: "You are not currently connected to my channel!",
+						}).setColor("random"),
 					});
 				} else {
-					if (ctx.argString == '') {
+					if (ctx.argString == "") {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
-								description: 'You need to provide a song position!',
-							}).setColor('random'),
+								title: "Music",
+								description: "You need to provide a song position!",
+							}).setColor("random"),
 						});
 					} else {
 						const number = parseInt(ctx.argString);
@@ -1397,12 +1416,12 @@ export class extension extends Extension {
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									title: 'Music',
-									description: 'Invalid number provided!',
-								}).setColor('random'),
+									title: "Music",
+									description: "Invalid number provided!",
+								}).setColor("random"),
 							});
 						} else {
 							const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
@@ -1410,52 +1429,52 @@ export class extension extends Extension {
 								await ctx.message.reply(undefined, {
 									embed: new Embed({
 										author: {
-											name: 'Bidome bot',
+											name: "Bidome bot",
 											icon_url: ctx.client.user?.avatarURL(),
 										},
-										title: 'Music',
+										title: "Music",
 										description: `You must provide a value between \`${
 											serverQueue.queue.length == 1
-												? '0 Songs to remove'
+												? "0 Songs to remove"
 												: `1-${serverQueue.queue.length - 1}`
 										}\``,
-									}).setColor('random'),
+									}).setColor("random"),
 								});
 							} else {
 								if (
 									((await vc.channel?.voiceStates.array()) ?? []).filter(
 										(d) => !d.user.bot
 									).length > 2 &&
-									!ctx.member?.permissions.has('ADMINISTRATOR') &&
+									!ctx.member?.permissions.has("ADMINISTRATOR") &&
 									serverQueue.queue[number].requestedBy != ctx.author.id
 								) {
 									await ctx.message.reply(undefined, {
 										embed: new Embed({
 											author: {
-												name: 'Bidome bot',
+												name: "Bidome bot",
 												icon_url: ctx.client.user?.avatarURL(),
 											},
-											title: 'Music',
+											title: "Music",
 											description:
-												'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
-										}).setColor('random'),
+												"You are missing the permission `ADMINISTRATOR`! (Being alone also works)",
+										}).setColor("random"),
 									});
 								} else {
 									const [removedSong] = serverQueue.queue.splice(number, 1);
 									await ctx.message.reply(undefined, {
 										embed: new Embed({
 											author: {
-												name: 'Bidome bot',
+												name: "Bidome bot",
 												icon_url: ctx.client.user?.avatarURL(),
 											},
-											title: 'Music',
+											title: "Music",
 											description: `Removed \`${(removedSong.name.length > 197
 												? `${removedSong.name.substring(0, 197)}...`
 												: removedSong.name
 											)
-												.replace(/`/gi, '\\`')
-												.replace(/\\/, '\\')}\` from queue!`,
-										}).setColor('random'),
+												.replace(/`/gi, "\\`")
+												.replace(/\\/, "\\")}\` from queue!`,
+										}).setColor("random"),
 									});
 								}
 							}
@@ -1467,9 +1486,9 @@ export class extension extends Extension {
 	}
 
 	@command({
-		aliases: ['mix'],
-		category: 'music',
-		description: 'Shuffle the music queue'
+		aliases: ["mix"],
+		category: "music",
+		description: "Shuffle the music queue",
 	})
 	async shuffle(ctx: CommandContext) {
 		if (!ctx.guild || !ctx.guild.id) return;
@@ -1477,12 +1496,12 @@ export class extension extends Extension {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					title: 'Music',
-					description: 'I am not currently playing anything!',
-				}).setColor('random'),
+					title: "Music",
+					description: "I am not currently playing anything!",
+				}).setColor("random"),
 			});
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
@@ -1493,51 +1512,51 @@ export class extension extends Extension {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
 						},
-						title: 'Music',
-						description: 'I am not currently connected to a channel!',
-					}).setColor('random'),
+						title: "Music",
+						description: "I am not currently connected to a channel!",
+					}).setColor("random"),
 				});
 			} else {
 				if (!vc || botvc.channel?.id != vc.channel?.id) {
 					await ctx.message.reply(undefined, {
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							title: 'Music',
-							description: 'You are not currently connected to my channel!',
-						}).setColor('random'),
+							title: "Music",
+							description: "You are not currently connected to my channel!",
+						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has('ADMINISTRATOR')
+						!ctx.member?.permissions.has("ADMINISTRATOR")
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
+								title: "Music",
 								description:
-									'You are missing the permission `ADMINISTRATOR`! (Being alone also works)',
-							}).setColor('random'),
+									"You are missing the permission `ADMINISTRATOR`! (Being alone also works)",
+							}).setColor("random"),
 						});
 					} else {
 						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
 
 						const newQueue = [...serverQueue.queue];
 						newQueue.shift();
-						
+
 						shuffleArray(newQueue);
-						
+
 						const monkeyPatch = [serverQueue.queue[0]];
 
 						for (const track of newQueue) {
@@ -1549,12 +1568,12 @@ export class extension extends Extension {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								title: 'Music',
-								description: 'I have shuffled the queue!',
-							}).setColor('random'),
+								title: "Music",
+								description: "I have shuffled the queue!",
+							}).setColor("random"),
 						});
 					}
 				}
