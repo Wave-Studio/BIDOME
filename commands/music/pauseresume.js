@@ -10,7 +10,7 @@ exports.info = {
 };
 
 exports.run = async function(bot, msg, args, prefix) {
-	return msg.channel.send("Hey, there's a new music system being tested in Bidome! Access it by mentioning me.");
+	return msg.channel.send("Hey, there's a new music system being tested in Bidome! Access it by replacing my prefix with <@778670182956531773>");
   if (!msg.guild.me.voice.channel)
     return msg.channel.send("I am not currently connected to a voice channel!");
   if (
