@@ -26,7 +26,7 @@ const ytapikeys = [
 ];
 
 exports.run = async function (bot, msg, args, prefix) {
-	return msg.channel.send("Hey, there's a new music system being tested in Bidome! Access it by mentioning me.");
+	return msg.channel.send("Hey, there's a new music system being tested in Bidome! Access it by replacing my prefix with <@778670182956531773>");
   const youtube = new ytapi(
     ytapikeys[Math.floor(Math.random() * ytapikeys.length)]
   );
