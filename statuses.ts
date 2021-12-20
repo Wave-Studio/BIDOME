@@ -33,7 +33,7 @@ export const getRandomStatus = async (bot: CommandClient) => {
             type: 'WATCHING'
         },
         {
-            name: 'MrBeast\'s Squid Game',
+            name: 'Biden mispronounce Omicron',
             type: 'COMPETING'
         }
     ];
