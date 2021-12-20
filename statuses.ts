@@ -34,7 +34,7 @@ export const getRandomStatus = async (bot: CommandClient) => {
         },
         {
             name: 'Biden mispronounce Omicron',
-            type: 'COMPETING'
+            type: 'WATCHING'
         }
     ];
     return statuses[Math.floor(Math.random() * statuses.length)];
