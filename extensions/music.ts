@@ -691,8 +691,6 @@ export class extension extends Extension {
 							.filter((d) => !d.user.bot)
 							.map((d) => d.user.id);
 
-						connectedUsers.push(ctx.client.user?.id as string);
-
 						const message = await ctx.message.reply(undefined, {
 							embed: new Embed({
 								author: {

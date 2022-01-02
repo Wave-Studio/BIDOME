@@ -52,7 +52,7 @@ export class Queue {
 	}
 
 	onTrackEnd() {
-		this.voteSkip = [this.client.user?.id as string];
+		this.voteSkip = [];
 		// Fix bugs somehow? idk
 		if (this.queueloop) {
 			this.queue.push(this.queue[0]);
@@ -96,7 +96,7 @@ export class Queue {
 	}
 
 	private playSong() {
-		this.voteSkip = [this.client.user?.id as string];
+		this.voteSkip = [];
 		const song = this.queue[0];
 		if (song == undefined) {
 			this.deleteQueue();
@@ -159,6 +159,11 @@ export class Queue {
 	}
 
 	async deleteQueue() {
+		// Prevent errors being thrown due to too many listeners (even tho the player is being destroyed)
+		this.player.off('trackEnd');
+		this.player.off('trackStuck');
+		this.player.off('trackException');
+
 		this.queue = [];
 		await this.player.destroy();
 		this.queueInstances.delete(this.server);
