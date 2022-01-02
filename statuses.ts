@@ -33,8 +33,8 @@ export const getRandomStatus = async (bot: CommandClient) => {
             type: 'WATCHING'
         },
         {
-            name: 'MrBeast\'s Squid Game',
-            type: 'COMPETING'
+            name: 'Biden mispronounce Omicron',
+            type: 'WATCHING'
         }
     ];
     return statuses[Math.floor(Math.random() * statuses.length)];
