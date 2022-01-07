@@ -4,29 +4,29 @@ import {
 	Embed,
 	isMessageComponentInteraction,
 	MessageComponentData,
-} from 'harmony';
+} from "harmony";
 
-import { format } from 'tools';
+import { format } from "tools";
 
 export class command extends Command {
-	name = 'help';
-	category = 'misc';
-	aliases = ['cmds', 'commands'];
-	usage = 'Help [command]';
-	description = 'Get a list of commands or information regarding a command';
+	name = "help";
+	category = "misc";
+	aliases = ["cmds", "commands"];
+	usage = "Help [command]";
+	description = "Get a list of commands or information regarding a command";
 	async execute(ctx: CommandContext) {
-		if (ctx.argString != '') {
+		if (ctx.argString != "") {
 			if (!ctx.client.commands.exists(ctx.argString)) {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
 						},
-						title: 'Bidome help',
+						title: "Bidome help",
 						description:
 							"Unknown command! Please make sure it's a valid command!",
-					}).setColor('random'),
+					}).setColor("random"),
 				});
 			} else {
 				const description = [
@@ -35,41 +35,39 @@ export class command extends Command {
 					)}\``,
 					`Description: \`${
 						ctx.client.commands.find(ctx.argString)?.description ??
-						'No description provided'
+						"No description provided"
 					}\``,
 					`Usage: \`${
 						ctx.client.commands.find(ctx.argString)?.usage ??
-						'No usage provided'
+						"No usage provided"
 					}\``,
 					`Permission: \`${
 						ctx.client.commands.find(ctx.argString)?.ownerOnly
-							? 'Owner only'
-							: ctx.client.commands.find(ctx.argString)
-									?.userPermissions ??
-							  'No permissions required'
+							? "Owner only"
+							: ctx.client.commands.find(ctx.argString)?.userPermissions ??
+							  "No permissions required"
 					}\``,
 					`Category: \`${format(
-						ctx.client.commands.find(ctx.argString)?.category ??
-							'Uncategorized'
+						ctx.client.commands.find(ctx.argString)?.category ?? "Uncategorized"
 					)}\``,
 				];
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
 						},
-						title: 'Bidome help',
+						title: "Bidome help",
 						fields: [
 							{
-								name: 'Command information',
-								value: description.join('\n'),
+								name: "Command information",
+								value: description.join("\n"),
 							},
 						],
 						footer: {
-							text: '[Arg] = Optional | <Arg> = Required',
+							text: "[Arg] = Optional | <Arg> = Required",
 						},
-					}).setColor('random'),
+					}).setColor("random"),
 				});
 			}
 		} else {
@@ -79,12 +77,32 @@ export class command extends Command {
 			const uncategorizedCmds: Command[] = [];
 
 			for (const command of await ctx.client.commands.list.array()) {
-				const category = (
-					command.category ?? 'Uncategorized'
-				).toLowerCase();
+				const category = (command.category ?? "Uncategorized").toLowerCase();
+
+				if (command.userPermissions != undefined && !command.ownerOnly) {
+					const perms =
+						typeof command.userPermissions == "string"
+							? [command.userPermissions]
+							: command.userPermissions;
+					let hasPerms = true;
+					for (const perm of perms) {
+						if (!ctx.message.member!.permissions.has(perm)) {
+							hasPerms = false;
+						}
+					}
+
+					if (!hasPerms) {
+						continue;
+					}
+				}
+
+				if (command.ownerOnly) {
+					if (!ctx.client.owners.includes(ctx.author.id)) continue;
+				}
+
 				if (!allcategories.includes(category)) {
 					allcategories.push(category);
-					if (category === 'uncategorized') {
+					if (category === "uncategorized") {
 						uncategorizedCmds.push(command);
 					}
 				}
@@ -98,12 +116,11 @@ export class command extends Command {
 				const row: MessageComponentData[] = [];
 				for (let b = 0; b < 5; b++) {
 					const button = categories[b + i * 5];
-					if (typeof button === 'undefined' || button === '')
-						continue;
+					if (typeof button === "undefined" || button === "") continue;
 					row.push({
 						type: 2,
 						label: format(button),
-						style: 'BLURPLE',
+						style: "BLURPLE",
 						customID: `${button}-${now}`,
 					});
 				}
@@ -116,23 +133,22 @@ export class command extends Command {
 			const message = await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
-					title: 'Bidome help',
-					description:
-						'Select a category from below to view the help menu!',
+					title: "Bidome help",
+					description: "Select a category from below to view the help menu!",
 					footer: {
-						text: 'This will expire in 30 seconds!',
+						text: "This will expire in 30 seconds!",
 					},
-				}).setColor('random'),
+				}).setColor("random"),
 				components: components,
 			});
 			const response = await ctx.message.client.waitFor(
-				'interactionCreate',
+				"interactionCreate",
 				(i) =>
 					isMessageComponentInteraction(i) &&
-					i.customID.endsWith('-' + now) &&
+					i.customID.endsWith("-" + now) &&
 					i.user.id === ctx.message.author.id,
 				30 * 1000
 			);
@@ -142,41 +158,42 @@ export class command extends Command {
 					components: [],
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
 						},
-						title: 'Bidome help',
-						description: 'Help prompt timed out!',
-					}).setColor('random'),
+						title: "Bidome help",
+						description: "Help prompt timed out!",
+					}).setColor("random"),
 				});
 				return;
 			} else {
 				if (!isMessageComponentInteraction(response[0])) return;
-				const choice = response[0].customID.split('-')[0];
+				const choice = response[0].customID.split("-")[0];
 				const categorydata =
-					choice.toLowerCase() === 'uncategorized'
+					choice.toLowerCase() === "uncategorized"
 						? uncategorizedCmds
 						: ctx.client.commands.category(choice).array();
-				const description = categorydata.sort()
+				const description = categorydata
+					.sort()
 					.map((cmd) => `${format(cmd.name)}`)
-					.join('\n - ');
+					.join("\n - ");
 
 				await message.edit({
 					components: [],
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
 						},
 						title: `${format(choice)} Commands`,
 						description:
 							categorydata.length < 1
 								? "I couldn't seem to find that category!"
-								: '```\n - ' + description + '\n```',
+								: "```\n - " + description + "\n```",
 						footer: {
 							text: `Need help with something? Check out our discord using ${ctx.prefix}discord`,
 						},
-					}).setColor('random'),
+					}).setColor("random"),
 				});
 			}
 		}

@@ -3,7 +3,7 @@ import { Command, CommandContext, Embed } from 'harmony';
 export class command extends Command {
 	name = 'say';
 	aliases = ['echo'];
-	permissions = 'ADMINISTRATOR';
+	userPermissions = 'ADMINISTRATOR';
 	description = 'Make the bot say something';
 	category = 'staff';
 	usage = 'Say <message>';
