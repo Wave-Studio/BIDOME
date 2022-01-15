@@ -10,22 +10,22 @@ export const formatMs = (ms: number, nontext = false): string => {
 	days -= weeks * 7;
 	if (!nontext) {
 		return [
-			`${weeks > 0 ? ` ${weeks} Week${weeks > 1 ? 's' : ''}` : ''}`,
-			`${days > 0 ? ` ${days} Day${days > 1 ? 's' : ''}` : ''}`,
-			`${hours > 0 ? ` ${hours} Hour${hours > 1 ? 's' : ''}` : ''}`,
-			`${minutes > 0 ? ` ${minutes} Minute${minutes > 1 ? 's' : ''}` : ''}`,
-			`${seconds > 0 ? ` ${seconds} Second${seconds > 1 ? 's' : ''}` : ''}`,
+			`${weeks > 0 ? ` ${weeks} Week${weeks > 1 ? "s" : ""}` : ""}`,
+			`${days > 0 ? ` ${days} Day${days > 1 ? "s" : ""}` : ""}`,
+			`${hours > 0 ? ` ${hours} Hour${hours > 1 ? "s" : ""}` : ""}`,
+			`${minutes > 0 ? ` ${minutes} Minute${minutes > 1 ? "s" : ""}` : ""}`,
+			`${seconds > 0 ? ` ${seconds} Second${seconds > 1 ? "s" : ""}` : ""}`,
 		]
-			.join('')
+			.join("")
 			.substring(1);
 	} else {
 		return [
-			`${weeks > 0 ? `${weeks}:` : ''}`,
-			`${weeks > 0 || days > 0 ? `${days}:` : ''}`,
-			`${hours > 0 ? `${hours < 10 ? `0${hours}` : hours}:` : ''}`,
+			`${weeks > 0 ? `${weeks}:` : ""}`,
+			`${weeks > 0 || days > 0 ? `${days}:` : ""}`,
+			`${hours > 0 ? `${hours < 10 ? `0${hours}` : hours}:` : ""}`,
 			`${minutes < 10 ? `0${minutes}` : minutes}:`,
 			`${seconds < 10 ? `0${seconds}` : seconds}`,
-		].join('');
+		].join("");
 	}
 };
 
@@ -56,32 +56,32 @@ export const format = (name: string): string => {
 
 export const removeDiscordFormatting = (text: string): string => {
 	return text
-		.replace(/\_/, '\\_')
-		.replace(/\*/, '\\*')
-		.replace(/\`/, '\\`')
-		.replace(/\[/, '\\[')
-		.replace(/\]/, '\\]')
-		.replace(/\)/, '\\)')
-		.replace(/\(/, '\\(')
-		.replace(/\~/, '\\~');
+		.replace(/\_/, "\\_")
+		.replace(/\*/, "\\*")
+		.replace(/\`/, "\\`")
+		.replace(/\[/, "\\[")
+		.replace(/\]/, "\\]")
+		.replace(/\)/, "\\)")
+		.replace(/\(/, "\\(")
+		.replace(/\~/, "\\~");
 };
 
 export const removeDiscordCodeBlocks = (text: string): string => {
-	return text.replace(/`/gi, '\\`');
-}
+	return text.replace(/`/gi, "\\`");
+};
 
 export const getRandomInteger = (min: number, max: number): number => {
 	min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+};
 
 export const shuffleArray = (array: unknown[]) => {
 	for (let i = array.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
 		[array[i], array[j]] = [array[j], array[i]];
 	}
-}
+};
 
 export enum TimeUnit {
 	SECOND = 1000,
