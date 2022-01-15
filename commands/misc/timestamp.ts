@@ -19,9 +19,8 @@ export class command extends Command {
 				}).setColor("random"),
 			});
 		} else {
-			try {
-				ms(ctx.argString);
-			} catch {
+			const timestamp = ms(ctx.argString);
+			if (isNaN(timestamp)) {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
@@ -33,22 +32,23 @@ export class command extends Command {
 							"Please provide a valid timestamp such as `4h` or `1d`",
 					}).setColor("random"),
 				});
-				return;
+			} else {
+				const time = (new Date().getTime() / 1000 + timestamp / 1000).toFixed(
+					0
+				);
+				await ctx.message.reply(undefined, {
+					embed: new Embed({
+						author: {
+							name: "Bidome bot",
+							icon_url: ctx.client.user?.avatarURL(),
+						},
+						title: "Here is your timestamp:",
+						description: ["d", "D", "t", "T", "f", "F", "R"]
+							.map((v) => `<t:${time}:${v}> - \`<t:${time}:${v}>\``)
+							.join("\n"),
+					}).setColor("random"),
+				});
 			}
-			const timestamp = ms(ctx.argString);
-			const time = (new Date().getTime() / 1000 + timestamp / 1000).toFixed(0);
-			await ctx.message.reply(undefined, {
-				embed: new Embed({
-					author: {
-						name: "Bidome bot",
-						icon_url: ctx.client.user?.avatarURL(),
-					},
-					title: "Here is your timestamp:",
-					description: ["d", "D", "t", "T", "f", "F", "R"]
-						.map((v) => `<t:${time}:${v}> - \`<t:${time}:${v}>\``)
-						.join("\n"),
-				}).setColor("random"),
-			});
 		}
 	}
 }
