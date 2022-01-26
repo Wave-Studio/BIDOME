@@ -725,7 +725,7 @@ export class extension extends Extension {
 										"Vote skip requirement met! I have skipped the track!",
 								}).setColor("random"),
 							});
-							
+
 							if (serverQueue.queue.length > 0) {
 								serverQueue.songloop = shouldEnableLoop;
 							}
@@ -787,7 +787,10 @@ export class extension extends Extension {
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has("ADMINISTRATOR")
+						!(
+							ctx.member?.permissions.has("ADMINISTRATOR") ||
+							ctx.author.id == queue.get(ctx.guild.id)!.queue[0].requestedBy
+						)
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
