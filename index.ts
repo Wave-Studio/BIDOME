@@ -134,6 +134,18 @@ const nextStatus = async () => {
 	});
 };
 
+import { serve } from "https://deno.land/std@0.123.0/http/server.ts";
+if (isProdTesting) {
+	const port = 3000;
+
+	const handler = (): Response => {
+		return new Response("Bidome", { status: 200 });
+	};
+
+	console.log(`HTTP webserver running. Access it at: http://localhost:3000/`);
+	await serve(handler, { port });
+}
+
 // Prevent console spam from lavalink
 // not being ready
 setTimeout(
