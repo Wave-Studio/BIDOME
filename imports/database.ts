@@ -3,8 +3,9 @@ import { initializeEco } from 'eco';
 export class JsonDB {
 	private data: {
 		[key: string]: unknown;
-	};
+	} = {};
 	constructor(private path = './database/core.json', autoSave = true) {
+		return;
 		const dirCheck = path.startsWith('./')
 			? path.substring(2)
 			: path.startsWith('/')
@@ -43,6 +44,7 @@ export class JsonDB {
 	}
 
 	private saveDatabase() {
+		return;
 		Deno.writeTextFileSync(this.path, JSON.stringify(this.data, null, '\t'));
 	}
 
@@ -82,6 +84,7 @@ export class JsonDB {
 	}
 
 	reload() {
+		return;
 		this.data = JSON.parse(Deno.readTextFileSync(this.path));
 	}
 }

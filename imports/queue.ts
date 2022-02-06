@@ -1,6 +1,6 @@
-import { Player, Cluster } from 'lavadeno';
-import { Message, CommandClient, Embed } from 'harmony';
-import { formatMs, removeDiscordFormatting } from 'tools';
+import { Player, Cluster } from "lavadeno";
+import { Message, CommandClient, Embed } from "harmony";
+import { formatMs, removeDiscordFormatting } from "tools";
 
 export interface Song {
 	name: string;
@@ -33,30 +33,41 @@ export class Queue {
 	) {
 		this.voteSkip = [this.client.user?.id as string];
 
+		const exsistsPlayer = node.players.get(BigInt(server)) != null;
+
 		this.player =
 			node.players.get(BigInt(server)) ?? node.createPlayer(BigInt(server));
 		this.player.connect(BigInt(channel), {
 			deafen: true,
 		});
-		this.player.on('channelMove', (_from, _to) => {
-			// Bug with lavadeno
-			this.deleteQueue();
-		});
-		this.player.on('channelLeave', () => {
-			this.deleteQueue();
-		});
 
-		this.player.on('trackEnd', () => this.onTrackEnd.call(this.instance));
-		this.player.on('trackStuck', () => this.onTrackEnd.call(this.instance));
-		this.player.on('trackException', () => this.onTrackEnd.call(this.instance));
+		if (!exsistsPlayer) {
+			this.player.on("channelMove", (_from, _to) => {
+				// Bug with lavadeno
+				this.deleteQueue();
+			});
+			this.player.on("channelLeave", () => {
+				this.deleteQueue();
+			});
+
+			this.player.on("trackEnd", () => this.onTrackEnd.call(this.instance));
+			this.player.on("trackStuck", () => this.onTrackEnd.call(this.instance));
+			this.player.on("trackException", () =>
+				this.onTrackEnd.call(this.instance)
+			);
+		}
 	}
 
 	onTrackEnd() {
 		this.voteSkip = [];
-		// Fix bugs somehow? idk
+
 		if (this.queueloop) {
-			this.queue.push(this.queue[0]);
-			this.queue.shift();
+			const nextSong = this.queue.shift();
+			if (nextSong == null) {
+				return this.deleteQueue();
+			} else {
+				this.queue.push(nextSong);
+			}
 		} else {
 			if (!this.songloop) {
 				this.queue.shift();
@@ -70,12 +81,12 @@ export class Queue {
 				this.message.edit(
 					new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: this.client.user?.avatarURL(),
 						},
-						title: 'Music',
+						title: "Music",
 						description: `I have finished my queue!`,
-					}).setColor('random')
+					}).setColor("random")
 				);
 			}
 			this.deleteQueue();
@@ -105,42 +116,43 @@ export class Queue {
 				this.message.edit({
 					embed: new Embed({
 						author: {
-							name: 'Bidome bot',
+							name: "Bidome bot",
 							icon_url: this.client.user?.avatarURL(),
 						},
-						title: 'Playing song',
+						title: "Playing song",
 						fields: [
 							{
-								name: 'Song',
+								name: "Song",
 								value: `\`${(song.name.length > 197
 									? `${song.name.substring(0, 197)}...`
 									: song.name
 								)
-									.replace(/`/gi, '\\`')
-									.replace(/\\/, '\\')}\``,
+									.replace(/`/gi, "\\`")
+									.replace(/\\/, "\\")}\``,
 								inline: true,
 							},
 							{
-								name: 'Author',
+								name: "Author",
 								value: `${removeDiscordFormatting(song.author)}`,
 								inline: true,
 							},
 							{
-								name: 'Length',
+								name: "Length",
 								value: `${formatMs(song.msLength)}`,
 								inline: true,
 							},
 							{
-								name: 'Requested by',
+								name: "Requested by",
 								value: `<@!${song.requestedBy}>`,
 								inline: true,
 							},
 							{
-								name: 'Progress:',
+								name: "Progress:",
 								value: `\`${formatMs(
 									(this.player.position ?? 1000) < 1000
 										? 1000
-										: this.player.position ?? 1000, true
+										: this.player.position ?? 1000,
+									true
 								)}\`/\`${formatMs(song.msLength, true)}\``,
 								inline: true,
 							},
@@ -148,7 +160,7 @@ export class Queue {
 						thumbnail: {
 							url: song.image ?? undefined,
 						},
-					}).setColor('random'),
+					}).setColor("random"),
 					components: [],
 				});
 			}
@@ -160,12 +172,16 @@ export class Queue {
 
 	async deleteQueue() {
 		// Prevent errors being thrown due to too many listeners (even tho the player is being destroyed)
-		this.player.off('trackEnd');
-		this.player.off('trackStuck');
-		this.player.off('trackException');
+		this.player.off("trackEnd");
+		this.player.off("trackStuck");
+		this.player.off("trackException");
+		this.player.off("channelMove");
+		this.player.off("channelLeave");
 
 		this.queue = [];
+		await this.player.disconnect();
 		await this.player.destroy();
+		await this.node.destroyPlayer(BigInt(this.server));
 		this.queueInstances.delete(this.server);
 	}
 
@@ -177,9 +193,7 @@ export class Queue {
 			}
 		}
 		const neededToSkip =
-			users.length == 1
-				? 0
-				: Math.floor(users.length / 2) + 1;
+			users.length == 1 ? 0 : Math.floor(users.length / 2) + 1;
 		if (voteSkipUsers.length >= neededToSkip) return true;
 		else return false;
 	}

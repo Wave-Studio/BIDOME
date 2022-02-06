@@ -32,8 +32,8 @@ export class extension extends Extension {
 		lavalink = new Cluster({
 			nodes: [
 				{
-					host: "127.0.0.1",
-					port: 2333,
+					host: "lava.link",
+					port: 80,
 					password: "youshallnotpass",
 					id: "1",
 					reconnect: {
