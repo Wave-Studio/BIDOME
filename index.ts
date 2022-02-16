@@ -146,14 +146,17 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 });
 
 const nextStatus = async () => {
-	const { type, name, status } = await getRandomStatus(bot);
-	bot.setPresence({
-		activity: {
-			name,
-			type,
-		},
-		status: status ?? "idle",
-	});
+	if (bot.gateway.connected) {
+		const { type, name, status } = await getRandomStatus(bot);
+		
+		bot.setPresence({
+			activity: {
+				name,
+				type,
+			},
+			status: status ?? "idle",
+		});
+	}
 };
 
 // Prevent console spam from lavalink
