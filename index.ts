@@ -4,12 +4,19 @@ import { getRandomStatus } from "status";
 
 import "https://deno.land/x/dotenv@v3.0.0/load.ts";
 
-if (!Deno.args.includes("--no-lava")) {
+const launchLava =
+	Deno.env.get("RAILWAY_STATIC_URL") != undefined
+		? false
+		: !Deno.args.map((a) => a.toLowerCase()).includes("--lava");
+
+if (launchLava) {
 	Deno.run({
 		cmd: ["java", "-jar", "lavalink/Lavalink.jar"],
 	});
 } else {
-	console.log("Flag '--no-lava' detected, not launching lavalink");
+	console.log(
+		"Lavalink disabled, this is either caused by the --no-lava flag or you're running this on railway which doesn't allow lavalink"
+	);
 }
 
 const isProdTesting = true;
@@ -63,7 +70,7 @@ bot.on("error", (err) => {
 	console.log("Error occured:", err);
 });
 
-bot.on("ready", async () => {
+bot.once("ready", async () => {
 	console.log(`Logged in as ${bot.user?.tag}`);
 	console.log("Loading Database");
 	initDatabases();
@@ -148,7 +155,7 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 const nextStatus = async () => {
 	if (bot.gateway.connected) {
 		const { type, name, status } = await getRandomStatus(bot);
-		
+
 		bot.setPresence({
 			activity: {
 				name,
@@ -172,5 +179,5 @@ setTimeout(
 		]);
 	},
 	// Prevent users from waiting when lavalink isn't being launched
-	Deno.args.includes("--no-lava") ? 1 : 1.5 * 1000
+	launchLava ? 1.5 * 1000 : 0
 );
