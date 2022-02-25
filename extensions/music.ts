@@ -61,6 +61,11 @@ export class extension extends Extension {
 		});
 
 		lavalink.on("nodeDisconnect", (node, code, reason) => {
+			lavalink.nodes.forEach((n) => {
+				if (n == node) {
+					n.connect();
+				}
+			});
 			console.log(
 				`[Lavalink]: Node ${node.id} disconnected! Code: ${code} Reason: ${
 					reason ?? "No reason given"

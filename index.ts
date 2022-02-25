@@ -70,7 +70,11 @@ bot.on("error", (err) => {
 	console.log("Error occured:", err);
 });
 
-bot.once("ready", async () => {
+let loggedIn = false;
+
+bot.on("ready", async () => {
+	if (loggedIn) return;
+	loggedIn = true;
 	console.log(`Logged in as ${bot.user?.tag}`);
 	console.log("Loading Database");
 	initDatabases();
