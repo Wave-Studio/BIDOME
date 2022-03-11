@@ -7,4 +7,6 @@ USER deno
 # These steps will be re-run upon each file change in your working directory:
 ADD . .
 
-CMD deno run --import-map=imports.json --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts --no-lava
+# Stop crashing on railway errors
+CMD deno run --allow-all crashHandler.ts
+#CMD deno run --import-map=imports.json --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts --no-lava
