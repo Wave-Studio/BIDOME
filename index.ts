@@ -5,9 +5,9 @@ import { getRandomStatus } from "status";
 import "https://deno.land/x/dotenv@v3.0.0/load.ts";
 
 const launchLava =
-	Deno.env.get("RAILWAY_STATIC_URL") != undefined
+	Deno.env.get("RAILWAY_STATIC_URL") != undefined || Deno.args.map((a) => a.toLowerCase()).includes("--no-lava")
 		? false
-		: !Deno.args.map((a) => a.toLowerCase()).includes("--lava");
+		: true;
 
 if (launchLava) {
 	Deno.run({
