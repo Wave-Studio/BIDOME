@@ -50,20 +50,14 @@ const bot = new CommandClient({
 
 bot.on("gatewayError", (err) => {
 	console.log("Gateway error occured:", err);
-	bot.reconnect();
 });
 
 bot.on("reconnect", () => {
 	console.log("Reconnect requested. Reconnecting...");
-	bot.reconnect();
 });
 
 bot.on("resumed", () => {
 	console.log("Reconnected.");
-});
-
-bot.on("gatewayError", (err) => {
-	console.log("Error spit by gateway:", err);
 });
 
 bot.on("error", (err) => {

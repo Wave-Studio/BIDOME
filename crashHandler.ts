@@ -11,15 +11,14 @@ const createInstance = () => {
 let webhook: Webhook | undefined = undefined;
 if (Deno.env.get("WEBHOOK_URL") != undefined) {
 	webhook = await Webhook.fromURL(Deno.env.get("WEBHOOK_URL") as string);
-	webhook.name = "Bidome Crash Handler";
-	webhook.avatar =
-		"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024";
 }
 
 while (true) {
 	const instance = createInstance();
+	console.log("Instance created");
 	await instance.status();
 	await instance.close();
+	console.log("Instance crashed! Posting webhook and restarting...");
 	if (webhook != undefined) {
 		webhook.send({
 			embeds: [
@@ -34,6 +33,8 @@ while (true) {
 						"The deno process has been killed. Starting a new one...",
 				}).setColor("random"),
 			],
+			avatar: "https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
+			name: "Bidome Crash Handler",
 		});
 	}
 }
