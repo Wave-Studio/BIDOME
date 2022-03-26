@@ -14,6 +14,7 @@ if (Deno.env.get("WEBHOOK_URL") != undefined) {
 }
 
 while (true) {
+	console.log("Launching instance...")
 	const instance = createInstance();
 	console.log("Instance created");
 	await instance.status();

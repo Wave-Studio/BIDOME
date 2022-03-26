@@ -8,5 +8,5 @@ USER deno
 ADD . .
 
 # Stop crashing on railway errors
-CMD deno run --allow-all crashHandler.ts
+CMD deno run --allow-all --no-check crashHandler.ts
 #CMD deno run --import-map=imports.json --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts --no-lava
