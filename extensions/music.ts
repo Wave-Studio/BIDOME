@@ -29,12 +29,13 @@ export class extension extends Extension {
 			shard.send(payload);
 		};
 
+		// Ty https://lavalink.darrennathanael.com/NoSSL/lavalink-without-ssl/
 		lavalink = new Cluster({
 			nodes: [
 				{
-					host: "lava.link",
-					port: 80,
-					password: "youshallnotpass",
+					host: "usa.lavalink.mitask.tech",
+					port: 2333,
+					password: "lvserver",
 					id: "1",
 					reconnect: {
 						type: "basic",
@@ -61,11 +62,7 @@ export class extension extends Extension {
 		});
 
 		lavalink.on("nodeDisconnect", (node, code, reason) => {
-			lavalink.nodes.forEach((n) => {
-				if (n == node) {
-					n.connect();
-				}
-			});
+			node.connect();
 			console.log(
 				`[Lavalink]: Node ${node.id} disconnected! Code: ${code} Reason: ${
 					reason ?? "No reason given"
@@ -216,7 +213,10 @@ export class extension extends Extension {
 						? ctx.argString
 						: `ytsearch:${ctx.argString}`;
 
-					const { tracks } = await lavalink.rest.loadTracks(searchPrompt);
+					const res = await lavalink.rest.loadTracks(searchPrompt),
+						{ tracks } = res;
+
+					//console.log(res);
 					if (tracks.length < 1) {
 						message.edit(
 							new Embed({
