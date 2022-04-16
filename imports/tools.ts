@@ -92,3 +92,42 @@ export enum TimeUnit {
 	MONTH = 30 * 24 * 60 * 60 * 1000,
 	YEAR = 365 * 24 * 60 * 60 * 1000,
 }
+
+export const toMs = (str: string) => {
+	let msValue = 0;
+	let unitType = "";
+	let unitValue = "";
+
+	const convertToMS = () => {
+		msValue += parseInt(unitValue) * ({
+			s: TimeUnit.SECOND,
+			m: TimeUnit.MINUTE,
+			h: TimeUnit.HOUR,
+			d: TimeUnit.DAY,
+			w: TimeUnit.WEEK,
+			mo: TimeUnit.MONTH,
+			y: TimeUnit.YEAR,
+		}[unitType] as number);
+		unitType = "";
+		unitValue = "";
+	}
+
+	for (const char of str) {
+		if (!isNaN(parseInt(char))) {
+			if (unitType !== "") {
+				convertToMS();
+			}
+			if (unitType === "") {
+				unitValue += char;
+			}
+		} else {
+			unitType += char;
+		}
+	}
+
+	if (unitType !== "") {
+		convertToMS();
+	}
+
+	return msValue;
+}

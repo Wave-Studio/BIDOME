@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import ms from "https://esm.sh/ms";
+import { toMs } from "tools";
 
 export class command extends Command {
 	name = "timestamp";
@@ -15,12 +15,12 @@ export class command extends Command {
 						icon_url: ctx.client.user?.avatarURL(),
 					},
 					title: "Invalid command use!",
-					description: "Please provide a timestamp such as `4h` or `1d`",
+					description: "Please provide a timestamp such as `4h`, `1d`, or `1y1d`",
 				}).setColor("random"),
 			});
 		} else {
-			const timestamp = ms(ctx.argString);
-			if (isNaN(timestamp)) {
+			const timestamp = toMs(ctx.argString);
+			if (timestamp == 0) {
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
