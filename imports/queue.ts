@@ -42,26 +42,30 @@ export class Queue {
 		});
 
 		if (!exsistsPlayer) {
-			this.player.on("channelMove", (_from, _to) => {
-				// Bug with lavadeno
-				this.deleteQueue();
-			});
 			this.player.on("channelLeave", () => {
-				this.deleteQueue();
+				this.deleteQueue.call(this.instance);
 			});
 
-			this.player.on("trackEnd", () => this.onTrackEnd.call(this.instance));
-			this.player.on("trackStuck", () => this.onTrackEnd.call(this.instance));
+			this.player.on("disconnected", () => {
+				this.deleteQueue.call(this.instance);
+			});
+
+			this.player.on("trackEnd", () => {
+				this.onTrackEnd.call(this.instance);
+			});
+			this.player.on("trackStuck", () =>
+				this.onTrackEnd.call(this.instance, true)
+			);
 			this.player.on("trackException", () =>
-				this.onTrackEnd.call(this.instance)
+				this.onTrackEnd.call(this.instance, true)
 			);
 		}
 	}
 
-	onTrackEnd() {
+	onTrackEnd(errored = false) {
 		this.voteSkip = [];
 
-		if (this.queueloop) {
+		if (this.queueloop && !errored) {
 			const nextSong = this.queue.shift();
 			if (nextSong == null) {
 				return this.deleteQueue();
@@ -69,7 +73,7 @@ export class Queue {
 				this.queue.push(nextSong);
 			}
 		} else {
-			if (!this.songloop) {
+			if (!this.songloop || errored) {
 				this.queue.shift();
 			}
 		}
@@ -106,7 +110,7 @@ export class Queue {
 		}
 	}
 
-	private playSong() {
+	private async playSong() {
 		this.voteSkip = [];
 		const song = this.queue[0];
 		if (song == undefined) {
@@ -164,7 +168,10 @@ export class Queue {
 					components: [],
 				});
 			}
-			this.player.play(song.track, {
+
+			await this.player.stop();
+
+			await this.player.play(song.track, {
 				volume: this.volume,
 			});
 		}
@@ -172,11 +179,11 @@ export class Queue {
 
 	async deleteQueue() {
 		// Prevent errors being thrown due to too many listeners (even tho the player is being destroyed)
+		this.player.off("channelLeave");
+		this.player.off("disconnected");
 		this.player.off("trackEnd");
 		this.player.off("trackStuck");
 		this.player.off("trackException");
-		this.player.off("channelMove");
-		this.player.off("channelLeave");
 
 		this.queue = [];
 		await this.player.disconnect();

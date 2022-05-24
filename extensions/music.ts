@@ -7,6 +7,7 @@ import {
 	CommandClient as CmdClient,
 	MessageComponentData,
 	isMessageComponentInteraction,
+	Member,
 } from "harmony";
 import { Cluster, UpdateVoiceStatus } from "lavadeno";
 import { removeDiscordFormatting, formatMs, shuffleArray } from "tools";
@@ -15,6 +16,8 @@ import { Queue, Song } from "queue";
 // Deno says to use let here instead of var so ok ig
 let lavalink: Cluster;
 const queue: Map<string, Queue> = new Map();
+
+const permCheck = (user: Member) => user.permissions.has("ADMINISTRATOR", true);
 
 export class extension extends Extension {
 	constructor(bot: CmdClient) {
@@ -596,7 +599,7 @@ export class extension extends Extension {
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has("ADMINISTRATOR")
+						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
@@ -715,9 +718,6 @@ export class extension extends Extension {
 
 							serverQueue.songloop = false;
 
-							if (serverQueue.songloop) {
-								serverQueue.queue.shift();
-							}
 							serverQueue.onTrackEnd();
 							await message.edit({
 								embed: new Embed({
@@ -793,7 +793,7 @@ export class extension extends Extension {
 							(d) => !d.user.bot
 						).length > 2 &&
 						!(
-							ctx.member?.permissions.has("ADMINISTRATOR") ||
+							permCheck(ctx.member!) ||
 							ctx.author.id == queue.get(ctx.guild.id)!.queue[0].requestedBy
 						)
 					) {
@@ -814,10 +814,6 @@ export class extension extends Extension {
 						const shouldEnableLoop = serverQueue.songloop ? true : false;
 
 						serverQueue.songloop = false;
-
-						if (serverQueue.songloop) {
-							serverQueue.queue.shift();
-						}
 
 						serverQueue.onTrackEnd();
 						await ctx.message.reply(undefined, {
@@ -890,7 +886,7 @@ export class extension extends Extension {
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has("ADMINISTRATOR")
+						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
@@ -985,7 +981,7 @@ export class extension extends Extension {
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has("ADMINISTRATOR")
+						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
@@ -1081,7 +1077,7 @@ export class extension extends Extension {
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has("ADMINISTRATOR")
+						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
@@ -1211,7 +1207,7 @@ export class extension extends Extension {
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has("ADMINISTRATOR")
+						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
@@ -1310,7 +1306,7 @@ export class extension extends Extension {
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has("ADMINISTRATOR")
+						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
@@ -1451,7 +1447,7 @@ export class extension extends Extension {
 									((await vc.channel?.voiceStates.array()) ?? []).filter(
 										(d) => !d.user.bot
 									).length > 2 &&
-									!ctx.member?.permissions.has("ADMINISTRATOR") &&
+									permCheck(ctx.member!) &&
 									serverQueue.queue[number].requestedBy != ctx.author.id
 								) {
 									await ctx.message.reply(undefined, {
@@ -1542,7 +1538,7 @@ export class extension extends Extension {
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
 							(d) => !d.user.bot
 						).length > 2 &&
-						!ctx.member?.permissions.has("ADMINISTRATOR")
+						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
 							embed: new Embed({
