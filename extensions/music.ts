@@ -36,16 +36,16 @@ export class extension extends Extension {
 		lavalink = new Cluster({
 			nodes: [
 				{
-					host: "usa.lavalink.mitask.tech",
-					port: 2333,
-					password: "lvserver",
+					host: "lavalink.oops.wtf",
+					port: 2000,
+					password: "www.freelavalink.ga",
 					id: "1",
 					reconnect: {
 						type: "basic",
 						tries: -1,
 						delay: 5 * 1000,
 					},
-				},
+				}
 			],
 			sendGatewayPayload,
 		});
