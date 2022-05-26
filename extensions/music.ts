@@ -40,11 +40,7 @@ export class extension extends Extension {
 					port: 2000,
 					password: "www.freelavalink.ga",
 					id: "1",
-					reconnect: {
-						type: "basic",
-						tries: -1,
-						delay: 5 * 1000,
-					},
+					reconnect: "basic",
 				}
 			],
 			sendGatewayPayload,
@@ -65,12 +61,13 @@ export class extension extends Extension {
 		});
 
 		lavalink.on("nodeDisconnect", (node, code, reason) => {
-			node.connect();
 			console.log(
 				`[Lavalink]: Node ${node.id} disconnected! Code: ${code} Reason: ${
 					reason ?? "No reason given"
 				}`
 			);
+
+			node.connect(BigInt(this.client.user?.id as string));
 		});
 
 		this.client.on("raw", (evt: string, d: unknown) => {
