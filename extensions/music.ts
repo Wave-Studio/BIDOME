@@ -40,8 +40,12 @@ export class extension extends Extension {
 					port: 2000,
 					password: "www.freelavalink.ga",
 					id: "1",
-					reconnect: "basic",
-				}
+					reconnect: {
+						type: "basic",
+						delay: 5000,
+						tries: 5,
+					},
+				},
 			],
 			sendGatewayPayload,
 		});
@@ -214,7 +218,7 @@ export class extension extends Extension {
 						: `ytsearch:${ctx.argString}`;
 
 					const res = await lavalink.rest.loadTracks(searchPrompt),
-						{ tracks } = res;
+						{ tracks, playlistInfo } = res;
 
 					//console.log(res);
 					if (tracks.length < 1) {
@@ -229,20 +233,37 @@ export class extension extends Extension {
 							}).setColor("random")
 						);
 					} else {
+						const toAddTracks: Song[] = [];
+
 						const getImageFromURI = (_uri: string): string | null => {
 							return null;
 						};
 
-						const track = tracks[0].info;
-						let song: Song = {
-							requestedBy: ctx.author.id,
-							name: track.title,
-							author: track.author,
-							image: getImageFromURI(track.uri),
-							url: track.uri,
-							msLength: track.length,
-							track: tracks[0].track,
-						};
+						if (isURL) {
+							for (const { info, track } of tracks) {
+								toAddTracks.push({
+									requestedBy: ctx.author.id,
+									name: info.title,
+									author: info.author,
+									image: getImageFromURI(info.uri),
+									url: info.uri,
+									msLength: info.length,
+									track: track,
+								});
+							}
+						} else {
+							const { info, track } = tracks[0];
+							toAddTracks.push({
+								requestedBy: ctx.author.id,
+								name: info.title,
+								author: info.author,
+								image: getImageFromURI(info.uri),
+								url: info.uri,
+								msLength: info.length,
+								track: track,
+							});
+						}
+
 						if (!isURL) {
 							const now = Date.now();
 							const buttons: MessageComponentData[] = [];
@@ -340,7 +361,7 @@ export class extension extends Extension {
 											parseInt(response.customID.substring(`${now}-`.length))
 										];
 									const track = trackInfo.info;
-									song = {
+									toAddTracks[0] = {
 										requestedBy: ctx.author.id,
 										name: track.title,
 										author: track.author,
@@ -373,48 +394,103 @@ export class extension extends Extension {
 						}
 						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
 						if (serverQueue.queue.length > 0) {
-							message.edit({
-								embed: new Embed({
-									author: {
-										name: "Bidome bot",
-										icon_url: ctx.client.user?.avatarURL(),
-									},
-									title: "Added song to queue",
-									fields: [
-										{
-											name: "Song",
-											value: `\`${(song.name.length > 197
-												? `${song.name.substring(0, 197)}...`
-												: song.name
-											)
-												.replace(/`/gi, "\\`")
-												.replace(/\\/, "\\")}\``,
-											inline: true,
+							if (toAddTracks.length == 1) {
+								const song = toAddTracks[0];
+								message.edit({
+									embed: new Embed({
+										author: {
+											name: "Bidome bot",
+											icon_url: ctx.client.user?.avatarURL(),
 										},
-										{
-											name: "Author",
-											value: `${removeDiscordFormatting(song.author)}`,
-											inline: true,
+										title: "Added song to queue",
+										fields: [
+											{
+												name: "Song",
+												value: `\`${(song.name.length > 197
+													? `${song.name.substring(0, 197)}...`
+													: song.name
+												)
+													.replace(/`/gi, "\\`")
+													.replace(/\\/, "\\")}\``,
+												inline: true,
+											},
+											{
+												name: "Author",
+												value: `${removeDiscordFormatting(song.author)}`,
+												inline: true,
+											},
+											{
+												name: "Length",
+												value: `${formatMs(song.msLength)}`,
+												inline: true,
+											},
+											{
+												name: "Position",
+												value: `${serverQueue.queue.length + 1}`,
+												inline: true,
+											},
+										],
+										thumbnail: {
+											url: song.image ?? undefined,
 										},
-										{
-											name: "Length",
-											value: `${formatMs(song.msLength)}`,
-											inline: true,
+									}).setColor("random"),
+									components: [],
+								});
+							} else {
+								let msLength = 0;
+
+								for (const track of toAddTracks) {
+									msLength += track.msLength;
+								}
+
+								message.edit({
+									embed: new Embed({
+										author: {
+											name: "Bidome bot",
+											icon_url: ctx.client.user?.avatarURL(),
 										},
-										{
-											name: "Position",
-											value: `${serverQueue.queue.length + 1}`,
-											inline: true,
-										},
-									],
-									thumbnail: {
-										url: song.image ?? undefined,
-									},
-								}).setColor("random"),
-								components: [],
-							});
+										title: "Added playlist to queue",
+										fields: [
+											{
+												name: "Playlist",
+												value: `\`${(playlistInfo.name.length > 197
+													? `${playlistInfo.name.substring(0, 197)}...`
+													: playlistInfo.name
+												)
+													.replace(/`/gi, "\\`")
+													.replace(/\\/, "\\")}\``,
+												inline: true,
+											},
+											{
+												name: "Tracks",
+												value: `${toAddTracks.length}`,
+												inline: true,
+											},
+											{
+												name: "Length",
+												value: `${formatMs(msLength)}`,
+												inline: true,
+											},
+										],
+									}).setColor("random"),
+									components: [],
+								});
+							}
 						}
-						serverQueue.addSong(song);
+
+						let play = false;
+
+						if (serverQueue.queue.length < 1) {
+							play = true;
+						}
+
+						for (const song of toAddTracks) {
+							serverQueue.addSong(song);
+						}
+
+						if (play) {
+							serverQueue.playSong();
+						}
 					}
 				}
 			}

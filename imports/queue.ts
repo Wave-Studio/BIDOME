@@ -100,23 +100,24 @@ export class Queue {
 	}
 
 	addSong(song: Song) {
-		// Yes, I could call the queue push once for both thingys
-		// Will i? No
-		if (this.queue.length < 1) {
-			this.queue.push(song);
-			this.playSong();
-		} else {
-			this.queue.push(song);
-		}
+		this.queue.push(song);
 	}
 
-	private async playSong() {
+	async playSong() {
 		this.voteSkip = [];
 		const song = this.queue[0];
 		if (song == undefined) {
 			this.deleteQueue();
 		} else {
 			if (this.message) {
+				let msLength = 0;
+
+				for (const song of this.queue) {
+					msLength += song.msLength;
+				}
+
+				this.player.position = 0;
+
 				this.message.edit({
 					embed: new Embed({
 						author: {
@@ -164,6 +165,9 @@ export class Queue {
 						thumbnail: {
 							url: song.image ?? undefined,
 						},
+						footer: {
+							text: `Songs in queue: ${this.queue.length} | Length: ${formatMs(msLength)}`,
+						}
 					}).setColor("random"),
 					components: [],
 				});
