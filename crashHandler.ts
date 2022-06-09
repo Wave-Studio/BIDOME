@@ -1,10 +1,11 @@
-import { Webhook, Embed } from "./imports/harmony.ts";
+import { Embed, Webhook } from "./imports/harmony.ts";
 
 const createInstance = () => {
 	return Deno.run({
-		cmd: "deno run --import-map=imports.json --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts --no-lava".split(
-			" "
-		),
+		cmd: "deno run --import-map=imports.json --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts --no-lava"
+			.split(
+				" ",
+			),
 	});
 };
 
@@ -14,7 +15,7 @@ if (Deno.env.get("WEBHOOK_URL") != undefined) {
 }
 
 while (true) {
-	console.log("Launching instance...")
+	console.log("Launching instance...");
 	const instance = createInstance();
 	console.log("Instance created");
 	await instance.status();
@@ -34,7 +35,8 @@ while (true) {
 						"The deno process has been killed. Starting a new one...",
 				}).setColor("random"),
 			],
-			avatar: "https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
+			avatar:
+				"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
 			name: "Bidome Crash Handler",
 		});
 	}

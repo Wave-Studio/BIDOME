@@ -13,9 +13,11 @@ export class command extends Command {
 					icon_url: ctx.client.user?.avatarURL(),
 				},
 				title: "Bot uptime",
-				description: `Bidome has been online for \`${formatMs(
-					ctx.client.uptime
-				)}\``,
+				description: `Bidome has been online for \`${
+					formatMs(
+						ctx.client.uptime,
+					)
+				}\``,
 			}).setColor("random"),
 		});
 	}

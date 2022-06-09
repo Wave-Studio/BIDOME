@@ -66,7 +66,7 @@ export class JsonDB {
 		this.saveDatabase();
 	}
 
-	get(key: string) {
+	get<T>(key: string): T {
 		let object = this.data;
 		const parts = key.split(".");
 		const dbKey = parts[parts.length - 1];
@@ -80,7 +80,7 @@ export class JsonDB {
 			// @ts-ignore - TS doesn't know that object[part] is a JSON object
 			object = object[part];
 		}
-		return object[dbKey];
+		return object[dbKey] as T;
 	}
 
 	reload() {

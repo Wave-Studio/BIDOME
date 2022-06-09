@@ -1,5 +1,5 @@
-import { Player, Cluster } from "lavadeno";
-import { Message, CommandClient, Embed } from "harmony";
+import { Cluster, Player } from "lavadeno";
+import { CommandClient, Embed, Message } from "harmony";
 import { formatMs, removeDiscordFormatting } from "tools";
 
 export interface Song {
@@ -29,14 +29,14 @@ export class Queue {
 		public server: string,
 		private client: CommandClient,
 		private queueInstances: Map<string, Queue>,
-		private message?: Message
+		private message?: Message,
 	) {
 		this.voteSkip = [this.client.user?.id as string];
 
 		const exsistsPlayer = node.players.get(BigInt(server)) != null;
 
-		this.player =
-			node.players.get(BigInt(server)) ?? node.createPlayer(BigInt(server));
+		this.player = node.players.get(BigInt(server)) ??
+			node.createPlayer(BigInt(server));
 		this.player.connect(BigInt(channel), {
 			deafen: true,
 		});
@@ -53,11 +53,13 @@ export class Queue {
 			this.player.on("trackEnd", () => {
 				this.onTrackEnd.call(this.instance);
 			});
-			this.player.on("trackStuck", () =>
-				this.onTrackEnd.call(this.instance, true)
+			this.player.on(
+				"trackStuck",
+				() => this.onTrackEnd.call(this.instance, true),
 			);
-			this.player.on("trackException", () =>
-				this.onTrackEnd.call(this.instance, true)
+			this.player.on(
+				"trackException",
+				() => this.onTrackEnd.call(this.instance, true),
 			);
 		}
 	}
@@ -90,7 +92,7 @@ export class Queue {
 						},
 						title: "Music",
 						description: `I have finished my queue!`,
-					}).setColor("random")
+					}).setColor("random"),
 				);
 			}
 			this.deleteQueue();
@@ -128,17 +130,20 @@ export class Queue {
 						fields: [
 							{
 								name: "Song",
-								value: `\`${(song.name.length > 197
-									? `${song.name.substring(0, 197)}...`
-									: song.name
-								)
-									.replace(/`/gi, "\\`")
-									.replace(/\\/, "\\")}\``,
+								value: `\`${
+									(song.name.length > 197
+										? `${song.name.substring(0, 197)}...`
+										: song.name)
+										.replace(/`/gi, "\\`")
+										.replace(/\\/, "\\")
+								}\``,
 								inline: true,
 							},
 							{
 								name: "Author",
-								value: `${removeDiscordFormatting(song.author)}`,
+								value: `${
+									removeDiscordFormatting(song.author)
+								}`,
 								inline: true,
 							},
 							{
@@ -153,12 +158,14 @@ export class Queue {
 							},
 							{
 								name: "Progress:",
-								value: `\`${formatMs(
-									(this.player.position ?? 1000) < 1000
-										? 1000
-										: this.player.position ?? 1000,
-									true
-								)}\`/\`${formatMs(song.msLength, true)}\``,
+								value: `\`${
+									formatMs(
+										(this.player.position ?? 1000) < 1000
+											? 1000
+											: this.player.position ?? 1000,
+										true,
+									)
+								}\`/\`${formatMs(song.msLength, true)}\``,
 								inline: true,
 							},
 						],
@@ -166,8 +173,11 @@ export class Queue {
 							url: song.image ?? undefined,
 						},
 						footer: {
-							text: `Songs in queue: ${this.queue.length} | Length: ${formatMs(msLength)}`,
-						}
+							text:
+								`Songs in queue: ${this.queue.length} | Length: ${
+									formatMs(msLength)
+								}`,
+						},
 					}).setColor("random"),
 					components: [],
 				});
@@ -203,8 +213,9 @@ export class Queue {
 				voteSkipUsers.push(user);
 			}
 		}
-		const neededToSkip =
-			users.length == 1 ? 0 : Math.floor(users.length / 2) + 1;
+		const neededToSkip = users.length == 1
+			? 0
+			: Math.floor(users.length / 2) + 1;
 		if (voteSkipUsers.length >= neededToSkip) return true;
 		else return false;
 	}

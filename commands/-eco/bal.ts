@@ -1,11 +1,11 @@
-import { Command, CommandContext, Embed, User } from 'harmony';
-import { getProfileFromDatabase, calculateXPToNextLevel } from 'eco';
+import { Command, CommandContext, Embed, User } from "harmony";
+import { calculateXPToNextLevel, getProfileFromDatabase } from "eco";
 
 export class command extends Command {
-	name = 'bal';
-	aliases = ['balance'];
-	description = 'Check your balance.';
-	category = 'eco';
+	name = "bal";
+	aliases = ["balance"];
+	description = "Check your balance.";
+	category = "eco";
 	async execute(ctx: CommandContext) {
 		if (!ctx.guild?.id) return;
 		let user = ctx.author;
@@ -16,51 +16,53 @@ export class command extends Command {
 			return await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
-					title: 'Bidome Eco',
+					title: "Bidome Eco",
 					description: `Bot's can't have a balance!`,
-				}).setColor('random'),
+				}).setColor("random"),
 			});
 		} else {
 			const profile = await getProfileFromDatabase(
 				ctx.guild.id,
 				user.id,
-				user.tag
+				user.tag,
 			);
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
-					title: 'User balance',
+					title: "User balance",
 					fields: [
 						{
-							name: 'Balance',
+							name: "Balance",
 							value: `$${profile.balance}`,
 							inline: true,
 						},
 						{
-							name: 'Level',
+							name: "Level",
 							value: `${profile.level}`,
 							inline: true,
 						},
 						{
-							name: 'XP',
-							value: `${profile.levelXp}/${calculateXPToNextLevel(
-								profile.level
-							)}`,
+							name: "XP",
+							value: `${profile.levelXp}/${
+								calculateXPToNextLevel(
+									profile.level,
+								)
+							}`,
 							inline: true,
 						},
 						{
-							name: 'Bank',
+							name: "Bank",
 							value: `$${profile.bank}/$${profile.maxBankSpace}`,
 							inline: true,
 						},
 					],
-				}).setColor('random'),
+				}).setColor("random"),
 			});
 		}
 	}

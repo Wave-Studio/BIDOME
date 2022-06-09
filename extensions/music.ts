@@ -1,16 +1,16 @@
 import {
-	Extension,
-	CommandContext,
-	Embed,
-	Gateway,
 	command,
 	CommandClient as CmdClient,
-	MessageComponentData,
+	CommandContext,
+	Embed,
+	Extension,
+	Gateway,
 	isMessageComponentInteraction,
 	Member,
+	MessageComponentData,
 } from "harmony";
 import { Cluster, UpdateVoiceStatus } from "lavadeno";
-import { removeDiscordFormatting, formatMs, shuffleArray } from "tools";
+import { formatMs, removeDiscordFormatting, shuffleArray } from "tools";
 import { Queue, Song } from "queue";
 
 // Deno says to use let here instead of var so ok ig
@@ -25,7 +25,8 @@ export class extension extends Extension {
 
 		const sendGatewayPayload = (id: bigint, payload: UpdateVoiceStatus) => {
 			const shardID = Number(
-				(BigInt(id) << 22n) % BigInt(this.client.shards.cachedShardCount ?? 1)
+				(BigInt(id) << 22n) %
+					BigInt(this.client.shards.cachedShardCount ?? 1),
 			);
 			const shard = this.client.shards.get(shardID) as Gateway;
 			// @ts-ignore stop errors
@@ -52,11 +53,9 @@ export class extension extends Extension {
 
 		lavalink.on("nodeConnect", (node, took, reconnect) => {
 			console.log(
-				`[Lavalink]: Node ${
-					node.id
-				} Connected! Took: ${took}ms Auto-Reconnect: ${
+				`[Lavalink]: Node ${node.id} Connected! Took: ${took}ms Auto-Reconnect: ${
 					reconnect ? "Yes" : "No"
-				}`
+				}`,
 			);
 		});
 
@@ -68,7 +67,7 @@ export class extension extends Extension {
 			console.log(
 				`[Lavalink]: Node ${node.id} disconnected! Code: ${code} Reason: ${
 					reason ?? "No reason given"
-				}`
+				}`,
 			);
 
 			node.connect(BigInt(this.client.user?.id as string));
@@ -118,7 +117,8 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: "I am already connected to another channel!",
+						description:
+							"I am already connected to another channel!",
 					}).setColor("random"),
 				});
 			} else {
@@ -132,7 +132,7 @@ export class extension extends Extension {
 					ctx.author.id,
 					ctx.guild?.id as string,
 					ctx.client,
-					queue
+					queue,
 				);
 				serverQueue.deleteQueue();
 
@@ -143,9 +143,11 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: `Joined **${removeDiscordFormatting(
-							vc.channel?.name as string
-						)}**`,
+						description: `Joined **${
+							removeDiscordFormatting(
+								vc.channel?.name as string,
+							)
+						}**`,
 					}).setColor("random"),
 				});
 			}
@@ -196,7 +198,8 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "I am currently playing in another channel!",
+							description:
+								"I am currently playing in another channel!",
 						}).setColor("random"),
 					});
 				} else {
@@ -207,11 +210,14 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "<a:typing:779775412829028373> Finding track",
+							description:
+								"<a:typing:779775412829028373> Finding track",
 						}).setColor("random"),
 					});
 
-					const isURL = /(((http|https):\/\/)|www.)/i.test(ctx.argString);
+					const isURL = /(((http|https):\/\/)|www.)/i.test(
+						ctx.argString,
+					);
 
 					const searchPrompt = isURL
 						? ctx.argString
@@ -229,13 +235,16 @@ export class extension extends Extension {
 									icon_url: ctx.client.user?.avatarURL(),
 								},
 								title: "Music",
-								description: "❗ Unable to find a track with that name",
-							}).setColor("random")
+								description:
+									"❗ Unable to find a track with that name",
+							}).setColor("random"),
 						);
 					} else {
 						const toAddTracks: Song[] = [];
 
-						const getImageFromURI = (_uri: string): string | null => {
+						const getImageFromURI = (
+							_uri: string,
+						): string | null => {
 							return null;
 						};
 
@@ -280,14 +289,18 @@ export class extension extends Extension {
 									customID: `${now}-${i}`,
 									style: "BLURPLE",
 								});
-								options += `\n\`#${i + 1}\` - [${removeDiscordFormatting(
-									track.info.title.length > 197
-										? `${track.info.title.substring(
-												0,
-												track.info.title.length - 3
-										  )}...`
-										: track.info.title
-								)}](${track.info.uri})`;
+								options += `\n\`#${i + 1}\` - [${
+									removeDiscordFormatting(
+										track.info.title.length > 197
+											? `${
+												track.info.title.substring(
+													0,
+													track.info.title.length - 3,
+												)
+											}...`
+											: track.info.title,
+									)
+								}](${track.info.uri})`;
 							}
 							await message.edit({
 								embed: new Embed({
@@ -325,14 +338,15 @@ export class extension extends Extension {
 									i.user.id == ctx.author.id &&
 									isMessageComponentInteraction(i) &&
 									i.customID.startsWith(`${now}-`),
-								30 * 1000
+								30 * 1000,
 							);
 							if (!response) {
 								message.edit({
 									embed: new Embed({
 										author: {
 											name: "Bidome bot",
-											icon_url: ctx.client.user?.avatarURL(),
+											icon_url: ctx.client.user
+												?.avatarURL(),
 										},
 										title: "Music",
 										description: "Selection timed out",
@@ -341,13 +355,16 @@ export class extension extends Extension {
 								});
 								return;
 							} else {
-								if (!isMessageComponentInteraction(response)) return;
+								if (!isMessageComponentInteraction(response)) {
+									return;
+								}
 								if (response.customID == `${now}-cancel`) {
 									message.edit({
 										embed: new Embed({
 											author: {
 												name: "Bidome bot",
-												icon_url: ctx.client.user?.avatarURL(),
+												icon_url: ctx.client.user
+													?.avatarURL(),
 											},
 											title: "Music",
 											description: "Canceled selection",
@@ -356,10 +373,13 @@ export class extension extends Extension {
 									});
 									return;
 								} else {
-									const trackInfo =
-										tracks[
-											parseInt(response.customID.substring(`${now}-`.length))
-										];
+									const trackInfo = tracks[
+										parseInt(
+											response.customID.substring(
+												`${now}-`.length,
+											),
+										)
+									];
 									const track = trackInfo.info;
 									toAddTracks[0] = {
 										requestedBy: ctx.author.id,
@@ -376,7 +396,8 @@ export class extension extends Extension {
 						if (
 							!queue.has(ctx.guild.id) ||
 							queue.get(ctx.guild.id)?.queue == undefined ||
-							(queue.get(ctx.guild.id)?.queue.length as number) < 1
+							(queue.get(ctx.guild.id)?.queue.length as number) <
+								1
 						) {
 							queue.delete(ctx.guild.id);
 							queue.set(
@@ -388,11 +409,13 @@ export class extension extends Extension {
 									ctx.guild.id,
 									ctx.client,
 									queue,
-									message
-								)
+									message,
+								),
 							);
 						}
-						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+						const serverQueue: Queue = queue.get(
+							ctx.guild.id,
+						) as Queue;
 						if (serverQueue.queue.length > 0) {
 							if (toAddTracks.length == 1) {
 								const song = toAddTracks[0];
@@ -400,33 +423,48 @@ export class extension extends Extension {
 									embed: new Embed({
 										author: {
 											name: "Bidome bot",
-											icon_url: ctx.client.user?.avatarURL(),
+											icon_url: ctx.client.user
+												?.avatarURL(),
 										},
 										title: "Added song to queue",
 										fields: [
 											{
 												name: "Song",
-												value: `\`${(song.name.length > 197
-													? `${song.name.substring(0, 197)}...`
-													: song.name
-												)
-													.replace(/`/gi, "\\`")
-													.replace(/\\/, "\\")}\``,
+												value: `\`${
+													(song.name.length > 197
+														? `${
+															song.name.substring(
+																0,
+																197,
+															)
+														}...`
+														: song.name)
+														.replace(/`/gi, "\\`")
+														.replace(/\\/, "\\")
+												}\``,
 												inline: true,
 											},
 											{
 												name: "Author",
-												value: `${removeDiscordFormatting(song.author)}`,
+												value: `${
+													removeDiscordFormatting(
+														song.author,
+													)
+												}`,
 												inline: true,
 											},
 											{
 												name: "Length",
-												value: `${formatMs(song.msLength)}`,
+												value: `${
+													formatMs(song.msLength)
+												}`,
 												inline: true,
 											},
 											{
 												name: "Position",
-												value: `${serverQueue.queue.length + 1}`,
+												value: `${
+													serverQueue.queue.length + 1
+												}`,
 												inline: true,
 											},
 										],
@@ -447,18 +485,27 @@ export class extension extends Extension {
 									embed: new Embed({
 										author: {
 											name: "Bidome bot",
-											icon_url: ctx.client.user?.avatarURL(),
+											icon_url: ctx.client.user
+												?.avatarURL(),
 										},
 										title: "Added playlist to queue",
 										fields: [
 											{
 												name: "Playlist",
-												value: `\`${(playlistInfo.name.length > 197
-													? `${playlistInfo.name.substring(0, 197)}...`
-													: playlistInfo.name
-												)
-													.replace(/`/gi, "\\`")
-													.replace(/\\/, "\\")}\``,
+												value: `\`${
+													(playlistInfo.name.length >
+															197
+														? `${
+															playlistInfo.name
+																.substring(
+																	0,
+																	197,
+																)
+														}...`
+														: playlistInfo.name)
+														.replace(/`/gi, "\\`")
+														.replace(/\\/, "\\")
+												}\``,
 												inline: true,
 											},
 											{
@@ -531,13 +578,16 @@ export class extension extends Extension {
 					description: info
 						.map(
 							({ pos, song }) =>
-								`\`${pos == 0 ? "Now playing" : `#${pos + 1}`}\` - **${(song
-									.name.length > 197
-									? `${song.name.substring(0, 197)}...`
-									: song.name
-								)
-									.replace(/`/gi, "\\`")
-									.replace(/\\/, "\\")}** (${formatMs(song.msLength)})`
+								`\`${
+									pos == 0 ? "Now playing" : `#${pos + 1}`
+								}\` - **${
+									(song
+											.name.length > 197
+										? `${song.name.substring(0, 197)}...`
+										: song.name)
+										.replace(/`/gi, "\\`")
+										.replace(/\\/, "\\")
+								}** (${formatMs(song.msLength)})`,
 						)
 						.join("\n"),
 					footer: {
@@ -579,12 +629,13 @@ export class extension extends Extension {
 					fields: [
 						{
 							name: "Song",
-							value: `\`${(song.name.length > 197
-								? `${song.name.substring(0, 197)}...`
-								: song.name
-							)
-								.replace(/`/gi, "\\`")
-								.replace(/\\/, "\\")}\``,
+							value: `\`${
+								(song.name.length > 197
+									? `${song.name.substring(0, 197)}...`
+									: song.name)
+									.replace(/`/gi, "\\`")
+									.replace(/\\/, "\\")
+							}\``,
 							inline: true,
 						},
 						{
@@ -604,12 +655,14 @@ export class extension extends Extension {
 						},
 						{
 							name: "Progress:",
-							value: `\`${formatMs(
-								(serverQueue.player.position ?? 1000) < 1000
-									? 1000
-									: serverQueue.player.position ?? 1000,
-								true
-							)}\`/\`${formatMs(song.msLength, true)}\``,
+							value: `\`${
+								formatMs(
+									(serverQueue.player.position ?? 1000) < 1000
+										? 1000
+										: serverQueue.player.position ?? 1000,
+									true,
+								)
+							}\`/\`${formatMs(song.msLength, true)}\``,
 							inline: true,
 						},
 					],
@@ -642,7 +695,7 @@ export class extension extends Extension {
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
 			const botvc = await ctx.guild.voiceStates.get(
-				ctx.client.user?.id as string
+				ctx.client.user?.id as string,
 			);
 			if (!botvc) {
 				await ctx.message.reply(undefined, {
@@ -652,7 +705,8 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: "I am not currently connected to a channel!",
+						description:
+							"I am not currently connected to a channel!",
 					}).setColor("random"),
 				});
 			} else {
@@ -664,14 +718,15 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "You are not currently connected to my channel!",
+							description:
+								"You are not currently connected to my channel!",
 						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
-							(d) => !d.user.bot
-						).length > 2 &&
+								(d) => !d.user.bot,
+							).length > 2 &&
 						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
@@ -686,7 +741,9 @@ export class extension extends Extension {
 							}).setColor("random"),
 						});
 					} else {
-						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+						const serverQueue: Queue = queue.get(
+							ctx.guild.id,
+						) as Queue;
 						await serverQueue.player.destroy();
 						serverQueue.deleteQueue();
 						await ctx.message.reply(undefined, {
@@ -727,7 +784,7 @@ export class extension extends Extension {
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
 			const botvc = await ctx.guild.voiceStates.get(
-				ctx.client.user?.id as string
+				ctx.client.user?.id as string,
 			);
 			if (!botvc) {
 				await ctx.message.reply(undefined, {
@@ -737,7 +794,8 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: "I am not currently connected to a channel!",
+						description:
+							"I am not currently connected to a channel!",
 					}).setColor("random"),
 				});
 			} else {
@@ -749,7 +807,8 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "You are not currently connected to my channel!",
+							description:
+								"You are not currently connected to my channel!",
 						}).setColor("random"),
 					});
 				} else {
@@ -762,7 +821,8 @@ export class extension extends Extension {
 									icon_url: ctx.client.user?.avatarURL(),
 								},
 								title: "Music",
-								description: "You have already voted to skip the song!",
+								description:
+									"You have already voted to skip the song!",
 							}).setColor("random"),
 						});
 					} else {
@@ -779,7 +839,8 @@ export class extension extends Extension {
 									icon_url: ctx.client.user?.avatarURL(),
 								},
 								title: "Music",
-								description: "You have voted to skip the queue!",
+								description:
+									"You have voted to skip the queue!",
 							}).setColor("random"),
 						});
 
@@ -787,7 +848,9 @@ export class extension extends Extension {
 
 						if (serverQueue.shouldBotVoteskip(connectedUsers)) {
 							// Freeze variables
-							const shouldEnableLoop = serverQueue.songloop ? true : false;
+							const shouldEnableLoop = serverQueue.songloop
+								? true
+								: false;
 
 							serverQueue.songloop = false;
 
@@ -835,7 +898,7 @@ export class extension extends Extension {
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
 			const botvc = await ctx.guild.voiceStates.get(
-				ctx.client.user?.id as string
+				ctx.client.user?.id as string,
 			);
 			if (!botvc) {
 				await ctx.message.reply(undefined, {
@@ -845,7 +908,8 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: "I am not currently connected to a channel!",
+						description:
+							"I am not currently connected to a channel!",
 					}).setColor("random"),
 				});
 			} else {
@@ -857,17 +921,19 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "You are not currently connected to my channel!",
+							description:
+								"You are not currently connected to my channel!",
 						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
-							(d) => !d.user.bot
-						).length > 2 &&
+								(d) => !d.user.bot,
+							).length > 2 &&
 						!(
 							permCheck(ctx.member!) ||
-							ctx.author.id == queue.get(ctx.guild.id)!.queue[0].requestedBy
+							ctx.author.id ==
+								queue.get(ctx.guild.id)!.queue[0].requestedBy
 						)
 					) {
 						await ctx.message.reply(undefined, {
@@ -882,9 +948,13 @@ export class extension extends Extension {
 							}).setColor("random"),
 						});
 					} else {
-						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+						const serverQueue: Queue = queue.get(
+							ctx.guild.id,
+						) as Queue;
 						// Freeze variables
-						const shouldEnableLoop = serverQueue.songloop ? true : false;
+						const shouldEnableLoop = serverQueue.songloop
+							? true
+							: false;
 
 						serverQueue.songloop = false;
 
@@ -929,7 +999,7 @@ export class extension extends Extension {
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
 			const botvc = await ctx.guild.voiceStates.get(
-				ctx.client.user?.id as string
+				ctx.client.user?.id as string,
 			);
 			if (!botvc) {
 				await ctx.message.reply(undefined, {
@@ -939,7 +1009,8 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: "I am not currently connected to a channel!",
+						description:
+							"I am not currently connected to a channel!",
 					}).setColor("random"),
 				});
 			} else {
@@ -951,14 +1022,15 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "You are not currently connected to my channel!",
+							description:
+								"You are not currently connected to my channel!",
 						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
-							(d) => !d.user.bot
-						).length > 2 &&
+								(d) => !d.user.bot,
+							).length > 2 &&
 						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
@@ -973,7 +1045,9 @@ export class extension extends Extension {
 							}).setColor("random"),
 						});
 					} else {
-						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+						const serverQueue: Queue = queue.get(
+							ctx.guild.id,
+						) as Queue;
 						if (serverQueue.player.paused) {
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
@@ -982,7 +1056,8 @@ export class extension extends Extension {
 										icon_url: ctx.client.user?.avatarURL(),
 									},
 									title: "Music",
-									description: "The player is already paused!",
+									description:
+										"The player is already paused!",
 								}).setColor("random"),
 							});
 						} else {
@@ -1024,7 +1099,7 @@ export class extension extends Extension {
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
 			const botvc = await ctx.guild.voiceStates.get(
-				ctx.client.user?.id as string
+				ctx.client.user?.id as string,
 			);
 			if (!botvc) {
 				await ctx.message.reply(undefined, {
@@ -1034,7 +1109,8 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: "I am not currently connected to a channel!",
+						description:
+							"I am not currently connected to a channel!",
 					}).setColor("random"),
 				});
 			} else {
@@ -1046,14 +1122,15 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "You are not currently connected to my channel!",
+							description:
+								"You are not currently connected to my channel!",
 						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
-							(d) => !d.user.bot
-						).length > 2 &&
+								(d) => !d.user.bot,
+							).length > 2 &&
 						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
@@ -1068,7 +1145,9 @@ export class extension extends Extension {
 							}).setColor("random"),
 						});
 					} else {
-						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+						const serverQueue: Queue = queue.get(
+							ctx.guild.id,
+						) as Queue;
 						if (!serverQueue.player.paused) {
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
@@ -1077,7 +1156,8 @@ export class extension extends Extension {
 										icon_url: ctx.client.user?.avatarURL(),
 									},
 									title: "Music",
-									description: "The player is already resumed!",
+									description:
+										"The player is already resumed!",
 								}).setColor("random"),
 							});
 						} else {
@@ -1120,7 +1200,7 @@ export class extension extends Extension {
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
 			const botvc = await ctx.guild.voiceStates.get(
-				ctx.client.user?.id as string
+				ctx.client.user?.id as string,
 			);
 			if (!botvc) {
 				await ctx.message.reply(undefined, {
@@ -1130,7 +1210,8 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: "I am not currently connected to a channel!",
+						description:
+							"I am not currently connected to a channel!",
 					}).setColor("random"),
 				});
 			} else {
@@ -1142,14 +1223,15 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "You are not currently connected to my channel!",
+							description:
+								"You are not currently connected to my channel!",
 						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
-							(d) => !d.user.bot
-						).length > 2 &&
+								(d) => !d.user.bot,
+							).length > 2 &&
 						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
@@ -1172,7 +1254,8 @@ export class extension extends Extension {
 										icon_url: ctx.client.user?.avatarURL(),
 									},
 									title: "Music",
-									description: "You need to provide a new volume!",
+									description:
+										"You need to provide a new volume!",
 								}).setColor("random"),
 							});
 						} else {
@@ -1182,23 +1265,28 @@ export class extension extends Extension {
 									embed: new Embed({
 										author: {
 											name: "Bidome bot",
-											icon_url: ctx.client.user?.avatarURL(),
+											icon_url: ctx.client.user
+												?.avatarURL(),
 										},
 										title: "Music",
 										description: "Invalid number provided!",
 									}).setColor("random"),
 								});
 							} else {
-								const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+								const serverQueue: Queue = queue.get(
+									ctx.guild.id,
+								) as Queue;
 								if (number < 1 || number > 1000) {
 									await ctx.message.reply(undefined, {
 										embed: new Embed({
 											author: {
 												name: "Bidome bot",
-												icon_url: ctx.client.user?.avatarURL(),
+												icon_url: ctx.client.user
+													?.avatarURL(),
 											},
 											title: "Music",
-											description: `You must provide a value between \`1-1000\``,
+											description:
+												`You must provide a value between \`1-1000\``,
 										}).setColor("random"),
 									});
 								} else {
@@ -1208,15 +1296,16 @@ export class extension extends Extension {
 										embed: new Embed({
 											author: {
 												name: "Bidome bot",
-												icon_url: ctx.client.user?.avatarURL(),
+												icon_url: ctx.client.user
+													?.avatarURL(),
 											},
 											title: "Music",
-											description: `I have set the volume to \`${ctx.argString}\``,
+											description:
+												`I have set the volume to \`${ctx.argString}\``,
 											footer: {
-												text:
-													number > 100
-														? "\nVolume above 100 may reduce the quality of the audio or cause hearing damage. Be cautious"
-														: "",
+												text: number > 100
+													? "\nVolume above 100 may reduce the quality of the audio or cause hearing damage. Be cautious"
+													: "",
 											},
 										}).setColor("random"),
 									});
@@ -1250,7 +1339,7 @@ export class extension extends Extension {
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
 			const botvc = await ctx.guild.voiceStates.get(
-				ctx.client.user?.id as string
+				ctx.client.user?.id as string,
 			);
 			if (!botvc) {
 				await ctx.message.reply(undefined, {
@@ -1260,7 +1349,8 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: "I am not currently connected to a channel!",
+						description:
+							"I am not currently connected to a channel!",
 					}).setColor("random"),
 				});
 			} else {
@@ -1272,14 +1362,15 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "You are not currently connected to my channel!",
+							description:
+								"You are not currently connected to my channel!",
 						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
-							(d) => !d.user.bot
-						).length > 2 &&
+								(d) => !d.user.bot,
+							).length > 2 &&
 						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
@@ -1294,7 +1385,9 @@ export class extension extends Extension {
 							}).setColor("random"),
 						});
 					} else {
-						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+						const serverQueue: Queue = queue.get(
+							ctx.guild.id,
+						) as Queue;
 						if (serverQueue.songloop) {
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
@@ -1349,7 +1442,7 @@ export class extension extends Extension {
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
 			const botvc = await ctx.guild.voiceStates.get(
-				ctx.client.user?.id as string
+				ctx.client.user?.id as string,
 			);
 			if (!botvc) {
 				await ctx.message.reply(undefined, {
@@ -1359,7 +1452,8 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: "I am not currently connected to a channel!",
+						description:
+							"I am not currently connected to a channel!",
 					}).setColor("random"),
 				});
 			} else {
@@ -1371,14 +1465,15 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "You are not currently connected to my channel!",
+							description:
+								"You are not currently connected to my channel!",
 						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
-							(d) => !d.user.bot
-						).length > 2 &&
+								(d) => !d.user.bot,
+							).length > 2 &&
 						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
@@ -1393,7 +1488,9 @@ export class extension extends Extension {
 							}).setColor("random"),
 						});
 					} else {
-						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+						const serverQueue: Queue = queue.get(
+							ctx.guild.id,
+						) as Queue;
 						if (serverQueue.queueloop) {
 							await ctx.message.reply(undefined, {
 								embed: new Embed({
@@ -1448,7 +1545,7 @@ export class extension extends Extension {
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
 			const botvc = await ctx.guild.voiceStates.get(
-				ctx.client.user?.id as string
+				ctx.client.user?.id as string,
 			);
 			if (!botvc) {
 				await ctx.message.reply(undefined, {
@@ -1458,7 +1555,8 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: "I am not currently connected to a channel!",
+						description:
+							"I am not currently connected to a channel!",
 					}).setColor("random"),
 				});
 			} else {
@@ -1470,7 +1568,8 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "You are not currently connected to my channel!",
+							description:
+								"You are not currently connected to my channel!",
 						}).setColor("random"),
 					});
 				} else {
@@ -1482,7 +1581,8 @@ export class extension extends Extension {
 									icon_url: ctx.client.user?.avatarURL(),
 								},
 								title: "Music",
-								description: "You need to provide a song position!",
+								description:
+									"You need to provide a song position!",
 							}).setColor("random"),
 						});
 					} else {
@@ -1499,35 +1599,47 @@ export class extension extends Extension {
 								}).setColor("random"),
 							});
 						} else {
-							const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
-							if (number < 1 || number >= serverQueue.queue.length) {
+							const serverQueue: Queue = queue.get(
+								ctx.guild.id,
+							) as Queue;
+							if (
+								number < 1 || number >= serverQueue.queue.length
+							) {
 								await ctx.message.reply(undefined, {
 									embed: new Embed({
 										author: {
 											name: "Bidome bot",
-											icon_url: ctx.client.user?.avatarURL(),
+											icon_url: ctx.client.user
+												?.avatarURL(),
 										},
 										title: "Music",
-										description: `You must provide a value between \`${
-											serverQueue.queue.length == 1
-												? "0 Songs to remove"
-												: `1-${serverQueue.queue.length - 1}`
-										}\``,
+										description:
+											`You must provide a value between \`${
+												serverQueue.queue.length == 1
+													? "0 Songs to remove"
+													: `1-${
+														serverQueue.queue
+															.length - 1
+													}`
+											}\``,
 									}).setColor("random"),
 								});
 							} else {
 								if (
-									((await vc.channel?.voiceStates.array()) ?? []).filter(
-										(d) => !d.user.bot
-									).length > 2 &&
+									((await vc.channel?.voiceStates.array()) ??
+											[]).filter(
+												(d) => !d.user.bot,
+											).length > 2 &&
 									permCheck(ctx.member!) &&
-									serverQueue.queue[number].requestedBy != ctx.author.id
+									serverQueue.queue[number].requestedBy !=
+										ctx.author.id
 								) {
 									await ctx.message.reply(undefined, {
 										embed: new Embed({
 											author: {
 												name: "Bidome bot",
-												icon_url: ctx.client.user?.avatarURL(),
+												icon_url: ctx.client.user
+													?.avatarURL(),
 											},
 											title: "Music",
 											description:
@@ -1535,20 +1647,26 @@ export class extension extends Extension {
 										}).setColor("random"),
 									});
 								} else {
-									const [removedSong] = serverQueue.queue.splice(number, 1);
+									const [removedSong] = serverQueue.queue
+										.splice(number, 1);
 									await ctx.message.reply(undefined, {
 										embed: new Embed({
 											author: {
 												name: "Bidome bot",
-												icon_url: ctx.client.user?.avatarURL(),
+												icon_url: ctx.client.user
+													?.avatarURL(),
 											},
 											title: "Music",
-											description: `Removed \`${(removedSong.name.length > 197
-												? `${removedSong.name.substring(0, 197)}...`
-												: removedSong.name
-											)
-												.replace(/`/gi, "\\`")
-												.replace(/\\/, "\\")}\` from queue!`,
+											description: `Removed \`${
+												(removedSong.name.length > 197
+													? `${
+														removedSong.name
+															.substring(0, 197)
+													}...`
+													: removedSong.name)
+													.replace(/`/gi, "\\`")
+													.replace(/\\/, "\\")
+											}\` from queue!`,
 										}).setColor("random"),
 									});
 								}
@@ -1581,7 +1699,7 @@ export class extension extends Extension {
 		} else {
 			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
 			const botvc = await ctx.guild.voiceStates.get(
-				ctx.client.user?.id as string
+				ctx.client.user?.id as string,
 			);
 			if (!botvc) {
 				await ctx.message.reply(undefined, {
@@ -1591,7 +1709,8 @@ export class extension extends Extension {
 							icon_url: ctx.client.user?.avatarURL(),
 						},
 						title: "Music",
-						description: "I am not currently connected to a channel!",
+						description:
+							"I am not currently connected to a channel!",
 					}).setColor("random"),
 				});
 			} else {
@@ -1603,14 +1722,15 @@ export class extension extends Extension {
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							title: "Music",
-							description: "You are not currently connected to my channel!",
+							description:
+								"You are not currently connected to my channel!",
 						}).setColor("random"),
 					});
 				} else {
 					if (
 						((await vc.channel?.voiceStates.array()) ?? []).filter(
-							(d) => !d.user.bot
-						).length > 2 &&
+								(d) => !d.user.bot,
+							).length > 2 &&
 						permCheck(ctx.member!)
 					) {
 						await ctx.message.reply(undefined, {
@@ -1625,7 +1745,9 @@ export class extension extends Extension {
 							}).setColor("random"),
 						});
 					} else {
-						const serverQueue: Queue = queue.get(ctx.guild.id) as Queue;
+						const serverQueue: Queue = queue.get(
+							ctx.guild.id,
+						) as Queue;
 
 						const newQueue = [...serverQueue.queue];
 						newQueue.shift();

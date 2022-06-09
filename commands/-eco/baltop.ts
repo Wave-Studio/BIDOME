@@ -1,12 +1,12 @@
-import { Command, CommandContext, Embed } from 'harmony';
-import { getAllProfiles, isServerEco, EcoUserDBObject } from 'eco';
-import { removeDiscordCodeBlocks } from 'tools';
+import { Command, CommandContext, Embed } from "harmony";
+import { EcoUserDBObject, getAllProfiles, isServerEco } from "eco";
+import { removeDiscordCodeBlocks } from "tools";
 
 export class command extends Command {
-	name = 'baltop';
-	aliases = ['btop'];
-	description = 'Shows the top users by balance';
-	category = 'eco';
+	name = "baltop";
+	aliases = ["btop"];
+	description = "Shows the top users by balance";
+	category = "eco";
 	async execute(ctx: CommandContext) {
 		if (!ctx.guild?.id) return;
 		let ecoWorth = 0;
@@ -23,15 +23,17 @@ export class command extends Command {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
-					title: 'Bidome Eco',
-					description: `Sorry! There are no users currently with money.`,
-				}).setColor('random'),
+					title: "Bidome Eco",
+					description:
+						`Sorry! There are no users currently with money.`,
+				}).setColor("random"),
 			});
 		} else {
-			const top10Users: { position: number; data: EcoUserDBObject }[] = [];
+			const top10Users: { position: number; data: EcoUserDBObject }[] =
+				[];
 
 			for (
 				let i = 1;
@@ -47,28 +49,36 @@ export class command extends Command {
 			await ctx.message.reply(undefined, {
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
-					title: 'Bidome Eco',
-					description: `Economy worth: \`$${ecoWorth}\`${top10Users
-						.map(
-							({ position, data }) =>
-								`\n\n#${position} <@!${data.userid}>\n  - Balance: \`$${
-									data.balance + data.bank
-								}\` \n  - User: \`${removeDiscordCodeBlocks(
-									data.lastKnownUsername
-								)}\``
-						)
-						.join('')}`,
+					title: "Bidome Eco",
+					description: `Economy worth: \`$${ecoWorth}\`${
+						top10Users
+							.map(
+								({ position, data }) =>
+									`\n\n#${position} <@!${data.userid}>\n  - Balance: \`$${
+										data.balance + data.bank
+									}\` \n  - User: \`${
+										removeDiscordCodeBlocks(
+											data.lastKnownUsername,
+										)
+									}\``,
+							)
+							.join("")
+					}`,
 					footer: {
 						text: `Top ${
-							sortedProfiles.length > 10 ? 10 : sortedProfiles.length
+							sortedProfiles.length > 10
+								? 10
+								: sortedProfiles.length
 						}/${sortedProfiles.length} users for ${
-							isServerEco(ctx.guild.id) ? 'this server' : 'all bidome users'
+							isServerEco(ctx.guild.id)
+								? "this server"
+								: "all bidome users"
 						}`,
 					},
-				}).setColor('random'),
+				}).setColor("random"),
 			});
 		}
 	}

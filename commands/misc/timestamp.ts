@@ -15,7 +15,8 @@ export class command extends Command {
 						icon_url: ctx.client.user?.avatarURL(),
 					},
 					title: "Invalid command use!",
-					description: "Please provide a timestamp such as `4h`, `1d`, or `1y1d`",
+					description:
+						"Please provide a timestamp such as `4h`, `1d`, or `1y1d`",
 				}).setColor("random"),
 			});
 		} else {
@@ -33,9 +34,10 @@ export class command extends Command {
 					}).setColor("random"),
 				});
 			} else {
-				const time = (new Date().getTime() / 1000 + timestamp / 1000).toFixed(
-					0
-				);
+				const time = (new Date().getTime() / 1000 + timestamp / 1000)
+					.toFixed(
+						0,
+					);
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
 						author: {
@@ -44,7 +46,9 @@ export class command extends Command {
 						},
 						title: "Here is your timestamp:",
 						description: ["d", "D", "t", "T", "f", "F", "R"]
-							.map((v) => `<t:${time}:${v}> - \`<t:${time}:${v}>\``)
+							.map((v) =>
+								`<t:${time}:${v}> - \`<t:${time}:${v}>\``
+							)
 							.join("\n"),
 					}).setColor("random"),
 				});

@@ -8,22 +8,19 @@ export class command extends Command {
 	async execute(ctx: CommandContext) {
 		const data = {
 			accounts: ctx.message.guild?.memberCount ?? 0,
-			humans:
-				(await ctx.message.guild?.members.fetchList())?.filter(
-					(m) => !m.user.bot
-				).length ?? 0,
-			bots:
-				(await ctx.message.guild?.members.fetchList())?.filter(
-					(m) => m.user.bot
-				).length ?? 1,
+			humans: (await ctx.message.guild?.members.fetchList())?.filter(
+				(m) => !m.user.bot,
+			).length ?? 0,
+			bots: (await ctx.message.guild?.members.fetchList())?.filter(
+				(m) => m.user.bot,
+			).length ?? 1,
 			channels: (await ctx.message.guild?.channels.size()) ?? 0,
 			roles: (await ctx.message.guild?.roles.size()) ?? 0,
-			owner:
-				(
-					await ctx.message.client.users.get(
-						ctx.message.guild?.ownerID as string
-					)
-				)?.tag ?? "Unknown",
+			owner: (
+				await ctx.message.client.users.get(
+					ctx.message.guild?.ownerID as string,
+				)
+			)?.tag ?? "Unknown",
 		};
 
 		const isCachedUsers = data.accounts != data.humans + data.bots;

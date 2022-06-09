@@ -1,4 +1,4 @@
-import { GlobalEco, ServerEco, Database } from 'database';
+import { Database, GlobalEco, ServerEco } from "database";
 import { getRandomInteger } from "tools";
 
 export interface EcoUserDBObject {
@@ -11,7 +11,7 @@ export interface EcoUserDBObject {
 	};
 	inventory: EcoInventoryDBObject[];
 	level: number;
-    lastKnownUsername: string;
+	lastKnownUsername: string;
 	bank: number;
 	maxBankSpace: number;
 	levelXp: number;
@@ -22,27 +22,32 @@ export interface EcoInventoryDBObject {
 	amount: number;
 }
 
-export const getProfileFromDatabase = (guildID: string, userid: string, userTag: string) => {
+export const getProfileFromDatabase = (
+	guildID: string,
+	userid: string,
+	userTag: string,
+) => {
 	return createOrFetchProfile(guildID, userid, userTag);
 };
 
 export const createOrFetchProfile = (
 	guildID: string,
-	userid: string, userTag: string
+	userid: string,
+	userTag: string,
 ): EcoUserDBObject => {
 	let userProfile: EcoUserDBObject = {
 		userid,
 		balance: 0,
 		inventory: [],
 		level: 1,
-        lastKnownUsername: userTag,
+		lastKnownUsername: userTag,
 		bank: 0,
 		maxBankSpace: 1000,
-		levelXp: 0
+		levelXp: 0,
 	};
 
 	if (isServerEco(guildID)) {
-		const servers = ServerEco.get('eco.servers') as {
+		const servers = ServerEco.get("eco.servers") as {
 			[guildID: string]: EcoUserDBObject[];
 		};
 
@@ -51,20 +56,20 @@ export const createOrFetchProfile = (
 		}
 
 		const serverProfiles = servers[guildID];
-        if (serverProfiles.filter(p=>p.userid !== userid).length === 0) {
-            serverProfiles.push(userProfile);
-            ServerEco.set('eco.servers', servers);
-        } else {
-            userProfile = serverProfiles.filter(p=>p.userid === userid)[0];
-        }
+		if (serverProfiles.filter((p) => p.userid !== userid).length === 0) {
+			serverProfiles.push(userProfile);
+			ServerEco.set("eco.servers", servers);
+		} else {
+			userProfile = serverProfiles.filter((p) => p.userid === userid)[0];
+		}
 	} else {
-		const profiles = GlobalEco.get('eco.profiles') as EcoUserDBObject[];
+		const profiles = GlobalEco.get("eco.profiles") as EcoUserDBObject[];
 
 		if (profiles.filter((p) => p.userid === userid).length > 0) {
 			userProfile = profiles.filter((p) => p.userid === userid)[0];
 		} else {
 			profiles.push(userProfile);
-			GlobalEco.set('eco.profiles', profiles);
+			GlobalEco.set("eco.profiles", profiles);
 		}
 	}
 
@@ -72,51 +77,52 @@ export const createOrFetchProfile = (
 };
 
 export const initializeEco = () => {
-	if (GlobalEco.get('eco.profiles') == undefined) {
-		GlobalEco.set('eco.profiles', []);
+	if (GlobalEco.get("eco.profiles") == undefined) {
+		GlobalEco.set("eco.profiles", []);
 	}
-	if (ServerEco.get('eco.servers') == undefined) {
-		ServerEco.set('eco.servers', []);
+	if (ServerEco.get("eco.servers") == undefined) {
+		ServerEco.set("eco.servers", []);
 	}
-	if (Database.get('eco.notglobal') == undefined) {
-		Database.set('eco.notglobal', []);
+	if (Database.get("eco.notglobal") == undefined) {
+		Database.set("eco.notglobal", []);
 	}
 };
 
 export const saveProfile = (guildID: string, profile: EcoUserDBObject) => {
 	if (isServerEco(guildID)) {
-		const servers = ServerEco.get('eco.servers') as {
+		const servers = ServerEco.get("eco.servers") as {
 			[guildID: string]: EcoUserDBObject[];
 		};
 		const server = servers[guildID] ?? [];
 		const profiles = server.filter((p) => p.userid !== profile.userid);
 		profiles.push(profile);
 		servers[guildID] = profiles;
-		ServerEco.set('eco.servers', servers);
+		ServerEco.set("eco.servers", servers);
 	} else {
-		const profiles = (GlobalEco.get('eco.profiles') as EcoUserDBObject[]) ?? [];
+		const profiles = (GlobalEco.get("eco.profiles") as EcoUserDBObject[]) ??
+			[];
 		const filteredProfiles = profiles.filter(
-			(p) => p.userid !== profile.userid
+			(p) => p.userid !== profile.userid,
 		);
 		filteredProfiles.push(profile);
-		GlobalEco.set('eco.profiles', filteredProfiles);
+		GlobalEco.set("eco.profiles", filteredProfiles);
 	}
 };
 
 export const getAllProfiles = (guildID: string) => {
-    if (isServerEco(guildID)) {
-        const servers = ServerEco.get('eco.servers') as {
-            [guildID: string]: EcoUserDBObject[];
-        };
-        const server = servers[guildID] ?? [];
-        return server;
-    } else {
-        return (GlobalEco.get('eco.profiles') as EcoUserDBObject[]) ?? [];
-    }
-}
+	if (isServerEco(guildID)) {
+		const servers = ServerEco.get("eco.servers") as {
+			[guildID: string]: EcoUserDBObject[];
+		};
+		const server = servers[guildID] ?? [];
+		return server;
+	} else {
+		return (GlobalEco.get("eco.profiles") as EcoUserDBObject[]) ?? [];
+	}
+};
 
 export const isServerEco = (guildid: string): boolean => {
-	const notGlobalServers = Database.get('eco.notglobal') as string[];
+	const notGlobalServers = Database.get("eco.notglobal") as string[];
 	return notGlobalServers.includes(guildid);
 };
 
@@ -127,11 +133,11 @@ export const isGlobalEco = (guildid: string): boolean => {
 export const calculateXPToNextLevel = (level: number): number => {
 	level = level + 1;
 	return level * level * 100;
-}
+};
 
 export const shouldLevelUp = (level: number, xp: number): boolean => {
 	return calculateXPToNextLevel(level) <= xp;
-}
+};
 
 export const onLevelUp = (profile: EcoUserDBObject) => {
 	profile.levelXp -= calculateXPToNextLevel(profile.level);
@@ -140,4 +146,4 @@ export const onLevelUp = (profile: EcoUserDBObject) => {
 	if (shouldLevelUp(profile.level, profile.levelXp)) {
 		onLevelUp(profile);
 	}
-}
+};

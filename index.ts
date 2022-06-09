@@ -1,13 +1,13 @@
-import { CommandClient, GatewayIntents, CommandContext, Embed } from "harmony";
+import { CommandClient, CommandContext, Embed, GatewayIntents } from "harmony";
 import { Database, initDatabases } from "database";
 import { getRandomStatus } from "status";
 
-import "https://deno.land/x/dotenv@v3.0.0/load.ts";
+import "https://deno.land/x/dotenv@v3.2.0/load.ts";
 
-const launchLava =
-	Deno.env.get("RAILWAY_STATIC_URL") != undefined || Deno.args.map((a) => a.toLowerCase()).includes("--no-lava")
-		? false
-		: true;
+const launchLava = Deno.env.get("RAILWAY_STATIC_URL") != undefined ||
+		Deno.args.map((a) => a.toLowerCase()).includes("--no-lava")
+	? false
+	: true;
 
 if (launchLava) {
 	Deno.run({
@@ -15,7 +15,7 @@ if (launchLava) {
 	});
 } else {
 	console.log(
-		"Lavalink disabled, this is either caused by the --no-lava flag or you're running this on railway which doesn't allow lavalink"
+		"Lavalink disabled, this is either caused by the --no-lava flag or you're running this on railway which doesn't allow lavalink",
 	);
 }
 
@@ -23,9 +23,10 @@ const isProdTesting = true;
 
 const bot = new CommandClient({
 	prefix: [],
-	async getGuildPrefix(guildid: string): Promise<string> {
-		if (isProdTesting) return "<@!778670182956531773>";
-		let prefix = (await Database.get("prefix." + guildid)) as string;
+	async getGuildPrefix(guildid: string): Promise<string[] | string> {
+		if (isProdTesting) return [];
+
+		let prefix = await Database.get<string>("prefix." + guildid);
 		if (typeof prefix === "undefined") {
 			prefix = "!";
 			await Database.set("prefix." + guildid, prefix);
@@ -77,22 +78,32 @@ bot.on("ready", async () => {
 		if (commands.name.startsWith("-")) continue;
 		if (
 			commands.isFile &&
-			(commands.name.endsWith(".ts") || commands.name.endsWith(".tsx"))
+			(commands.name.endsWith(".ts") || commands.name.endsWith(".tsx")) &&
+			!commands.name.startsWith("-")
 		) {
-			bot.commands.add((await import(`./commands/${commands.name}`)).command);
+			bot.commands.add(
+				(await import(`./commands/${commands.name}`)).command,
+			);
 		} else {
-			for await (const subcommand of Deno.readDir(
-				`./commands/${commands.name}`
-			)) {
-				if (
-					subcommand.isFile &&
-					(subcommand.name.endsWith(".ts") || subcommand.name.endsWith(".tsx"))
+			if (commands.isDirectory) {
+				for await (
+					const subcommand of Deno.readDir(
+						`./commands/${commands.name}`,
+					)
 				) {
-					if (subcommand.name.startsWith("-")) continue;
-					bot.commands.add(
-						(await import(`./commands/${commands.name}/${subcommand.name}`))
-							.command
-					);
+					if (
+						subcommand.isFile &&
+						(subcommand.name.endsWith(".ts") ||
+							subcommand.name.endsWith(".tsx")) &&
+						!commands.name.startsWith("-")
+					) {
+						bot.commands.add(
+							(await import(
+								`./commands/${commands.name}/${subcommand.name}`
+							))
+								.command,
+						);
+					}
 				}
 			}
 		}
@@ -101,11 +112,12 @@ bot.on("ready", async () => {
 	for await (const extension of Deno.readDir("./extensions")) {
 		if (
 			extension.isFile &&
-			(extension.name.endsWith(".ts") || extension.name.endsWith(".tsx"))
+			(extension.name.endsWith(".ts") ||
+				extension.name.endsWith(".tsx")) &&
+			!extension.name.startsWith("-")
 		) {
-			if (extension.name.startsWith("-")) continue;
 			bot.extensions.load(
-				(await import(`./extensions/${extension.name}`)).extension
+				(await import(`./extensions/${extension.name}`)).extension,
 			);
 		}
 	}
@@ -115,7 +127,7 @@ bot.on("ready", async () => {
 			bot.commands.list.size == 1 ? "" : "s"
 		} and ${await bot.extensions.list.size} extension${
 			bot.extensions.list.size == 1 ? "" : "s"
-		}!`
+		}!`,
 	);
 	console.log("Loaded bot!");
 
@@ -126,7 +138,7 @@ bot.on("ready", async () => {
 
 bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 	console.log(
-		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`
+		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`,
 	);
 	console.log(err);
 	try {
@@ -153,14 +165,17 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 const nextStatus = async () => {
 	if (bot.gateway.connected) {
 		const { type, name, status } = await getRandomStatus(bot);
-                try {
-		bot.setPresence({
-			activity: {
-				name,
-				type,
-			},
-			status: status ?? "idle",
-		});}catch{console.log("status failed to be set");}
+		try {
+			bot.setPresence({
+				activity: {
+					name,
+					type,
+				},
+				status: status ?? "idle",
+			});
+		} catch {
+			console.log("status failed to be set");
+		}
 	}
 };
 
@@ -177,5 +192,5 @@ setTimeout(
 		]);
 	},
 	// Prevent users from waiting when lavalink isn't being launched
-	launchLava ? 1.5 * 1000 : 0
+	launchLava ? 1.5 * 1000 : 0,
 );

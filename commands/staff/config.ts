@@ -2,42 +2,42 @@ import {
 	Command,
 	CommandContext,
 	Embed,
-	isMessageComponentInteraction,
 	InteractionResponseType,
-} from 'harmony';
-import { Database } from 'database';
-import { isGlobalEco, isServerEco } from 'eco';
+	isMessageComponentInteraction,
+} from "harmony";
+import { Database } from "database";
+import { isGlobalEco, isServerEco } from "eco";
 
 export class command extends Command {
-	name = 'config';
-	aliases = ['settings', 'options'];
-	category = 'staff';
-	userPermissions = 'ADMINISTRATOR';
-	description = 'Change settings regarding bidome';
-	usage = 'Config';
+	name = "config";
+	aliases = ["settings", "options"];
+	category = "staff";
+	userPermissions = "ADMINISTRATOR";
+	description = "Change settings regarding bidome";
+	usage = "Config";
 	async execute(ctx: CommandContext) {
 		if (!ctx.guild?.id) return;
 		const currentTime = Date.now();
 		const message = await ctx.message.reply(undefined, {
 			embed: new Embed({
 				author: {
-					name: 'Bidome bot',
+					name: "Bidome bot",
 					icon_url: ctx.client.user?.avatarURL(),
 				},
-				description: 'Please select a category from below!',
+				description: "Please select a category from below!",
 				footer: {
-					text: 'This will time out in 30 seconds!',
+					text: "This will time out in 30 seconds!",
 				},
-			}).setColor('random'),
+			}).setColor("random"),
 			components: [
 				{
 					type: 1,
 					components: [
 						{
 							type: 2,
-							label: 'Prefix',
-							customID: 'prefix-' + currentTime,
-							style: 'BLURPLE',
+							label: "Prefix",
+							customID: "prefix-" + currentTime,
+							style: "BLURPLE",
 						},
 						// Removed until I can figure out why it's broken
 						// {
@@ -51,12 +51,12 @@ export class command extends Command {
 			],
 		});
 		const response = await ctx.client.waitFor(
-			'interactionCreate',
+			"interactionCreate",
 			(i) =>
 				isMessageComponentInteraction(i) &&
-				i.customID.endsWith('-' + currentTime) &&
+				i.customID.endsWith("-" + currentTime) &&
 				i.user.id === ctx.author.id,
-			30 * 1000
+			30 * 1000,
 		);
 
 		const res = response[0];
@@ -66,17 +66,17 @@ export class command extends Command {
 				components: [],
 				embed: new Embed({
 					author: {
-						name: 'Bidome bot',
+						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
-					description: 'Config prompt timed out!',
-				}).setColor('random'),
+					description: "Config prompt timed out!",
+				}).setColor("random"),
 			});
 			return;
 		} else {
 			if (!isMessageComponentInteraction(res)) return;
-			switch (res.customID.split('-')[0]) {
-				case 'prefix': {
+			switch (res.customID.split("-")[0]) {
+				case "prefix": {
 					await message.edit({
 						components: [
 							{
@@ -84,37 +84,39 @@ export class command extends Command {
 								components: [
 									{
 										type: 2,
-										label: 'Change prefix',
-										customID: 'changeprefix-' + currentTime,
-										style: 'BLURPLE',
+										label: "Change prefix",
+										customID: "changeprefix-" + currentTime,
+										style: "BLURPLE",
 									},
 								],
 							},
 						],
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
-							description:
-								'Current prefix: `' +
-								(await Database.get('prefix.' + ctx.guild?.id)) +
-								'`',
+							description: "Current prefix: `" +
+								(await Database.get(
+									"prefix." + ctx.guild?.id,
+								)) +
+								"`",
 							footer: {
-								text: 'Changing the prefix will time out in 30 seconds!',
+								text:
+									"Changing the prefix will time out in 30 seconds!",
 							},
-						}).setColor('random'),
+						}).setColor("random"),
 					});
 					await res.respond({
 						type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
 					});
 					const changePrefix = await ctx.client.waitFor(
-						'interactionCreate',
+						"interactionCreate",
 						(i) =>
 							isMessageComponentInteraction(i) &&
-							i.customID.endsWith('-' + currentTime) &&
+							i.customID.endsWith("-" + currentTime) &&
 							i.user.id === ctx.author.id,
-						30 * 1000
+						30 * 1000,
 					);
 					const willChange = changePrefix[0];
 					if (!willChange) {
@@ -122,71 +124,74 @@ export class command extends Command {
 							components: [],
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								description: 'Prefix change timed out!',
-							}).setColor('random'),
+								description: "Prefix change timed out!",
+							}).setColor("random"),
 						});
 					} else {
 						await message.edit({
 							components: [],
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								description: 'Please send the new prefix in chat!',
+								description:
+									"Please send the new prefix in chat!",
 								fields: [
 									{
-										name: 'Prefix rules',
+										name: "Prefix rules",
 										value: [
-											'```yml',
-											' - Must be 5 characters or fewer in length',
-											' - Allowed characters: ',
-											'  - A-Z 0-9 !@#$%^&*()<>,.?/|;{}[]:+=-',
-											'```',
-										].join('\n'),
+											"```yml",
+											" - Must be 5 characters or fewer in length",
+											" - Allowed characters: ",
+											"  - A-Z 0-9 !@#$%^&*()<>,.?/|;{}[]:+=-",
+											"```",
+										].join("\n"),
 									},
 								],
 								footer: {
-									text: 'This will time out in 30 seconds!',
+									text: "This will time out in 30 seconds!",
 								},
-							}).setColor('random'),
+							}).setColor("random"),
 						});
 						const newPrefix = await ctx.client.waitFor(
-							'messageCreate',
+							"messageCreate",
 							(i) =>
 								i.channel.id === ctx.channel.id &&
 								ctx.author.id === i.author.id,
-							30 * 1000
+							30 * 1000,
 						);
 						const prefix = newPrefix[0];
 						if (!prefix) {
 							await message.edit({
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
-									description: 'Prefix change timed out!',
-								}).setColor('random'),
+									description: "Prefix change timed out!",
+								}).setColor("random"),
 							});
 						} else {
 							const allowedChars =
-								'abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()<>,.?/|;{}[]:+=-'.split(
-									''
-								);
+								"abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()<>,.?/|;{}[]:+=-"
+									.split(
+										"",
+									);
 							if (prefix.content.length > 5) {
 								await prefix.reply(undefined, {
 									embed: new Embed({
 										author: {
-											name: 'Bidome bot',
-											icon_url: ctx.client.user?.avatarURL(),
+											name: "Bidome bot",
+											icon_url: ctx.client.user
+												?.avatarURL(),
 										},
 										description:
-											'Prefix length is longer than the maximum allowed! (5)',
-									}).setColor('random'),
+											"Prefix length is longer than the maximum allowed! (5)",
+									}).setColor("random"),
 								});
 							}
 
@@ -198,14 +203,15 @@ export class command extends Command {
 									await prefix.reply(undefined, {
 										embed: new Embed({
 											author: {
-												name: 'Bidome bot',
-												icon_url: ctx.client.user?.avatarURL(),
+												name: "Bidome bot",
+												icon_url: ctx.client.user
+													?.avatarURL(),
 											},
 											description:
-												'An invalid character was provided! `` ' +
+												"An invalid character was provided! `` " +
 												letter +
-												' ``',
-										}).setColor('random'),
+												" ``",
+										}).setColor("random"),
 									});
 									shouldChangePrefix = false;
 									return;
@@ -213,27 +219,27 @@ export class command extends Command {
 							}
 							if (!shouldChangePrefix) return;
 							await Database.set(
-								'prefix.' + ctx.guild.id,
-								prefix.content.toLowerCase()
+								"prefix." + ctx.guild.id,
+								prefix.content.toLowerCase(),
 							);
 							await prefix.reply(undefined, {
 								embed: new Embed({
 									author: {
-										name: 'Bidome bot',
+										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
 									description:
-										'The prefix has been changed to `` ' +
+										"The prefix has been changed to `` " +
 										prefix.content.toLowerCase() +
-										' ``',
-								}).setColor('random'),
+										" ``",
+								}).setColor("random"),
 							});
 						}
 					}
 					break;
 				}
 
-				case 'geco': {
+				case "geco": {
 					await message.edit({
 						components: [
 							{
@@ -241,118 +247,129 @@ export class command extends Command {
 								components: [
 									{
 										type: 2,
-										label: 'Global Economy',
-										customID: 'global-' + currentTime,
-										style: 'BLURPLE',
+										label: "Global Economy",
+										customID: "global-" + currentTime,
+										style: "BLURPLE",
 									},
 									{
 										type: 2,
-										label: 'Server Economy',
-										customID: 'server-' + currentTime,
-										style: 'BLURPLE',
+										label: "Server Economy",
+										customID: "server-" + currentTime,
+										style: "BLURPLE",
 									},
 								],
 							},
 						],
 						embed: new Embed({
 							author: {
-								name: 'Bidome bot',
+								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
 							},
 							fields: [
 								{
-									name: 'Important',
+									name: "Important",
 									value:
-										'❗ Changing economy type **WILL NOT** reset your progress ❗',
+										"❗ Changing economy type **WILL NOT** reset your progress ❗",
 								},
 								{
 									name: `${
-										isGlobalEco(ctx.guild.id) ? 'Current:' : 'Default:'
+										isGlobalEco(ctx.guild.id)
+											? "Current:"
+											: "Default:"
 									} Global Economy`,
 									value: [
-										'Economy that can be accessed on any server with Bidome & Global Economy',
+										"Economy that can be accessed on any server with Bidome & Global Economy",
 										"Doesn't allow staff to give/remove items from users",
-									].join('\n'),
+									].join("\n"),
 								},
 								{
 									name: `${
-										isServerEco(ctx.guild.id) ? 'Current: ' : ""
+										isServerEco(ctx.guild.id)
+											? "Current: "
+											: ""
 									}Server Economy`,
 									value: [
 										`Economy that can only be accessed on this server.`,
 										"Allows staff to modify other user's balance & inventory",
-									].join('\n'),
+									].join("\n"),
 									inline: true,
 								},
 							],
 							footer: {
-								text: 'Changing eco type will time out in 30 seconds!!',
+								text:
+									"Changing eco type will time out in 30 seconds!!",
 							},
-						}).setColor('random'),
+						}).setColor("random"),
 					});
 					await res.respond({
 						type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
 					});
 					const [selectedEcoType] = await ctx.client.waitFor(
-						'interactionCreate',
+						"interactionCreate",
 						(i) =>
 							isMessageComponentInteraction(i) &&
-							i.customID.endsWith('-' + currentTime) &&
+							i.customID.endsWith("-" + currentTime) &&
 							i.user.id === ctx.author.id,
-						30 * 1000
+						30 * 1000,
 					);
 					if (!selectedEcoType) {
 						await message.edit({
 							components: [],
 							embed: new Embed({
 								author: {
-									name: 'Bidome bot',
+									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
-								description: 'Economy type change timed out!',
-							}).setColor('random'),
+								description: "Economy type change timed out!",
+							}).setColor("random"),
 						});
 					} else {
-						if (!isMessageComponentInteraction(selectedEcoType)) return;
-						switch (selectedEcoType.customID.split('-')[0]) {
-							case 'global': {
+						if (!isMessageComponentInteraction(selectedEcoType)) {
+							return;
+						}
+						switch (selectedEcoType.customID.split("-")[0]) {
+							case "global": {
 								const serverValues = (
-									Database.get('eco.notglobal') as string[]
+									Database.get("eco.notglobal") as string[]
 								).filter((s) => s !== ctx.guild?.id);
 
-								Database.set('eco.notglobal', serverValues);
+								Database.set("eco.notglobal", serverValues);
 
 								await message.edit({
 									components: [],
 									embed: new Embed({
 										author: {
-											name: 'Bidome bot',
-											icon_url: ctx.client.user?.avatarURL(),
+											name: "Bidome bot",
+											icon_url: ctx.client.user
+												?.avatarURL(),
 										},
-										description: 'Economy type changed to Global!',
-									}).setColor('random'),
+										description:
+											"Economy type changed to Global!",
+									}).setColor("random"),
 								});
 								break;
 							}
 
-							case 'server': {
+							case "server": {
 								const serverValues = (
-									Database.get('eco.notglobal') as string[]
+									Database.get("eco.notglobal") as string[]
 								).filter((s) => s !== ctx.guild?.id);
 
 								serverValues.push(ctx.guild.id);
 
-								Database.set('eco.notglobal', serverValues);
+								Database.set("eco.notglobal", serverValues);
 
 								await message.edit({
 									components: [],
 									embed: new Embed({
 										author: {
-											name: 'Bidome bot',
-											icon_url: ctx.client.user?.avatarURL(),
+											name: "Bidome bot",
+											icon_url: ctx.client.user
+												?.avatarURL(),
 										},
-										description: 'Economy type changed to Server!',
-									}).setColor('random'),
+										description:
+											"Economy type changed to Server!",
+									}).setColor("random"),
 								});
 
 								break;
@@ -360,7 +377,9 @@ export class command extends Command {
 
 							default: {
 								throw new Error(
-									`Invalid Eco Type: ${selectedEcoType.customID.split('-')[0]}`
+									`Invalid Eco Type: ${
+										selectedEcoType.customID.split("-")[0]
+									}`,
 								);
 							}
 						}
@@ -369,7 +388,7 @@ export class command extends Command {
 				}
 				default: {
 					throw new Error(
-						`Invalid Config Option: ${res.customID.split('-')[0]}`
+						`Invalid Config Option: ${res.customID.split("-")[0]}`,
 					);
 				}
 			}

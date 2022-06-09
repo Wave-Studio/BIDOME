@@ -30,26 +30,33 @@ export class command extends Command {
 				});
 			} else {
 				const description = [
-					`Name: \`${format(
-						ctx.client.commands.find(ctx.argString)?.name as string
-					)}\``,
+					`Name: \`${
+						format(
+							ctx.client.commands.find(ctx.argString)
+								?.name as string,
+						)
+					}\``,
 					`Description: \`${
 						ctx.client.commands.find(ctx.argString)?.description ??
-						"No description provided"
+							"No description provided"
 					}\``,
 					`Usage: \`${
 						ctx.client.commands.find(ctx.argString)?.usage ??
-						"No usage provided"
+							"No usage provided"
 					}\``,
 					`Permission: \`${
 						ctx.client.commands.find(ctx.argString)?.ownerOnly
 							? "Owner only"
-							: ctx.client.commands.find(ctx.argString)?.userPermissions ??
-							  "No permissions required"
+							: ctx.client.commands.find(ctx.argString)
+								?.userPermissions ??
+								"No permissions required"
 					}\``,
-					`Category: \`${format(
-						ctx.client.commands.find(ctx.argString)?.category ?? "Uncategorized"
-					)}\``,
+					`Category: \`${
+						format(
+							ctx.client.commands.find(ctx.argString)?.category ??
+								"Uncategorized",
+						)
+					}\``,
 				];
 				await ctx.message.reply(undefined, {
 					embed: new Embed({
@@ -77,13 +84,15 @@ export class command extends Command {
 			const uncategorizedCmds: Command[] = [];
 
 			for (const command of await ctx.client.commands.list.array()) {
-				const category = (command.category ?? "Uncategorized").toLowerCase();
+				const category = (command.category ?? "Uncategorized")
+					.toLowerCase();
 
-				if (command.userPermissions != undefined && !command.ownerOnly) {
-					const perms =
-						typeof command.userPermissions == "string"
-							? [command.userPermissions]
-							: command.userPermissions;
+				if (
+					command.userPermissions != undefined && !command.ownerOnly
+				) {
+					const perms = typeof command.userPermissions == "string"
+						? [command.userPermissions]
+						: command.userPermissions;
 					let hasPerms = true;
 					for (const perm of perms) {
 						if (!ctx.message.member!.permissions.has(perm)) {
@@ -116,7 +125,9 @@ export class command extends Command {
 				const row: MessageComponentData[] = [];
 				for (let b = 0; b < 5; b++) {
 					const button = categories[b + i * 5];
-					if (typeof button === "undefined" || button === "") continue;
+					if (typeof button === "undefined" || button === "") {
+						continue;
+					}
 					row.push({
 						type: 2,
 						label: format(button),
@@ -137,7 +148,8 @@ export class command extends Command {
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bidome help",
-					description: "Select a category from below to view the help menu!",
+					description:
+						"Select a category from below to view the help menu!",
 					footer: {
 						text: "This will expire in 30 seconds!",
 					},
@@ -150,7 +162,7 @@ export class command extends Command {
 					isMessageComponentInteraction(i) &&
 					i.customID.endsWith("-" + now) &&
 					i.user.id === ctx.message.author.id,
-				30 * 1000
+				30 * 1000,
 			);
 
 			if (!response[0]) {
@@ -169,10 +181,9 @@ export class command extends Command {
 			} else {
 				if (!isMessageComponentInteraction(response[0])) return;
 				const choice = response[0].customID.split("-")[0];
-				const categorydata =
-					choice.toLowerCase() === "uncategorized"
-						? uncategorizedCmds
-						: ctx.client.commands.category(choice).array();
+				const categorydata = choice.toLowerCase() === "uncategorized"
+					? uncategorizedCmds
+					: ctx.client.commands.category(choice).array();
 				const description = categorydata
 					.sort()
 					.map((cmd) => `${format(cmd.name)}`)
@@ -186,12 +197,12 @@ export class command extends Command {
 							icon_url: ctx.message.client.user?.avatarURL(),
 						},
 						title: `${format(choice)} Commands`,
-						description:
-							categorydata.length < 1
-								? "I couldn't seem to find that category!"
-								: "```\n - " + description + "\n```",
+						description: categorydata.length < 1
+							? "I couldn't seem to find that category!"
+							: "```\n - " + description + "\n```",
 						footer: {
-							text: `Need help with something? Check out our discord using ${ctx.prefix}discord`,
+							text:
+								`Need help with something? Check out our discord using ${ctx.prefix}discord`,
 						},
 					}).setColor("random"),
 				});

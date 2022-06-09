@@ -2,5 +2,6 @@
 	"deno.enable": true,
 	"deno.lint": true,
 	"deno.unstable": true,
-	"deno.importMap": "./imports.json"
+	"deno.importMap": "./imports.json",
+	"deno.config": "./deno.jsonc"
 }
