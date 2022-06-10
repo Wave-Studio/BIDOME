@@ -7,6 +7,8 @@
 		"queue": "./imports/queue.ts",
 		"status": "./imports/status.ts",
 		"eco": "./imports/eco.ts",
-		"jobs": "./imports/jobs.ts"
+		"jobs": "./imports/jobs.ts",
+		"lavanodes": "./imports/nodes.ts",
+		"emoji": "./imports/emoji.ts"
 	}
 }

@@ -14,7 +14,7 @@ const { firstrow, secondrow } = JSON.parse(
 	await Deno.readTextFile("./assets/fun.json"),
 ).dice as DieSizes;
 
-export class command extends Command {
+export default class Dice extends Command {
 	name = "dice";
 	aliases = ["diceroll", "rolladice"];
 	category = "fun";
@@ -23,7 +23,7 @@ export class command extends Command {
 	async execute(ctx: CommandContext) {
 		const now = Date.now();
 		const message = await ctx.message.reply(undefined, {
-			embed: new Embed({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
 					icon_url: ctx.message.client.user?.avatarURL(),
@@ -33,7 +33,7 @@ export class command extends Command {
 				footer: {
 					text: "This will time out in 30 seconds!",
 				},
-			}).setColor("random"),
+			}).setColor("random")],
 			components: [
 				{
 					type: 1,
@@ -65,14 +65,14 @@ export class command extends Command {
 		);
 		if (!selected[0]) {
 			await message.edit(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Dice size",
 					description: "Selection timed out!",
-				}).setColor("random"),
+				}).setColor("random")],
 				components: [],
 			});
 			return;
@@ -80,7 +80,7 @@ export class command extends Command {
 			if (!isMessageComponentInteraction(selected[0])) return;
 			const size = parseInt(selected[0].customID.split("-")[0]);
 			await message.edit(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
@@ -89,7 +89,7 @@ export class command extends Command {
 					description: `The dice rolled a \`${
 						Math.floor(Math.random() * (size - 1 + 1)) + 1
 					}\``,
-				}).setColor("random"),
+				}).setColor("random")],
 				components: [],
 			});
 			return;

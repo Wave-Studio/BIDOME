@@ -1,23 +1,23 @@
 import { Command, CommandContext, Embed } from "harmony";
 
-export class command extends Command {
+export default class Say extends Command {
 	name = "say";
 	aliases = ["echo"];
-	userPermissions = "ADMINISTRATOR";
 	description = "Make the bot say something";
-	category = "staff";
+	category = "dev";
 	usage = "Say <message>";
+	ownerOnly = true;
 	async execute(ctx: CommandContext) {
 		if (ctx.argString === "") {
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bidome say",
 					description: `You need to provide a message`,
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		} else {
 			await ctx.message.reply(ctx.argString, {

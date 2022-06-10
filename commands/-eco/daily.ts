@@ -7,7 +7,7 @@ import {
 } from "eco";
 import { formatMs, getRandomInteger } from "tools";
 
-export class command extends Command {
+export default class Daily extends Command {
 	name = "daily";
 	aliases = ["d"];
 	description = "Claim your daily coins";
@@ -23,7 +23,7 @@ export class command extends Command {
 			const time = profile.lastDailyClaim + 60 * 1000 * 60 * 24;
 			if (time > Date.now()) {
 				return await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
@@ -32,7 +32,7 @@ export class command extends Command {
 						description: `You need to wait ${
 							formatMs(time - Date.now())
 						}`,
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 			}
 		}
@@ -47,7 +47,7 @@ export class command extends Command {
 		if (shouldLevelUp(profile.level, profile.levelXp)) {
 			onLevelUp(profile);
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
@@ -55,19 +55,19 @@ export class command extends Command {
 					title: "Level up!",
 					description:
 						`You have leveled up to level ${profile.level}!`,
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		}
 		saveProfile(ctx.guild.id, profile);
 		await ctx.message.reply(undefined, {
-			embed: new Embed({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
 					icon_url: ctx.message.client.user?.avatarURL(),
 				},
 				title: "Daily",
 				description: `You have received $${added}`,
-			}).setColor("random"),
+			}).setColor("random")],
 		});
 	}
 }

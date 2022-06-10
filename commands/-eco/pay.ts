@@ -3,7 +3,7 @@ import { getProfileFromDatabase, saveProfile } from "eco";
 
 const allRegex = /(all|max)/i;
 
-export class command extends Command {
+export default class Pay extends Command {
 	name = "send";
 	aliases = ["give", "pay"];
 	description = "Send someone money";
@@ -15,7 +15,7 @@ export class command extends Command {
 			let number = parseInt(ctx.argString);
 			if (isNaN(number) && !allRegex.test(ctx.argString)) {
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
@@ -23,19 +23,19 @@ export class command extends Command {
 						title: "Bidome eco",
 						description:
 							`That's not a valid number! Please provide a valid number`,
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 			} else {
 				if (number < 0) {
 					await ctx.message.reply(undefined, {
-						embed: new Embed({
+						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
 								icon_url: ctx.message.client.user?.avatarURL(),
 							},
 							title: "Bidome eco",
 							description: `You can't give negative amounts!`,
-						}).setColor("random"),
+						}).setColor("random")],
 					});
 				} else {
 					const profile = await getProfileFromDatabase(
@@ -48,7 +48,7 @@ export class command extends Command {
 					}
 					if (profile.balance < number) {
 						await ctx.message.reply(undefined, {
-							embed: new Embed({
+							embeds: [new Embed({
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.message.client.user
@@ -57,11 +57,11 @@ export class command extends Command {
 								title: "Bidome eco",
 								description:
 									`You need to actually have that much money!`,
-							}).setColor("random"),
+							}).setColor("random")],
 						});
 					} else {
 						const message = await ctx.message.reply(undefined, {
-							embed: new Embed({
+							embeds: [new Embed({
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.message.client.user
@@ -73,7 +73,7 @@ export class command extends Command {
 								footer: {
 									text: "This will time out in 30 seconds!",
 								},
-							}).setColor("random"),
+							}).setColor("random")],
 						});
 
 						const [response] = await ctx.client.waitFor(
@@ -88,7 +88,7 @@ export class command extends Command {
 
 						if (!response) {
 							return await message.edit(undefined, {
-								embed: new Embed({
+								embeds: [new Embed({
 									author: {
 										name: "Bidome bot",
 										icon_url: ctx.message.client.user
@@ -96,12 +96,12 @@ export class command extends Command {
 									},
 									title: "Bidome eco",
 									description: `Sending timed out!`,
-								}).setColor("random"),
+								}).setColor("random")],
 							});
 						} else {
 							if (response.content.toLowerCase() == "cancel") {
 								return await message.edit(undefined, {
-									embed: new Embed({
+									embeds: [new Embed({
 										author: {
 											name: "Bidome bot",
 											icon_url: ctx.message.client.user
@@ -109,13 +109,13 @@ export class command extends Command {
 										},
 										title: "Bidome eco",
 										description: `Canceled sending!`,
-									}).setColor("random"),
+									}).setColor("random")],
 								});
 							} else {
 								const target = response.mentions.users.first();
 								if (!target) {
 									return await message.edit(undefined, {
-										embed: new Embed({
+										embeds: [new Embed({
 											author: {
 												name: "Bidome bot",
 												icon_url: ctx.message.client
@@ -124,7 +124,7 @@ export class command extends Command {
 											title: "Bidome eco",
 											description:
 												`Unable to find target user!`,
-										}).setColor("random"),
+										}).setColor("random")],
 									});
 								} else {
 									const userProfile =
@@ -143,7 +143,7 @@ export class command extends Command {
 										return await ctx.message.reply(
 											undefined,
 											{
-												embed: new Embed({
+												embeds: [new Embed({
 													author: {
 														name: "Bidome bot",
 														icon_url: ctx.message
@@ -153,7 +153,7 @@ export class command extends Command {
 													title: "Bidome eco",
 													description:
 														`You need to actually have that much money!`,
-												}).setColor("random"),
+												}).setColor("random")],
 											},
 										);
 									} else {
@@ -168,7 +168,7 @@ export class command extends Command {
 											targetProfile,
 										);
 										return await message.edit(undefined, {
-											embed: new Embed({
+											embeds: [new Embed({
 												author: {
 													name: "Bidome bot",
 													icon_url: ctx.message.client
@@ -177,7 +177,7 @@ export class command extends Command {
 												title: "Bidome eco",
 												description:
 													`Sent ${number} to ${target.tag}!`,
-											}).setColor("random"),
+											}).setColor("random")],
 										});
 									}
 								}
@@ -188,14 +188,14 @@ export class command extends Command {
 			}
 		} else {
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bidome eco",
 					description: `You must deposit an amount!`,
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		}
 	}

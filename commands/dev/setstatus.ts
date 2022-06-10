@@ -6,7 +6,7 @@ import {
 } from "harmony";
 import { format } from "tools";
 
-export class command extends Command {
+export default class SetStatus extends Command {
 	name = "setstatus";
 	ownerOnly = true;
 	category = "dev";
@@ -15,19 +15,19 @@ export class command extends Command {
 	async execute(ctx: CommandContext) {
 		if (ctx.argString === "") {
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bot status",
 					description: "Please provide a status to change it to!",
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		} else {
 			const now = Date.now();
 			const message = await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
@@ -37,7 +37,7 @@ export class command extends Command {
 					footer: {
 						text: "This will time out in 30 seconds!",
 					},
-				}).setColor("random"),
+				}).setColor("random")],
 				components: [
 					{
 						type: 1,
@@ -66,14 +66,14 @@ export class command extends Command {
 			);
 			if (!choice[0]) {
 				await message.edit(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
 						},
 						title: "Bot status",
 						description: "Status change timed out!",
-					}).setColor("random"),
+					}).setColor("random")],
 					components: [],
 				});
 				return;
@@ -90,14 +90,14 @@ export class command extends Command {
 					status: ctx.client.presence.status,
 				});
 				await message.edit(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
 						},
 						title: "Bot status",
 						description: "Status has been changed!",
-					}).setColor("random"),
+					}).setColor("random")],
 					components: [],
 				});
 			}

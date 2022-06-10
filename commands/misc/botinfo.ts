@@ -1,12 +1,24 @@
 import { Command, CommandContext, Embed } from "harmony";
 
-export class command extends Command {
+export default class Botinfo extends Command {
 	name = "botinfo";
 	category = "misc";
 	aliases = ["botstats", "info"];
 	description = "Get bot information";
 	usage = "Botinfo";
 	async execute(ctx: CommandContext) {
+		const msg = await ctx.message.reply(undefined, {
+			embeds: [new Embed({
+				author: {
+					name: "Bidome bot",
+					icon_url: ctx.message.client.user?.avatarURL(),
+				},
+				title: "Bidome bot info",
+				description:
+					"<a:typing:779775412829028373> Please wait, fetching data...",
+			}).setColor("random")],
+		});
+
 		const data = {
 			servers: 0,
 			roles: 0,
@@ -31,8 +43,8 @@ export class command extends Command {
 
 		const isCachedUsers = data.accounts != data.humans + data.bots;
 
-		await ctx.message.reply(undefined, {
-			embed: new Embed({
+		await msg.edit({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
 					icon_url: ctx.message.client.user?.avatarURL(),
@@ -87,7 +99,7 @@ export class command extends Command {
 				footer: {
 					text: `${isCachedUsers ? `* Cached users` : ""}`,
 				},
-			}).setColor("random"),
+			}).setColor("random")],
 		});
 	}
 }

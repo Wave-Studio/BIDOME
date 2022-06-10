@@ -2,7 +2,7 @@ import { Command, CommandContext, Embed } from "harmony";
 import { EcoUserDBObject, getAllProfiles, isServerEco } from "eco";
 import { removeDiscordCodeBlocks } from "tools";
 
-export class command extends Command {
+export default class Baltop extends Command {
 	name = "baltop";
 	aliases = ["btop"];
 	description = "Shows the top users by balance";
@@ -21,7 +21,7 @@ export class command extends Command {
 
 		if (sortedProfiles.length === 0) {
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
@@ -29,7 +29,7 @@ export class command extends Command {
 					title: "Bidome Eco",
 					description:
 						`Sorry! There are no users currently with money.`,
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		} else {
 			const top10Users: { position: number; data: EcoUserDBObject }[] =
@@ -47,7 +47,7 @@ export class command extends Command {
 			}
 
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
@@ -78,7 +78,7 @@ export class command extends Command {
 								: "all bidome users"
 						}`,
 					},
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		}
 	}

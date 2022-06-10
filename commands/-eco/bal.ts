@@ -1,7 +1,7 @@
 import { Command, CommandContext, Embed, User } from "harmony";
 import { calculateXPToNextLevel, getProfileFromDatabase } from "eco";
 
-export class command extends Command {
+export default class Balance extends Command {
 	name = "bal";
 	aliases = ["balance"];
 	description = "Check your balance.";
@@ -14,14 +14,14 @@ export class command extends Command {
 		}
 		if (user.bot) {
 			return await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bidome Eco",
 					description: `Bot's can't have a balance!`,
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		} else {
 			const profile = await getProfileFromDatabase(
@@ -30,7 +30,7 @@ export class command extends Command {
 				user.tag,
 			);
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
@@ -62,7 +62,7 @@ export class command extends Command {
 							inline: true,
 						},
 					],
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		}
 	}

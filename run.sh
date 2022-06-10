@@ -2,8 +2,6 @@
 # When running in production it is suggested to add a --no-check before index.ts
 # This prevents deno from type checking the files in a production enviroment
 
-# Launch Lavalink with the bot
-deno run --import-map=imports.json --allow-net --allow-env --allow-read --allow-write --allow-run index.ts
+# To disable lavalink being summoned add --no-lava at the end of command
 
-# Don't launch lavalink
-# deno run --import-map=imports.json --allow-net --allow-env --allow-read --allow-write --allow-run index.ts --no-lava
+deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run index.ts

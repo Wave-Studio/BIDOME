@@ -25,7 +25,7 @@ export const getRandomStatus = async (bot: CommandClient) => {
 			type: "WATCHING",
 		},
 		{
-			name: `The end of 2021 approach 👀`,
+			name: `2022 happen`,
 			type: "WATCHING",
 		},
 		{

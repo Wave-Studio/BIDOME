@@ -8,7 +8,7 @@ import {
 import { formatMs, getRandomInteger } from "tools";
 import { jobs } from "jobs";
 
-export class command extends Command {
+export default class Work extends Command {
 	name = "work";
 	aliases = ["job"];
 	description = "Work to earn money";
@@ -22,7 +22,7 @@ export class command extends Command {
 		);
 		if (profile.job == undefined) {
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
@@ -30,7 +30,7 @@ export class command extends Command {
 					title: "Bidome eco",
 					description:
 						`You are not currently in a job! Use \`${ctx.prefix}job list\` to join a job`,
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		} else {
 			const userJob = jobs.find((job) => job.id == profile.job!.id);
@@ -47,7 +47,7 @@ export class command extends Command {
 				profile.job.lastJobTime = Date.now();
 				profile.balance += earnedMoney;
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
@@ -55,12 +55,12 @@ export class command extends Command {
 						title: "Bidome eco",
 						description:
 							`You worked as \`${userJob.name}\` and earned $${earnedMoney}`,
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 				if (shouldLevelUp(profile.level, profile.levelXp)) {
 					onLevelUp(profile);
 					await ctx.message.reply(undefined, {
-						embed: new Embed({
+						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
 								icon_url: ctx.message.client.user?.avatarURL(),
@@ -68,13 +68,13 @@ export class command extends Command {
 							title: "Level up!",
 							description:
 								`You have leveled up to level ${profile.level}!`,
-						}).setColor("random"),
+						}).setColor("random")],
 					});
 				}
 				saveProfile(ctx.guild.id, profile);
 			} else {
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
@@ -86,7 +86,7 @@ export class command extends Command {
 									Date.now(),
 							)
 						}\` before you can work again!`,
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 			}
 		}
@@ -98,7 +98,7 @@ export class command extends Command {
 	})
 	async listJobs(ctx: CommandContext) {
 		await ctx.message.reply(undefined, {
-			embed: new Embed({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
 					icon_url: ctx.message.client.user?.avatarURL(),
@@ -115,7 +115,7 @@ export class command extends Command {
 				footer: {
 					text: `Join with ${ctx.prefix}job join <name>`,
 				},
-			}).setColor("random"),
+			}).setColor("random")],
 		});
 	}
 
@@ -135,7 +135,7 @@ export class command extends Command {
 			);
 			if (filteredJobs.length == 0) {
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
@@ -143,7 +143,7 @@ export class command extends Command {
 						title: "Bidome eco",
 						description:
 							`That's an invalid job! Use ${ctx.prefix}job listjobs to see all jobs`,
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 			} else {
 				const userProfile = await getProfileFromDatabase(
@@ -161,7 +161,7 @@ export class command extends Command {
 							Date.now()
 					) {
 						await ctx.message.reply(undefined, {
-							embed: new Embed({
+							embeds: [new Embed({
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.message.client.user
@@ -175,7 +175,7 @@ export class command extends Command {
 											Date.now(),
 									)
 								}\` before you can join a new job!`,
-							}).setColor("random"),
+							}).setColor("random")],
 						});
 						return;
 					}
@@ -187,7 +187,7 @@ export class command extends Command {
 				};
 
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
@@ -196,21 +196,21 @@ export class command extends Command {
 						description: `You have joined ${
 							filteredJobs[0].name
 						}! Use ${ctx.prefix}job to work.`,
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 
 				saveProfile(ctx.guild.id, userProfile);
 			}
 		} else {
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bidome eco",
 					description: "You need to provide a job to join!",
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		}
 	}
@@ -234,7 +234,7 @@ export class command extends Command {
 					Date.now()
 			) {
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
@@ -247,7 +247,7 @@ export class command extends Command {
 									Date.now(),
 							)
 						}\` before you can resign!`,
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 				return;
 			}
@@ -255,14 +255,14 @@ export class command extends Command {
 			userProfile.job = undefined;
 			saveProfile(ctx.guild.id, userProfile);
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bidome eco",
 					description: "You have left your job!",
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		}
 	}

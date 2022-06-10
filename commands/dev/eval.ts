@@ -1,6 +1,6 @@
 import { Command, CommandContext, Embed } from "harmony";
 
-export class command extends Command {
+export default class Eval extends Command {
 	name = "eval";
 	ownerOnly = true;
 	category = "dev";
@@ -13,13 +13,13 @@ export class command extends Command {
 			code = code.substring(code.split("\n")[0].length, code.length - 3);
 		}
 		const message = await ctx.message.reply(undefined, {
-			embed: new Embed({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
 					icon_url: ctx.message.client.user?.avatarURL(),
 				},
 				description: "Executing code!",
-			}).setColor("random"),
+			}).setColor("random")],
 		});
 
 		try {

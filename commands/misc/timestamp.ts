@@ -1,7 +1,7 @@
 import { Command, CommandContext, Embed } from "harmony";
 import { toMs } from "tools";
 
-export class command extends Command {
+export default class Timestamp extends Command {
 	name = "timestamp";
 	aliases = ["ts", "time"];
 	category = "misc";
@@ -9,7 +9,7 @@ export class command extends Command {
 	async execute(ctx: CommandContext) {
 		if (ctx.argString == "") {
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
@@ -17,13 +17,13 @@ export class command extends Command {
 					title: "Invalid command use!",
 					description:
 						"Please provide a timestamp such as `4h`, `1d`, or `1y1d`",
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		} else {
 			const timestamp = toMs(ctx.argString);
 			if (timestamp == 0) {
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
@@ -31,7 +31,7 @@ export class command extends Command {
 						title: "Invalid timestamp!",
 						description:
 							"Please provide a valid timestamp such as `4h` or `1d`",
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 			} else {
 				const time = (new Date().getTime() / 1000 + timestamp / 1000)
@@ -39,7 +39,7 @@ export class command extends Command {
 						0,
 					);
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.client.user?.avatarURL(),
@@ -50,7 +50,7 @@ export class command extends Command {
 								`<t:${time}:${v}> - \`<t:${time}:${v}>\``
 							)
 							.join("\n"),
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 			}
 		}

@@ -8,7 +8,7 @@ import {
 import { Database } from "database";
 import { isGlobalEco, isServerEco } from "eco";
 
-export class command extends Command {
+export default class Config extends Command {
 	name = "config";
 	aliases = ["settings", "options"];
 	category = "staff";
@@ -19,7 +19,7 @@ export class command extends Command {
 		if (!ctx.guild?.id) return;
 		const currentTime = Date.now();
 		const message = await ctx.message.reply(undefined, {
-			embed: new Embed({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
 					icon_url: ctx.client.user?.avatarURL(),
@@ -28,7 +28,7 @@ export class command extends Command {
 				footer: {
 					text: "This will time out in 30 seconds!",
 				},
-			}).setColor("random"),
+			}).setColor("random")],
 			components: [
 				{
 					type: 1,
@@ -64,13 +64,13 @@ export class command extends Command {
 		if (!res) {
 			await message.edit({
 				components: [],
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.client.user?.avatarURL(),
 					},
 					description: "Config prompt timed out!",
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 			return;
 		} else {
@@ -91,7 +91,7 @@ export class command extends Command {
 								],
 							},
 						],
-						embed: new Embed({
+						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
@@ -105,7 +105,7 @@ export class command extends Command {
 								text:
 									"Changing the prefix will time out in 30 seconds!",
 							},
-						}).setColor("random"),
+						}).setColor("random")],
 					});
 					await res.respond({
 						type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
@@ -122,18 +122,18 @@ export class command extends Command {
 					if (!willChange) {
 						await message.edit({
 							components: [],
-							embed: new Embed({
+							embeds: [new Embed({
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
 								description: "Prefix change timed out!",
-							}).setColor("random"),
+							}).setColor("random")],
 						});
 					} else {
 						await message.edit({
 							components: [],
-							embed: new Embed({
+							embeds: [new Embed({
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
@@ -155,7 +155,7 @@ export class command extends Command {
 								footer: {
 									text: "This will time out in 30 seconds!",
 								},
-							}).setColor("random"),
+							}).setColor("random")],
 						});
 						const newPrefix = await ctx.client.waitFor(
 							"messageCreate",
@@ -167,13 +167,13 @@ export class command extends Command {
 						const prefix = newPrefix[0];
 						if (!prefix) {
 							await message.edit({
-								embed: new Embed({
+								embeds: [new Embed({
 									author: {
 										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
 									},
 									description: "Prefix change timed out!",
-								}).setColor("random"),
+								}).setColor("random")],
 							});
 						} else {
 							const allowedChars =
@@ -183,7 +183,7 @@ export class command extends Command {
 									);
 							if (prefix.content.length > 5) {
 								await prefix.reply(undefined, {
-									embed: new Embed({
+									embeds: [new Embed({
 										author: {
 											name: "Bidome bot",
 											icon_url: ctx.client.user
@@ -191,7 +191,7 @@ export class command extends Command {
 										},
 										description:
 											"Prefix length is longer than the maximum allowed! (5)",
-									}).setColor("random"),
+									}).setColor("random")],
 								});
 							}
 
@@ -201,7 +201,7 @@ export class command extends Command {
 								if (allowedChars.includes(letter)) continue;
 								else {
 									await prefix.reply(undefined, {
-										embed: new Embed({
+										embeds: [new Embed({
 											author: {
 												name: "Bidome bot",
 												icon_url: ctx.client.user
@@ -211,7 +211,7 @@ export class command extends Command {
 												"An invalid character was provided! `` " +
 												letter +
 												" ``",
-										}).setColor("random"),
+										}).setColor("random")],
 									});
 									shouldChangePrefix = false;
 									return;
@@ -223,7 +223,7 @@ export class command extends Command {
 								prefix.content.toLowerCase(),
 							);
 							await prefix.reply(undefined, {
-								embed: new Embed({
+								embeds: [new Embed({
 									author: {
 										name: "Bidome bot",
 										icon_url: ctx.client.user?.avatarURL(),
@@ -232,7 +232,7 @@ export class command extends Command {
 										"The prefix has been changed to `` " +
 										prefix.content.toLowerCase() +
 										" ``",
-								}).setColor("random"),
+								}).setColor("random")],
 							});
 						}
 					}
@@ -260,7 +260,7 @@ export class command extends Command {
 								],
 							},
 						],
-						embed: new Embed({
+						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
 								icon_url: ctx.client.user?.avatarURL(),
@@ -299,7 +299,7 @@ export class command extends Command {
 								text:
 									"Changing eco type will time out in 30 seconds!!",
 							},
-						}).setColor("random"),
+						}).setColor("random")],
 					});
 					await res.respond({
 						type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
@@ -315,13 +315,13 @@ export class command extends Command {
 					if (!selectedEcoType) {
 						await message.edit({
 							components: [],
-							embed: new Embed({
+							embeds: [new Embed({
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.client.user?.avatarURL(),
 								},
 								description: "Economy type change timed out!",
-							}).setColor("random"),
+							}).setColor("random")],
 						});
 					} else {
 						if (!isMessageComponentInteraction(selectedEcoType)) {
@@ -337,7 +337,7 @@ export class command extends Command {
 
 								await message.edit({
 									components: [],
-									embed: new Embed({
+									embeds: [new Embed({
 										author: {
 											name: "Bidome bot",
 											icon_url: ctx.client.user
@@ -345,7 +345,7 @@ export class command extends Command {
 										},
 										description:
 											"Economy type changed to Global!",
-									}).setColor("random"),
+									}).setColor("random")],
 								});
 								break;
 							}
@@ -361,7 +361,7 @@ export class command extends Command {
 
 								await message.edit({
 									components: [],
-									embed: new Embed({
+									embeds: [new Embed({
 										author: {
 											name: "Bidome bot",
 											icon_url: ctx.client.user
@@ -369,7 +369,7 @@ export class command extends Command {
 										},
 										description:
 											"Economy type changed to Server!",
-									}).setColor("random"),
+									}).setColor("random")],
 								});
 
 								break;

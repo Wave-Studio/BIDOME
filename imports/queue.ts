@@ -1,222 +1,150 @@
-import { Cluster, Player } from "lavadeno";
-import { CommandClient, Embed, Message } from "harmony";
-import { formatMs, removeDiscordFormatting } from "tools";
+import { CommandClient, Gateway, Guild, Message } from "./harmony.ts";
+import { Cluster, Player, PlayerEvents } from "./lavadeno.ts";
+import { formatMs } from "./tools.ts";
+import { nodes } from "./nodes.ts";
 
-export interface Song {
-	name: string;
-	image: string | null;
-	requestedBy: string;
-	url: string;
-	msLength: number;
-	track: string;
-	author: string;
-}
+// deno-lint-ignore no-unused-vars
+let client: CommandClient;
 
-export class Queue {
+export const queues: Map<string, ServerQueue> = new Map();
+
+export let lavaCluster: Cluster;
+
+export class ServerQueue {
 	public player: Player;
+	public readonly guildId: string;
 	public queue: Song[] = [];
-	public voteSkip: string[] = [];
 	public volume = 100;
-	public queueloop = false;
-	public songloop = false;
-
-	private instance: Queue = this;
 
 	constructor(
-		private node: Cluster,
-		public channel: string,
-		public startedBy: string,
-		public server: string,
-		private client: CommandClient,
-		private queueInstances: Map<string, Queue>,
-		private message?: Message,
+		private channel: string,
+		private guild: Guild,
+		public queueMessage?: Message,
 	) {
-		this.voteSkip = [this.client.user?.id as string];
-
-		const exsistsPlayer = node.players.get(BigInt(server)) != null;
-
-		this.player = node.players.get(BigInt(server)) ??
-			node.createPlayer(BigInt(server));
-		this.player.connect(BigInt(channel), {
+		this.guildId = this.guild.id;
+		this.player = lavaCluster.players.get(BigInt(this.channel)) ??
+			lavaCluster.createPlayer(BigInt(this.channel));
+		this.player.connect(BigInt(this.channel), {
 			deafen: true,
 		});
 
-		if (!exsistsPlayer) {
-			this.player.on("channelLeave", () => {
-				this.deleteQueue.call(this.instance);
-			});
+		this.player.on("trackStart", (_track) => {
 
-			this.player.on("disconnected", () => {
-				this.deleteQueue.call(this.instance);
-			});
+		});
 
-			this.player.on("trackEnd", () => {
-				this.onTrackEnd.call(this.instance);
+		this.player.on("channelMove", (_, to) => {
+			this.channel = to.toString();
+			this.player.connect(BigInt(this.channel), {
+				deafen: true,
 			});
-			this.player.on(
-				"trackStuck",
-				() => this.onTrackEnd.call(this.instance, true),
-			);
-			this.player.on(
+	
+		})
+
+		queues.set(this.guildId, this);
+	}
+
+	deleteQueue() {
+		queues.delete(this.guildId);
+		for (
+			const key of [
+				"trackStart",
+				"trackEnd",
 				"trackException",
-				() => this.onTrackEnd.call(this.instance, true),
-			);
+				"trackStuck",
+				"disconnected",
+				"channelJoin",
+				"channelLeave",
+				"channelMove",
+			] as (keyof PlayerEvents)[]
+		) {
+			this.player.off(key);
 		}
+		this.player.destroy();
 	}
 
-	onTrackEnd(errored = false) {
-		this.voteSkip = [];
-
-		if (this.queueloop && !errored) {
-			const nextSong = this.queue.shift();
-			if (nextSong == null) {
-				return this.deleteQueue();
-			} else {
-				this.queue.push(nextSong);
-			}
+	addSongs(song: Song | Song[]) {
+		const shouldPlay = this.queue.length < 1;
+		if (Array.isArray(song)) {
+			this.queue.push(...song);
 		} else {
-			if (!this.songloop || errored) {
-				this.queue.shift();
-			}
+			this.queue.push(song);
 		}
 
-		if (this.queue.length < 1) {
-			this.queueloop = false;
-			this.songloop = false;
-			if (this.message) {
-				this.message.edit(
-					new Embed({
-						author: {
-							name: "Bidome bot",
-							icon_url: this.client.user?.avatarURL(),
-						},
-						title: "Music",
-						description: `I have finished my queue!`,
-					}).setColor("random"),
-				);
-			}
-			this.deleteQueue();
-			return;
-		}
-		this.playSong();
-	}
-
-	addSong(song: Song) {
-		this.queue.push(song);
-	}
-
-	async playSong() {
-		this.voteSkip = [];
-		const song = this.queue[0];
-		if (song == undefined) {
-			this.deleteQueue();
-		} else {
-			if (this.message) {
-				let msLength = 0;
-
-				for (const song of this.queue) {
-					msLength += song.msLength;
-				}
-
-				this.player.position = 0;
-
-				this.message.edit({
-					embed: new Embed({
-						author: {
-							name: "Bidome bot",
-							icon_url: this.client.user?.avatarURL(),
-						},
-						title: "Playing song",
-						fields: [
-							{
-								name: "Song",
-								value: `\`${
-									(song.name.length > 197
-										? `${song.name.substring(0, 197)}...`
-										: song.name)
-										.replace(/`/gi, "\\`")
-										.replace(/\\/, "\\")
-								}\``,
-								inline: true,
-							},
-							{
-								name: "Author",
-								value: `${
-									removeDiscordFormatting(song.author)
-								}`,
-								inline: true,
-							},
-							{
-								name: "Length",
-								value: `${formatMs(song.msLength)}`,
-								inline: true,
-							},
-							{
-								name: "Requested by",
-								value: `<@!${song.requestedBy}>`,
-								inline: true,
-							},
-							{
-								name: "Progress:",
-								value: `\`${
-									formatMs(
-										(this.player.position ?? 1000) < 1000
-											? 1000
-											: this.player.position ?? 1000,
-										true,
-									)
-								}\`/\`${formatMs(song.msLength, true)}\``,
-								inline: true,
-							},
-						],
-						thumbnail: {
-							url: song.image ?? undefined,
-						},
-						footer: {
-							text:
-								`Songs in queue: ${this.queue.length} | Length: ${
-									formatMs(msLength)
-								}`,
-						},
-					}).setColor("random"),
-					components: [],
-				});
-			}
-
-			await this.player.stop();
-
-			await this.player.play(song.track, {
-				volume: this.volume,
-			});
+		if (shouldPlay) {
+			this.play();
 		}
 	}
 
-	async deleteQueue() {
-		// Prevent errors being thrown due to too many listeners (even tho the player is being destroyed)
-		this.player.off("channelLeave");
-		this.player.off("disconnected");
-		this.player.off("trackEnd");
-		this.player.off("trackStuck");
-		this.player.off("trackException");
+	private play() {
+		// TODO: Make this proper or smth
+		if (this.queue.length < 1) return;
 
-		this.queue = [];
-		await this.player.disconnect();
-		await this.player.destroy();
-		await this.node.destroyPlayer(BigInt(this.server));
-		this.queueInstances.delete(this.server);
-	}
-
-	shouldBotVoteskip(users: string[]): boolean {
-		const voteSkipUsers: string[] = [];
-		for (const user of users) {
-			if (this.voteSkip.includes(user)) {
-				voteSkipUsers.push(user);
-			}
-		}
-		const neededToSkip = users.length == 1
-			? 0
-			: Math.floor(users.length / 2) + 1;
-		if (voteSkipUsers.length >= neededToSkip) return true;
-		else return false;
+		const track = this.queue[0];
+		this.player.connect(BigInt(this.channel), {
+			deafen: true,
+		});
+		this.player.play(track.track, {
+			volume: this.volume,
+		});
 	}
 }
+
+export interface Song {
+	title: string;
+	author: string;
+	url: string;
+	msLength: number;
+	track: string;
+	requestedBy: string;
+	thumbnail?: string;
+}
+
+export const initLava = (bot: CommandClient) => {
+	client = bot;
+
+	const cluster = new Cluster({
+		nodes,
+		userId: BigInt(bot.user!.id),
+		sendGatewayPayload: (id, payload) => {
+			const shardID = Number(
+				(BigInt(id) << 22n) % BigInt(bot.shards.cachedShardCount ?? 1),
+			);
+			const shard = bot.shards.get(shardID) as Gateway;
+			shard.send(payload);
+		},
+	});
+	lavaCluster = cluster;
+
+	cluster.on("nodeConnect", (node, took, reconnect) => {
+		console.log(
+			`[Lavalink] Connected to node ${node.id} in ${
+				formatMs(
+					took,
+				)
+			} Reconnected: ${reconnect ? "Yes" : "No"}`,
+		);
+	});
+
+	cluster.on("nodeDisconnect", (node, code, reason, reconnecting) => {
+		console.log(
+			`[Lavalink] Disconnected from node ${node.id} with code: ${code} | ${reason} Reconnecting: ${
+				reconnecting ? "Yes" : "No"
+			}`,
+		);
+	});
+
+	cluster.on("nodeError", (node, error) => {
+		console.log(`[Lavalink] Error on node ${node.id}:`, error);
+	});
+
+	bot.on("raw", (event, payload) => {
+		switch (event) {
+			case "VOICE_STATE_UPDATE":
+			case "VOICE_SERVER_UPDATE": {
+				cluster.handleVoiceUpdate(payload);
+			}
+		}
+	});
+
+	cluster.init(BigInt(bot.user!.id));
+};

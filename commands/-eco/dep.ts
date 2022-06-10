@@ -3,7 +3,7 @@ import { getProfileFromDatabase, saveProfile } from "eco";
 
 const allRegex = /(all|max)/i;
 
-export class command extends Command {
+export default class Deposit extends Command {
 	name = "deposit";
 	aliases = ["dep"];
 	description = "Deposit coins into bank";
@@ -14,7 +14,7 @@ export class command extends Command {
 			let number = parseInt(ctx.argString);
 			if (isNaN(number) && !allRegex.test(ctx.argString)) {
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
@@ -22,12 +22,12 @@ export class command extends Command {
 						title: "Bidome eco",
 						description:
 							`That's not a valid number! Please provide a valid number`,
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 			} else {
 				if (number < 0) {
 					await ctx.message.reply(undefined, {
-						embed: new Embed({
+						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
 								icon_url: ctx.message.client.user?.avatarURL(),
@@ -35,7 +35,7 @@ export class command extends Command {
 							title: "Bidome eco",
 							description:
 								`You can't deposit negative amounts! Use ${ctx.prefix}withdraw to withdraw coins`,
-						}).setColor("random"),
+						}).setColor("random")],
 					});
 				} else {
 					const profile = await getProfileFromDatabase(
@@ -48,7 +48,7 @@ export class command extends Command {
 					}
 					if (profile.balance < number) {
 						await ctx.message.reply(undefined, {
-							embed: new Embed({
+							embeds: [new Embed({
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.message.client.user
@@ -57,12 +57,12 @@ export class command extends Command {
 								title: "Bidome eco",
 								description:
 									`You need to actually have that much money!`,
-							}).setColor("random"),
+							}).setColor("random")],
 						});
 					} else {
 						if (profile.bank >= profile.maxBankSpace) {
 							await ctx.message.reply(undefined, {
-								embed: new Embed({
+								embeds: [new Embed({
 									author: {
 										name: "Bidome bot",
 										icon_url: ctx.message.client.user
@@ -71,7 +71,7 @@ export class command extends Command {
 									title: "Bidome eco",
 									description:
 										`You can't put any more coins in your bank!`,
-								}).setColor("random"),
+								}).setColor("random")],
 							});
 						} else {
 							if (profile.bank + number > profile.maxBankSpace) {
@@ -81,7 +81,7 @@ export class command extends Command {
 							profile.balance -= number;
 							saveProfile(ctx.guild.id, profile);
 							await ctx.message.reply(undefined, {
-								embed: new Embed({
+								embeds: [new Embed({
 									author: {
 										name: "Bidome bot",
 										icon_url: ctx.message.client.user
@@ -89,7 +89,7 @@ export class command extends Command {
 									},
 									title: "Bidome eco",
 									description: `Depositied $${number}`,
-								}).setColor("random"),
+								}).setColor("random")],
 							});
 						}
 					}
@@ -97,14 +97,14 @@ export class command extends Command {
 			}
 		} else {
 			await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bidome eco",
 					description: `You must deposit an amount!`,
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		}
 	}

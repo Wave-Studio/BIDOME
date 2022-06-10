@@ -6,7 +6,7 @@ import {
 } from "harmony";
 import { Database, GlobalEco, JsonDB, ServerEco } from "database";
 
-export class command extends Command {
+export default class ReloadDB extends Command {
 	name = "reloaddb";
 	aliases = ["rldb"];
 	ownerOnly = true;
@@ -16,7 +16,7 @@ export class command extends Command {
 	async execute(ctx: CommandContext) {
 		const now = Date.now();
 		const message = await ctx.message.reply(undefined, {
-			embed: new Embed({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
 					icon_url: ctx.message.client.user?.avatarURL(),
@@ -26,7 +26,7 @@ export class command extends Command {
 				footer: {
 					text: "This will time out in 30 seconds!",
 				},
-			}).setColor("random"),
+			}).setColor("random")],
 			components: [
 				{
 					type: 1,
@@ -65,14 +65,14 @@ export class command extends Command {
 
 		if (!response) {
 			return await message.edit(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bidome Reload",
 					description: "Database reload timed out!",
-				}).setColor("random"),
+				}).setColor("random")],
 				components: [],
 			});
 		} else {
@@ -89,26 +89,26 @@ export class command extends Command {
 			}
 
 			await message.edit(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bidome Reload",
 					description: "Reloading database!",
-				}).setColor("random"),
+				}).setColor("random")],
 				components: [],
 			});
 			await DatabaseToReload.reload();
 			await message.edit(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bidome Reload",
 					description: "Database reloaded!",
-				}).setColor("random"),
+				}).setColor("random")],
 				components: [],
 			});
 		}

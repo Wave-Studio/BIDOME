@@ -2,7 +2,7 @@ import { Command, CommandContext, Embed, User } from "harmony";
 import { getProfileFromDatabase, saveProfile } from "eco";
 import { getRandomInteger } from "tools";
 
-export class command extends Command {
+export default class Rob extends Command {
 	name = "rob";
 	aliases = ["steal"];
 	description = "Rob a user";
@@ -11,39 +11,39 @@ export class command extends Command {
 		if (!ctx.guild?.id) return;
 		if ((await ctx.message.mentions.users.first()) == undefined) {
 			return await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user?.avatarURL(),
 					},
 					title: "Bidome Eco",
 					description: `You need to mention someone to rob them!`,
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		} else {
 			const user = (await ctx.message.mentions.users.first()) as User;
 			if (user.id == ctx.author.id) {
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user?.avatarURL(),
 						},
 						title: "Bidome Eco",
 						description: `You can't rob yourself!`,
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 			} else {
 				if (user.bot) {
 					await ctx.message.reply(undefined, {
-						embed: new Embed({
+						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
 								icon_url: ctx.message.client.user?.avatarURL(),
 							},
 							title: "Bidome Eco",
 							description: `You can't rob bots!`,
-						}).setColor("random"),
+						}).setColor("random")],
 					});
 				} else {
 					const profile = await getProfileFromDatabase(
@@ -53,7 +53,7 @@ export class command extends Command {
 					);
 					if (profile.balance < 500) {
 						await ctx.message.reply(undefined, {
-							embed: new Embed({
+							embeds: [new Embed({
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.message.client.user
@@ -62,7 +62,7 @@ export class command extends Command {
 								title: "Bidome Eco",
 								description:
 									`You need to have $500 to rob someone!`,
-							}).setColor("random"),
+							}).setColor("random")],
 						});
 					} else {
 						const targetProfile = await getProfileFromDatabase(
@@ -72,7 +72,7 @@ export class command extends Command {
 						);
 						if (targetProfile.balance < 500) {
 							await ctx.message.reply(undefined, {
-								embed: new Embed({
+								embeds: [new Embed({
 									author: {
 										name: "Bidome bot",
 										icon_url: ctx.message.client.user
@@ -80,7 +80,7 @@ export class command extends Command {
 									},
 									title: "Bidome Eco",
 									description: `That user doesn't have $500!`,
-								}).setColor("random"),
+								}).setColor("random")],
 							});
 						} else {
 							if (getRandomInteger(0, 100) > 35) {
@@ -89,7 +89,7 @@ export class command extends Command {
 								saveProfile(ctx.guild.id, profile);
 								saveProfile(ctx.guild.id, targetProfile);
 								await ctx.message.reply(undefined, {
-									embed: new Embed({
+									embeds: [new Embed({
 										author: {
 											name: "Bidome bot",
 											icon_url: ctx.message.client.user
@@ -98,7 +98,7 @@ export class command extends Command {
 										title: "Bidome Eco",
 										description:
 											`You got caught and gave ${user.tag} $500`,
-									}).setColor("random"),
+									}).setColor("random")],
 								});
 							} else {
 								const stolenAmount = getRandomInteger(
@@ -110,7 +110,7 @@ export class command extends Command {
 								saveProfile(ctx.guild.id, profile);
 								saveProfile(ctx.guild.id, targetProfile);
 								await ctx.message.reply(undefined, {
-									embed: new Embed({
+									embeds: [new Embed({
 										author: {
 											name: "Bidome bot",
 											icon_url: ctx.message.client.user
@@ -119,7 +119,7 @@ export class command extends Command {
 										title: "Bidome Eco",
 										description:
 											`💸 You managed to get away with $${stolenAmount}!`,
-									}).setColor("random"),
+									}).setColor("random")],
 								});
 							}
 						}

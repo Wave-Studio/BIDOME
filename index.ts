@@ -1,6 +1,7 @@
 import { CommandClient, CommandContext, Embed, GatewayIntents } from "harmony";
 import { Database, initDatabases } from "database";
 import { getRandomStatus } from "status";
+import { initLava } from "queue";
 
 import "https://deno.land/x/dotenv@v3.2.0/load.ts";
 
@@ -74,6 +75,17 @@ bot.on("ready", async () => {
 	console.log("Loading Database");
 	initDatabases();
 	console.log("Loading all commands!");
+
+	await initLava(bot);
+
+	for (const dir of ["./commands/", "./extensions/"]) {
+		try {
+			await Deno.mkdir(dir);
+		} catch {
+			// Ignore
+		}
+	}
+
 	for await (const commands of Deno.readDir("./commands/")) {
 		if (commands.name.startsWith("-")) continue;
 		if (
@@ -82,7 +94,7 @@ bot.on("ready", async () => {
 			!commands.name.startsWith("-")
 		) {
 			bot.commands.add(
-				(await import(`./commands/${commands.name}`)).command,
+				(await import(`./commands/${commands.name}`)).default,
 			);
 		} else {
 			if (commands.isDirectory) {
@@ -101,7 +113,7 @@ bot.on("ready", async () => {
 							(await import(
 								`./commands/${commands.name}/${subcommand.name}`
 							))
-								.command,
+								.default,
 						);
 					}
 				}
@@ -117,7 +129,7 @@ bot.on("ready", async () => {
 			!extension.name.startsWith("-")
 		) {
 			bot.extensions.load(
-				(await import(`./extensions/${extension.name}`)).extension,
+				(await import(`./extensions/${extension.name}`)).default,
 			);
 		}
 	}
@@ -143,7 +155,7 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 	console.log(err);
 	try {
 		await ctx.message.reply(undefined, {
-			embed: new Embed({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
 					icon_url: ctx.message.client.user?.avatarURL(),
@@ -151,7 +163,7 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 				title: "An error occured!",
 				description:
 					"An error occured while executing this command! If this command continues erroring please alert a developer!",
-			}).setColor("random"),
+			}).setColor("random")],
 		});
 	} catch {
 		try {
