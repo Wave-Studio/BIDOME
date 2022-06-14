@@ -5,7 +5,7 @@ export const nodes: ClusterNodeOptions[] = [{
 	host: "lavalink.oops.wtf",
 	port: 2000,
 	password: "www.freelavalink.ga",
-	id: "FreeNode",
+	id: "1",
 	reconnect: {
 		type: "basic",
 		tries: -1,
