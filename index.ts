@@ -50,8 +50,8 @@ const bot = new CommandClient({
 	owners: ["314166178144583682", "423258218035150849"],
 });
 
-bot.on("gatewayError", (err) => {
-	console.log("Gateway error occured:", err);
+bot.on("gatewayError", (_err) => {
+	console.log("Gateway error occured");
 });
 
 bot.on("reconnect", () => {
@@ -62,8 +62,8 @@ bot.on("resumed", () => {
 	console.log("Reconnected.");
 });
 
-bot.on("error", (err) => {
-	console.log("Error occured:", err);
+bot.on("error", (_err) => {
+	console.log("Error occured");
 });
 
 let loggedIn = false;
