@@ -24,7 +24,7 @@ export default class Baltop extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome Eco",
 					description:
@@ -50,7 +50,7 @@ export default class Baltop extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome Eco",
 					description: `Economy worth: \`$${ecoWorth}\`${

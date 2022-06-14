@@ -10,7 +10,7 @@ export default class Uptime extends Command {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.client.user?.avatarURL(),
+					icon_url: ctx.client.user!.avatarURL(),
 				},
 				title: "Bot uptime",
 				description: `Bidome has been online for \`${

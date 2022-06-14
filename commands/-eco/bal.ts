@@ -17,7 +17,7 @@ export default class Balance extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome Eco",
 					description: `Bot's can't have a balance!`,
@@ -33,7 +33,7 @@ export default class Balance extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "User balance",
 					fields: [

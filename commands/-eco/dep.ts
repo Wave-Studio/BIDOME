@@ -17,7 +17,7 @@ export default class Deposit extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome eco",
 						description:
@@ -30,7 +30,7 @@ export default class Deposit extends Command {
 						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
-								icon_url: ctx.message.client.user?.avatarURL(),
+								icon_url: ctx.message.client.user!.avatarURL(),
 							},
 							title: "Bidome eco",
 							description:
@@ -100,7 +100,7 @@ export default class Deposit extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome eco",
 					description: `You must deposit an amount!`,

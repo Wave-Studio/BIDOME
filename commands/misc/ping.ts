@@ -12,7 +12,7 @@ export default class Ping extends Command {
 				new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome ping",
 					description: "Collecting ping! Please wait",
@@ -25,7 +25,7 @@ export default class Ping extends Command {
 				new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome ping",
 					fields: [

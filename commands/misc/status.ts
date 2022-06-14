@@ -10,7 +10,7 @@ export default class Status extends Command {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.client.user?.avatarURL(),
+					icon_url: ctx.client.user!.avatarURL(),
 				},
 				description:
 					"You can suggest statuses on our [**Github**](https://github.com/quick007/BIDOME)",

@@ -22,7 +22,7 @@ export default class Config extends Command {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.client.user?.avatarURL(),
+					icon_url: ctx.client.user!.avatarURL(),
 				},
 				description: "Please select a category from below!",
 				footer: {
@@ -67,7 +67,7 @@ export default class Config extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.client.user?.avatarURL(),
+						icon_url: ctx.client.user!.avatarURL(),
 					},
 					description: "Config prompt timed out!",
 				}).setColor("random")],
@@ -94,7 +94,7 @@ export default class Config extends Command {
 						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
-								icon_url: ctx.client.user?.avatarURL(),
+								icon_url: ctx.client.user!.avatarURL(),
 							},
 							description: "Current prefix: `" +
 								(await Database.get(
@@ -125,7 +125,7 @@ export default class Config extends Command {
 							embeds: [new Embed({
 								author: {
 									name: "Bidome bot",
-									icon_url: ctx.client.user?.avatarURL(),
+									icon_url: ctx.client.user!.avatarURL(),
 								},
 								description: "Prefix change timed out!",
 							}).setColor("random")],
@@ -136,7 +136,7 @@ export default class Config extends Command {
 							embeds: [new Embed({
 								author: {
 									name: "Bidome bot",
-									icon_url: ctx.client.user?.avatarURL(),
+									icon_url: ctx.client.user!.avatarURL(),
 								},
 								description:
 									"Please send the new prefix in chat!",
@@ -170,7 +170,7 @@ export default class Config extends Command {
 								embeds: [new Embed({
 									author: {
 										name: "Bidome bot",
-										icon_url: ctx.client.user?.avatarURL(),
+										icon_url: ctx.client.user!.avatarURL(),
 									},
 									description: "Prefix change timed out!",
 								}).setColor("random")],
@@ -226,7 +226,7 @@ export default class Config extends Command {
 								embeds: [new Embed({
 									author: {
 										name: "Bidome bot",
-										icon_url: ctx.client.user?.avatarURL(),
+										icon_url: ctx.client.user!.avatarURL(),
 									},
 									description:
 										"The prefix has been changed to `` " +
@@ -263,7 +263,7 @@ export default class Config extends Command {
 						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
-								icon_url: ctx.client.user?.avatarURL(),
+								icon_url: ctx.client.user!.avatarURL(),
 							},
 							fields: [
 								{
@@ -318,7 +318,7 @@ export default class Config extends Command {
 							embeds: [new Embed({
 								author: {
 									name: "Bidome bot",
-									icon_url: ctx.client.user?.avatarURL(),
+									icon_url: ctx.client.user!.avatarURL(),
 								},
 								description: "Economy type change timed out!",
 							}).setColor("random")],

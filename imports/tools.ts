@@ -1,4 +1,4 @@
-export const formatMs = (ms: number, nontext = false): string => {
+export const formatMs = (ms: number, long = false): string => {
 	let seconds = Math.floor(ms / 1000);
 	let minutes = Math.floor(seconds / 60);
 	seconds -= minutes * 60;
@@ -8,7 +8,7 @@ export const formatMs = (ms: number, nontext = false): string => {
 	hours -= days * 24;
 	const weeks = Math.floor(days / 7);
 	days -= weeks * 7;
-	if (!nontext) {
+	if (long) {
 		return [
 			`${weeks > 0 ? ` ${weeks} Week${weeks > 1 ? "s" : ""}` : ""}`,
 			`${days > 0 ? ` ${days} Day${days > 1 ? "s" : ""}` : ""}`,

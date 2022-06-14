@@ -10,7 +10,7 @@ export default class Discord extends Command {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.client.user?.avatarURL(),
+					icon_url: ctx.client.user!.avatarURL(),
 				},
 				description:
 					"To access Bidome related channels please DM me after joining our [**Discord**](https://discord.gg/Y4USEwV)",

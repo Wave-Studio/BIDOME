@@ -18,7 +18,7 @@ export default class SetStatus extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bot status",
 					description: "Please provide a status to change it to!",
@@ -30,7 +30,7 @@ export default class SetStatus extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bot status",
 					description: "Please select the status type!",
@@ -69,7 +69,7 @@ export default class SetStatus extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bot status",
 						description: "Status change timed out!",
@@ -93,7 +93,7 @@ export default class SetStatus extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bot status",
 						description: "Status has been changed!",

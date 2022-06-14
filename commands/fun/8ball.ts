@@ -20,7 +20,7 @@ export default class Eightball extends Command {
 					new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Magic 8Ball",
 						description:
@@ -34,7 +34,7 @@ export default class Eightball extends Command {
 					new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Magic 8Ball",
 						description: `Contacting the oracle`,
@@ -47,7 +47,7 @@ export default class Eightball extends Command {
 						new Embed({
 							author: {
 								name: "Bidome bot",
-								icon_url: ctx.message.client.user?.avatarURL(),
+								icon_url: ctx.message.client.user!.avatarURL(),
 							},
 							title: "Magic 8Ball",
 							fields: [

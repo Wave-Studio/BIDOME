@@ -18,7 +18,7 @@ export default class SetPresence extends Command {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
+					icon_url: ctx.message.client.user!.avatarURL(),
 				},
 				title: "Bot status",
 				description: "Please select the status type!",
@@ -54,7 +54,7 @@ export default class SetPresence extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bot status",
 					description: "Presence change timed out!",
@@ -77,7 +77,7 @@ export default class SetPresence extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bot status",
 					description: "Presence has been changed!",

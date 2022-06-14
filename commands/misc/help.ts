@@ -21,7 +21,7 @@ export default class Help extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome help",
 						description:
@@ -62,7 +62,7 @@ export default class Help extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome help",
 						fields: [
@@ -145,7 +145,7 @@ export default class Help extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome help",
 					description:
@@ -171,7 +171,7 @@ export default class Help extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome help",
 						description: "Help prompt timed out!",
@@ -194,7 +194,7 @@ export default class Help extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: `${format(choice)} Commands`,
 						description: categorydata.length < 1

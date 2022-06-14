@@ -19,7 +19,7 @@ export default class ReloadDB extends Command {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
+					icon_url: ctx.message.client.user!.avatarURL(),
 				},
 				title: "Bidome Reload",
 				description: "Please select a database",
@@ -68,7 +68,7 @@ export default class ReloadDB extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome Reload",
 					description: "Database reload timed out!",
@@ -92,7 +92,7 @@ export default class ReloadDB extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome Reload",
 					description: "Reloading database!",
@@ -104,7 +104,7 @@ export default class ReloadDB extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome Reload",
 					description: "Database reloaded!",

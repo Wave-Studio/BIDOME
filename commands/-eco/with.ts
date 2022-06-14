@@ -17,7 +17,7 @@ export default class Withdraw extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome eco",
 						description:
@@ -30,7 +30,7 @@ export default class Withdraw extends Command {
 						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
-								icon_url: ctx.message.client.user?.avatarURL(),
+								icon_url: ctx.message.client.user!.avatarURL(),
 							},
 							title: "Bidome eco",
 							description:
@@ -82,7 +82,7 @@ export default class Withdraw extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome eco",
 					description: `You must withdraw an amount!`,

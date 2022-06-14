@@ -12,7 +12,7 @@ export default class Timestamp extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.client.user?.avatarURL(),
+						icon_url: ctx.client.user!.avatarURL(),
 					},
 					title: "Invalid command use!",
 					description:
@@ -26,7 +26,7 @@ export default class Timestamp extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.client.user?.avatarURL(),
+							icon_url: ctx.client.user!.avatarURL(),
 						},
 						title: "Invalid timestamp!",
 						description:
@@ -42,7 +42,7 @@ export default class Timestamp extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.client.user?.avatarURL(),
+							icon_url: ctx.client.user!.avatarURL(),
 						},
 						title: "Here is your timestamp:",
 						description: ["d", "D", "t", "T", "f", "F", "R"]

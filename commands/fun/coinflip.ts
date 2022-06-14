@@ -12,7 +12,7 @@ export default class CoinFlip extends Command {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
+					icon_url: ctx.message.client.user!.avatarURL(),
 				},
 				title: "Coin flip",
 				description: "Flipping the coin!",
@@ -23,7 +23,7 @@ export default class CoinFlip extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Coin flip",
 					description: `The coin landed on \`${

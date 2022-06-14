@@ -16,7 +16,7 @@ export default class Eval extends Command {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
+					icon_url: ctx.message.client.user!.avatarURL(),
 				},
 				description: "Executing code!",
 			}).setColor("random")],
@@ -32,7 +32,7 @@ export default class Eval extends Command {
 				new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Executed code",
 					description: "Please check console for an output!",
@@ -49,7 +49,7 @@ export default class Eval extends Command {
 				new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Error occured while executing!",
 					description: "Please check console for an error!",

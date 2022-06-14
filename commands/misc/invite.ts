@@ -10,7 +10,7 @@ export default class Invite extends Command {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.client.user?.avatarURL(),
+					icon_url: ctx.client.user!.avatarURL(),
 				},
 				description:
 					"To invite Bidome to your server use [**this invite**](https://discord.com/api/oauth2/authorize?client_id=778670182956531773&permissions=8&scope=applications.commands%20bot)",

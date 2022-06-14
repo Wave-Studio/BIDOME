@@ -71,7 +71,7 @@ let loggedIn = false;
 bot.on("ready", async () => {
 	if (loggedIn) return;
 	loggedIn = true;
-	console.log(`Logged in as ${bot.user?.tag}`);
+	console.log(`Logged in as ${bot.user!.tag}`);
 	console.log("Loading Database");
 	initDatabases();
 	console.log("Loading all commands!");
@@ -158,7 +158,7 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
+					icon_url: ctx.message.client.user!.avatarURL(),
 				},
 				title: "An error occured!",
 				description:

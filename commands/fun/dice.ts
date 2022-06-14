@@ -26,7 +26,7 @@ export default class Dice extends Command {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
+					icon_url: ctx.message.client.user!.avatarURL(),
 				},
 				title: "Dice size",
 				description: "Please select a size for the dice!",
@@ -68,7 +68,7 @@ export default class Dice extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Dice size",
 					description: "Selection timed out!",
@@ -83,7 +83,7 @@ export default class Dice extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Dice roll",
 					description: `The dice rolled a \`${

@@ -25,7 +25,7 @@ export default class Work extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome eco",
 					description:
@@ -50,7 +50,7 @@ export default class Work extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome eco",
 						description:
@@ -63,7 +63,7 @@ export default class Work extends Command {
 						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
-								icon_url: ctx.message.client.user?.avatarURL(),
+								icon_url: ctx.message.client.user!.avatarURL(),
 							},
 							title: "Level up!",
 							description:
@@ -77,7 +77,7 @@ export default class Work extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome eco",
 						description: `You need to wait \`${
@@ -101,7 +101,7 @@ export default class Work extends Command {
 			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
+					icon_url: ctx.message.client.user!.avatarURL(),
 				},
 				title: "Bidome eco",
 				fields: jobs.map((job) => ({
@@ -138,7 +138,7 @@ export default class Work extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome eco",
 						description:
@@ -190,7 +190,7 @@ export default class Work extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome eco",
 						description: `You have joined ${
@@ -206,7 +206,7 @@ export default class Work extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome eco",
 					description: "You need to provide a job to join!",
@@ -237,7 +237,7 @@ export default class Work extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome eco",
 						description: `You need to wait \`${
@@ -258,7 +258,7 @@ export default class Work extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome eco",
 					description: "You have left your job!",

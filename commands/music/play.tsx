@@ -28,7 +28,7 @@ export default class Play extends Command {
 					new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.client.user?.avatarURL(),
+							icon_url: ctx.client.user!.avatarURL(),
 						},
 						title: "Missing arguments",
 						description: "Please provide a song to play!",
@@ -43,7 +43,7 @@ export default class Play extends Command {
 						new Embed({
 							author: {
 								name: "Bidome bot",
-								icon_url: ctx.client.user?.avatarURL(),
+								icon_url: ctx.client.user!.avatarURL(),
 							},
 							title: "Unable to play",
 							description: "Please join a voice channel before playing!",
@@ -56,7 +56,7 @@ export default class Play extends Command {
 						new Embed({
 							author: {
 								name: "Bidome bot",
-								icon_url: ctx.client.user?.avatarURL(),
+								icon_url: ctx.client.user!.avatarURL(),
 							},
 							title: "Searching for songs",
 							description: "<a:typing:779775412829028373> Searching",
@@ -68,7 +68,7 @@ export default class Play extends Command {
 					/(https?:\/\/)?(www\.)?([a-zA-Z0-9][a-zA-Z0-9\-]{1,}[a-zA-Z0-9]\.?){1,}(\.[a-zA-Z]{2})?\.[a-zA-Z]{2,63}/i.test(
 						ctx.argString
 					);
-				const { tracks, playlistInfo, loadType } =
+				const { tracks, loadType } =
 					await lavaCluster.rest.loadTracks(
 						isLink || /(yt|sc)search\:/i.test(ctx.argString)
 							? ctx.argString
@@ -85,7 +85,7 @@ export default class Play extends Command {
 							new Embed({
 								author: {
 									name: "Bidome bot",
-									icon_url: ctx.client.user?.avatarURL(),
+									icon_url: ctx.client.user!.avatarURL(),
 								},
 								title: "Unable to find songs!",
 								description: "No songs were found for that result!",
@@ -100,6 +100,14 @@ export default class Play extends Command {
 							info: { title, author, uri, length },
 							track,
 						} = trackInfo;
+
+						let thumbnail: undefined | string = undefined;
+
+						if (uri.toLowerCase().startsWith("https://www.youtube.com/")) {
+							const videoID = uri.substring(uri.indexOf("=") + 1);
+							thumbnail = `https://i.ytimg.com/vi/${videoID}/hq720.jpg`;
+						}
+
 						songsToAdd.push({
 							title,
 							author,
@@ -107,6 +115,7 @@ export default class Play extends Command {
 							msLength: length,
 							track,
 							requestedBy: ctx.author.id,
+							thumbnail,
 						});
 					};
 
@@ -122,11 +131,11 @@ export default class Play extends Command {
 						const now = Date.now();
 
 						const emojiMap = {
-							0: await getEmojiByName("one"),
-							1: await getEmojiByName("two"),
-							2: await getEmojiByName("three"),
-							3: await getEmojiByName("four"),
-							4: await getEmojiByName("five"),
+							0: getEmojiByName("one"),
+							1: getEmojiByName("two"),
+							2: getEmojiByName("three"),
+							3: getEmojiByName("four"),
+							4: getEmojiByName("five"),
 						};
 
 						await message.edit(undefined, {
@@ -134,7 +143,7 @@ export default class Play extends Command {
 								new Embed({
 									author: {
 										name: "Bidome bot",
-										icon_url: ctx.client.user?.avatarURL(),
+										icon_url: ctx.client.user!.avatarURL(),
 									},
 									title: "Please select an option",
 									description: tracks
@@ -190,7 +199,7 @@ export default class Play extends Command {
 									new Embed({
 										author: {
 											name: "Bidome bot",
-											icon_url: ctx.client.user?.avatarURL(),
+											icon_url: ctx.client.user!.avatarURL(),
 										},
 										title: "Selection canceled",
 										description: "No songs were selected!",
@@ -217,12 +226,12 @@ export default class Play extends Command {
 								new Embed({
 									author: {
 										name: "Bidome bot",
-										icon_url: ctx.client.user?.avatarURL(),
+										icon_url: ctx.client.user!.avatarURL(),
 									},
 									title: "Enqueued songs",
-									description: `${songsToAdd.length} song${
+									description: `Added ${songsToAdd.length} song${
 										songsToAdd.length > 1 ? "s" : ""
-									} enqueued!`,
+									} to the queue!`,
 									footer: {
 										text: `Songs in queue: ${queue.queue.length + songsToAdd.length}`,
 									}
@@ -236,7 +245,7 @@ export default class Play extends Command {
 								new Embed({
 									author: {
 										name: "Bidome bot",
-										icon_url: ctx.client.user?.avatarURL(),
+										icon_url: ctx.client.user!.avatarURL(),
 									},
 									title: "Enqueued song",
 									description: `Added [${removeDiscordFormatting(songsToAdd[0].title)}](${songsToAdd[0].url}) to the queue!`,
@@ -250,6 +259,10 @@ export default class Play extends Command {
 					}
 
 					queue.addSongs(songsToAdd);
+
+					if (queue.queueMessage == undefined) {
+						queue.queueMessage = await ctx.channel.send(queue.nowPlayingMessage)
+					}
 				}
 			}
 		}

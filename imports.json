@@ -4,7 +4,7 @@
 		"database": "./imports/database.ts",
 		"tools": "./imports/tools.ts",
 		"lavadeno": "./imports/lavadeno.ts",
-		"queue": "./imports/queue.ts",
+		"queue": "./imports/queue.tsx",
 		"status": "./imports/status.ts",
 		"eco": "./imports/eco.ts",
 		"jobs": "./imports/jobs.ts",

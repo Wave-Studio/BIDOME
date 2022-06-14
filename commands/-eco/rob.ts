@@ -14,7 +14,7 @@ export default class Rob extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome Eco",
 					description: `You need to mention someone to rob them!`,
@@ -27,7 +27,7 @@ export default class Rob extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome Eco",
 						description: `You can't rob yourself!`,
@@ -39,7 +39,7 @@ export default class Rob extends Command {
 						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
-								icon_url: ctx.message.client.user?.avatarURL(),
+								icon_url: ctx.message.client.user!.avatarURL(),
 							},
 							title: "Bidome Eco",
 							description: `You can't rob bots!`,

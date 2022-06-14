@@ -18,7 +18,7 @@ export default class Pay extends Command {
 					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome eco",
 						description:
@@ -31,7 +31,7 @@ export default class Pay extends Command {
 						embeds: [new Embed({
 							author: {
 								name: "Bidome bot",
-								icon_url: ctx.message.client.user?.avatarURL(),
+								icon_url: ctx.message.client.user!.avatarURL(),
 							},
 							title: "Bidome eco",
 							description: `You can't give negative amounts!`,
@@ -119,7 +119,7 @@ export default class Pay extends Command {
 											author: {
 												name: "Bidome bot",
 												icon_url: ctx.message.client
-													.user?.avatarURL(),
+													.user!.avatarURL(),
 											},
 											title: "Bidome eco",
 											description:
@@ -172,7 +172,7 @@ export default class Pay extends Command {
 												author: {
 													name: "Bidome bot",
 													icon_url: ctx.message.client
-														.user?.avatarURL(),
+														.user!.avatarURL(),
 												},
 												title: "Bidome eco",
 												description:
@@ -191,7 +191,7 @@ export default class Pay extends Command {
 				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome eco",
 					description: `You must deposit an amount!`,
