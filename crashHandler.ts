@@ -2,7 +2,7 @@ import { Embed, Webhook } from "./imports/harmony.ts";
 
 const createInstance = () => {
 	return Deno.run({
-		cmd: "deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts --no-lava"
+		cmd: "./deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts --no-lava"
 			.split(
 				" ",
 			),
