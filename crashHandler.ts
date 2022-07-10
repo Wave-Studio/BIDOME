@@ -1,6 +1,12 @@
 import { Embed, Webhook } from "./imports/harmony.ts";
 
-const createInstance = () => {
+const createInstance = async () => {
+    const git = Deno.run({
+		cmd: ["git", "pull"]
+	});
+
+	await git.status();
+
 	return Deno.run({
 		cmd: "./deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts --no-lava"
 			.split(
@@ -16,7 +22,7 @@ if (Deno.env.get("WEBHOOK_URL") != undefined) {
 
 while (true) {
 	console.log("Launching instance...");
-	const instance = createInstance();
+	const instance = await createInstance();
 	console.log("Instance created");
 	await instance.status();
 	await instance.close();
