@@ -1,17 +1,22 @@
 import { Embed, Webhook } from "./imports/harmony.ts";
 
 const createInstance = async () => {
-    const git = Deno.run({
-		cmd: ["git", "pull"]
-	});
+	for (const gitcmd of [
+		"git config branch.master.remote origin",
+		"git config branch.master.merge refs/heads/master",
+		"git pull",
+	]) {
+		const git = Deno.run({
+			cmd: gitcmd.split(" "),
+		});
 
-	await git.status();
+		await git.status();
+	}
 
 	return Deno.run({
-		cmd: "./deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts --no-lava"
-			.split(
-				" ",
-			),
+		cmd: "./deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts --no-lava".split(
+			" "
+		),
 	});
 };
 
