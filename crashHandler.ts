@@ -2,9 +2,9 @@ import { Embed, Webhook } from "./imports/harmony.ts";
 
 const createInstance = async () => {
 	for (const gitcmd of [
-		"git checkout -b music",
 		"git config branch.master.remote origin",
 		"git config branch.master.merge refs/heads/master",
+		"git checkout -b music",
 		"git pull",
 	]) {
 		const git = Deno.run({
