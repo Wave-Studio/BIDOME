@@ -12,28 +12,19 @@ import { initLava } from "queue";
 
 import "https://deno.land/x/dotenv@v3.2.0/load.ts";
 
-const launchLava = Deno.args.map((a) => a.toLowerCase()).includes("--no-lava");
 const interactionHandlers: ((
 	i: MessageComponentInteraction
 ) => Promise<boolean | void>)[] = [];
-
-if (launchLava) {
-	Deno.run({
-		cmd: ["java", "-jar", "lavalink/Lavalink.jar"],
-	});
-} else {
-	console.log("Lavalink disabled, this is caused by the --no-lava flag");
-}
 
 const bot = new CommandClient({
 	prefix: [],
 	async getGuildPrefix(guildid: string): Promise<string[] | string> {
 		if (guildid == "725103887584985088") {
-			return ["sex"];
-		} else {
-			// Make it shut up about no async
-			return await [];
+			//return ["sex"];
 		}
+
+		// Make it shut up about no async
+		return await [];
 	},
 	allowBots: false,
 	allowDMs: false,
@@ -87,9 +78,7 @@ const loopFilesAndReturn = async (path: string) => {
 			}
 		} else {
 			if (file.isDirectory) {
-				files.push(
-					...(await loopFilesAndReturn(uri))
-				);
+				files.push(...(await loopFilesAndReturn(uri)));
 			}
 		}
 	}
@@ -163,7 +152,7 @@ bot.on("interactionCreate", async (i) => {
 	if (!isMessageComponentInteraction(i)) return;
 	if (i.message.author.id != bot.user!.id) return;
 	if (i.guild == undefined) return;
-	
+
 	for (const handler of interactionHandlers) {
 		const res = await handler(i);
 		if (typeof res == "boolean") {
@@ -191,18 +180,10 @@ const nextStatus = async () => {
 	}
 };
 
-// Prevent console spam from lavalink
-// not being ready
-setTimeout(
-	() => {
-		bot.connect(Deno.env.get("token"), [
-			GatewayIntents.GUILDS,
-			GatewayIntents.GUILD_MESSAGES,
-			GatewayIntents.GUILD_VOICE_STATES,
-			GatewayIntents.GUILD_PRESENCES,
-			GatewayIntents.GUILD_MEMBERS,
-		]);
-	},
-	// Prevent users from waiting when lavalink isn't being launched
-	launchLava ? 1.5 * 1000 : 0
-);
+bot.connect(Deno.env.get("token"), [
+	GatewayIntents.GUILDS,
+	GatewayIntents.GUILD_MESSAGES,
+	GatewayIntents.GUILD_VOICE_STATES,
+	GatewayIntents.GUILD_PRESENCES,
+	GatewayIntents.GUILD_MEMBERS,
+]);
