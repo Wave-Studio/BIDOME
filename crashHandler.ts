@@ -2,7 +2,7 @@ import { Embed, Webhook } from "./imports/harmony.ts";
 
 const createInstance = async () => {
 	for (const gitcmd of [
-		"git pull",
+		"git reset --hard origin/music",
 	]) {
 		const git = Deno.run({
 			cmd: gitcmd.split(" "),
