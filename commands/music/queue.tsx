@@ -1,4 +1,12 @@
-import { Command, CommandContext, Embed } from "harmony";
+import {
+	Command,
+	CommandContext,
+	Embed,
+	BotUI,
+	fragment,
+	ActionRow,
+	Button,
+} from "harmony";
 import { queues } from "queue";
 import { getEmojiByName } from "emoji";
 import { removeDiscordFormatting, formatMs } from "tools";
@@ -63,6 +71,28 @@ export default class Queue extends Command {
 						},
 					}).setColor("random"),
 				],
+				components: (
+					<>
+						<ActionRow>
+							<Button
+								style={"blurple"}
+								disabled={true}
+								id={"queuepg-0"}
+								emoji={{
+									name: getEmojiByName("arrow_left"),
+								}}
+							/>
+							<Button
+								style={"blurple"}
+								id={"queuepg-1"}
+								disabled={queue.queue.length <= 10}
+								emoji={{
+									name: getEmojiByName("arrow_right"),
+								}}
+							/>
+						</ActionRow>
+					</>
+				),
 			});
 		}
 	}

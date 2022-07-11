@@ -1,38 +1,39 @@
-import { CommandClient, CommandContext, Embed, GatewayIntents } from "harmony";
-import { Database, initDatabases } from "database";
+import {
+	CommandClient,
+	CommandContext,
+	Embed,
+	GatewayIntents,
+	MessageComponentInteraction,
+	isMessageComponentInteraction,
+} from "harmony";
+import { initDatabases } from "database";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
 
 import "https://deno.land/x/dotenv@v3.2.0/load.ts";
 
-const launchLava = Deno.env.get("RAILWAY_STATIC_URL") != undefined ||
-		Deno.args.map((a) => a.toLowerCase()).includes("--no-lava")
-	? false
-	: true;
+const launchLava = Deno.args.map((a) => a.toLowerCase()).includes("--no-lava");
+const interactionHandlers: ((
+	i: MessageComponentInteraction
+) => Promise<boolean | void>)[] = [];
 
 if (launchLava) {
 	Deno.run({
 		cmd: ["java", "-jar", "lavalink/Lavalink.jar"],
 	});
 } else {
-	console.log(
-		"Lavalink disabled, this is either caused by the --no-lava flag or you're running this on railway which doesn't allow lavalink",
-	);
+	console.log("Lavalink disabled, this is caused by the --no-lava flag");
 }
-
-const isProdTesting = true;
 
 const bot = new CommandClient({
 	prefix: [],
 	async getGuildPrefix(guildid: string): Promise<string[] | string> {
-		if (isProdTesting) return [];
-
-		let prefix = await Database.get<string>("prefix." + guildid);
-		if (typeof prefix === "undefined") {
-			prefix = "!";
-			await Database.set("prefix." + guildid, prefix);
+		if (guildid == "725103887584985088") {
+			return ["sex"];
+		} else {
+			// Make it shut up about no async
+			return await [];
 		}
-		return prefix;
 	},
 	allowBots: false,
 	allowDMs: false,
@@ -66,11 +67,37 @@ bot.on("error", (_err) => {
 	console.log("Error occured");
 });
 
-let loggedIn = false;
+const loopFilesAndReturn = async (path: string) => {
+	const files: string[] = [];
+
+	try {
+		await Deno.mkdir(path, { recursive: true });
+	} catch {
+		// Ignore
+	}
+
+	for await (const file of Deno.readDir(path)) {
+		if (file.name.trim().startsWith("-")) continue;
+		const uri = `${path}${path.endsWith("/") ? "" : "/"}${file.name}`;
+		if (file.isFile) {
+			for (const ext of [".ts", ".tsx", ".js", ".jsx"]) {
+				if (file.name.trim().toLowerCase().endsWith(ext)) {
+					files.push(uri);
+				}
+			}
+		} else {
+			if (file.isDirectory) {
+				files.push(
+					...(await loopFilesAndReturn(uri))
+				);
+			}
+		}
+	}
+
+	return files;
+};
 
 bot.on("ready", async () => {
-	if (loggedIn) return;
-	loggedIn = true;
 	console.log(`Logged in as ${bot.user!.tag}`);
 	console.log("Loading Database");
 	initDatabases();
@@ -78,60 +105,16 @@ bot.on("ready", async () => {
 
 	await initLava(bot);
 
-	for (const dir of ["./commands/", "./extensions/"]) {
-		try {
-			await Deno.mkdir(dir);
-		} catch {
-			// Ignore
-		}
+	for (const cmd of await loopFilesAndReturn("./commands/")) {
+		bot.commands.add((await import(cmd)).default);
 	}
 
-	for await (const commands of Deno.readDir("./commands/")) {
-		if (commands.name.startsWith("-")) continue;
-		if (
-			commands.isFile &&
-			(commands.name.endsWith(".ts") || commands.name.endsWith(".tsx")) &&
-			!commands.name.startsWith("-")
-		) {
-			bot.commands.add(
-				(await import(`./commands/${commands.name}`)).default,
-			);
-		} else {
-			if (commands.isDirectory) {
-				for await (
-					const subcommand of Deno.readDir(
-						`./commands/${commands.name}`,
-					)
-				) {
-					if (
-						subcommand.isFile &&
-						(subcommand.name.endsWith(".ts") ||
-							subcommand.name.endsWith(".tsx")) &&
-						!commands.name.startsWith("-")
-					) {
-						bot.commands.add(
-							(await import(
-								`./commands/${commands.name}/${subcommand.name}`
-							))
-								.default,
-						);
-					}
-				}
-			}
-		}
+	for (const ext of await loopFilesAndReturn("./extensions/")) {
+		bot.extensions.load((await import(ext)).default);
 	}
 
-	for await (const extension of Deno.readDir("./extensions")) {
-		if (
-			extension.isFile &&
-			(extension.name.endsWith(".ts") ||
-				extension.name.endsWith(".tsx")) &&
-			!extension.name.startsWith("-")
-		) {
-			bot.extensions.load(
-				(await import(`./extensions/${extension.name}`)).default,
-			);
-		}
+	for (const int of await loopFilesAndReturn("./interactions/")) {
+		interactionHandlers.push((await import(int)).default);
 	}
 
 	console.log(
@@ -139,7 +122,7 @@ bot.on("ready", async () => {
 			bot.commands.list.size == 1 ? "" : "s"
 		} and ${await bot.extensions.list.size} extension${
 			bot.extensions.list.size == 1 ? "" : "s"
-		}!`,
+		}!`
 	);
 	console.log("Loaded bot!");
 
@@ -150,26 +133,43 @@ bot.on("ready", async () => {
 
 bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 	console.log(
-		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`,
+		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`
 	);
 	console.log(err);
 	try {
 		await ctx.message.reply(undefined, {
-			embeds: [new Embed({
-				author: {
-					name: "Bidome bot",
-					icon_url: ctx.message.client.user!.avatarURL(),
-				},
-				title: "An error occured!",
-				description:
-					"An error occured while executing this command! If this command continues erroring please alert a developer!",
-			}).setColor("random")],
+			embeds: [
+				new Embed({
+					author: {
+						name: "Bidome bot",
+						icon_url: ctx.message.client.user!.avatarURL(),
+					},
+					title: "An error occured!",
+					description:
+						"An error occured while executing this command! If this command continues erroring please alert a developer!",
+				}).setColor("random"),
+			],
 		});
 	} catch {
 		try {
 			await ctx.message.addReaction("❗");
 		} catch {
 			return;
+		}
+	}
+});
+
+bot.on("interactionCreate", async (i) => {
+	if (!isMessageComponentInteraction(i)) return;
+	if (i.message.author.id != bot.user!.id) return;
+	if (i.guild == undefined) return;
+	
+	for (const handler of interactionHandlers) {
+		const res = await handler(i);
+		if (typeof res == "boolean") {
+			if (!res) {
+				return;
+			}
 		}
 	}
 });
@@ -204,5 +204,5 @@ setTimeout(
 		]);
 	},
 	// Prevent users from waiting when lavalink isn't being launched
-	launchLava ? 1.5 * 1000 : 0,
+	launchLava ? 1.5 * 1000 : 0
 );

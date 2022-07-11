@@ -13,16 +13,8 @@ export const formatMs = (ms: number, long = false): string => {
 			`${weeks > 0 ? ` ${weeks} Week${weeks > 1 ? "s" : ""}` : ""}`,
 			`${days > 0 ? ` ${days} Day${days > 1 ? "s" : ""}` : ""}`,
 			`${hours > 0 ? ` ${hours} Hour${hours > 1 ? "s" : ""}` : ""}`,
-			`${
-				minutes > 0
-					? ` ${minutes} Minute${minutes > 1 ? "s" : ""}`
-					: ""
-			}`,
-			`${
-				seconds > 0
-					? ` ${seconds} Second${seconds > 1 ? "s" : ""}`
-					: ""
-			}`,
+			`${minutes > 0 ? ` ${minutes} Minute${minutes > 1 ? "s" : ""}` : ""}`,
+			`${seconds > 0 ? ` ${seconds} Second${seconds > 1 ? "s" : ""}` : ""}`,
 		]
 			.join("")
 			.substring(1);
@@ -57,11 +49,9 @@ export const areAllGreaterThan0 = (...args: number[]): boolean => {
 };
 
 export const format = (name: string): string => {
-	return `${name.substring(0, 1).toUpperCase()}${
-		name
-			.substring(1)
-			.toLowerCase()
-	}`;
+	return `${name.substring(0, 1).toUpperCase()}${name
+		.substring(1)
+		.toLowerCase()}`;
 };
 
 export const removeDiscordFormatting = (text: string): string => {
@@ -85,12 +75,34 @@ export const getRandomInteger = (min: number, max: number): number => {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-export const shuffleArray = (array: unknown[]) => {
-	for (let i = array.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[array[i], array[j]] = [array[j], array[i]];
+export const shuffleArray = <T>(array: T[]) => {
+	let elements = array;
+
+	for (let i = 0; i < elements.length; i++) {
+		const shuffledArray: T[] = [];
+
+		for (const element of elements) {
+			const before = Math.random() < 0.5 ? true : false;
+			if (before) {
+				shuffledArray.unshift(element);
+			} else {
+				shuffledArray.push(element);
+			}
+		}
+
+		elements = shuffledArray;
 	}
+
+	return elements;
 };
+
+// No clue how this dumbfuckery works so i'm replacing it even though it works
+// export const shuffleArray = (array: unknown[]) => {
+// 	for (let i = array.length - 1; i > 0; i--) {
+// 		const j = Math.floor(Math.random() * (i + 1));
+// 		[array[i], array[j]] = [array[j], array[i]];
+// 	}
+// };
 
 export enum TimeUnit {
 	SECOND = 1000,
@@ -103,20 +115,22 @@ export enum TimeUnit {
 }
 
 export const toMs = (str: string) => {
-	let msValue = 0;
+	let msValue = -1;
 	let unitType = "";
 	let unitValue = "";
 
 	const convertToMS = () => {
-		msValue += parseInt(unitValue) * ({
-			s: TimeUnit.SECOND,
-			m: TimeUnit.MINUTE,
-			h: TimeUnit.HOUR,
-			d: TimeUnit.DAY,
-			w: TimeUnit.WEEK,
-			mo: TimeUnit.MONTH,
-			y: TimeUnit.YEAR,
-		}[unitType] as number);
+		msValue +=
+			parseInt(unitValue) *
+			({
+				s: TimeUnit.SECOND,
+				m: TimeUnit.MINUTE,
+				h: TimeUnit.HOUR,
+				d: TimeUnit.DAY,
+				w: TimeUnit.WEEK,
+				mo: TimeUnit.MONTH,
+				y: TimeUnit.YEAR,
+			}[unitType] as number);
 		unitType = "";
 		unitValue = "";
 	};
@@ -138,5 +152,9 @@ export const toMs = (str: string) => {
 		convertToMS();
 	}
 
-	return msValue;
+	if (msValue < 0) {
+		return -1;
+	}
+
+	return msValue + 1;
 };

@@ -21,7 +21,7 @@ export default class Timestamp extends Command {
 			});
 		} else {
 			const timestamp = toMs(ctx.argString);
-			if (timestamp == 0) {
+			if (timestamp < 0) {
 				await ctx.message.reply(undefined, {
 					embeds: [new Embed({
 						author: {

@@ -1,0 +1,86 @@
+import { Command, CommandContext, Embed } from "harmony";
+import { queues, doPermCheck } from "queue";
+import { toMs, formatMs } from "tools";
+
+export default class Seek extends Command {
+	name = "seek";
+	aliases = ["skipto"];
+	category = "music";
+	description = "Seek to a specific time in the song";
+
+	async execute(ctx: CommandContext) {
+		if (ctx.guild == undefined) return;
+		const queue = queues.get(ctx.guild.id);
+		if (queue == undefined) {
+			await ctx.message.reply(undefined, {
+				embeds: [
+					new Embed({
+						author: {
+							name: "Bidome bot",
+							icon_url: ctx.client.user!.avatarURL(),
+						},
+						title: "Not currently playing!",
+						description: "I am not currently playing anything!",
+					}).setColor("red"),
+				],
+			});
+		} else {
+			const queue = queues.get(ctx.guild!.id)!;
+			const states = await ctx.guild!.voiceStates.get(ctx.author.id);
+			if (await doPermCheck(ctx.member!, states!.channel!)) {
+				if (ctx.argString == "" || toMs(ctx.argString) < 0) {
+					await ctx.message.reply({
+						embeds: [
+							new Embed({
+								author: {
+									name: "Bidome bot",
+									icon_url: ctx.client.user!.avatarURL(),
+								},
+								title: "Invalid argument",
+								description:
+									"Please provide a valid timestamp such as `4h` or `1d`",
+							}).setColor("red"),
+						],
+					});
+				} else {
+					const position = toMs(ctx.argString);
+					queue.player.seek(position);
+					queue.player.position = position;
+
+					if (queue.queueMessage != undefined) {
+						queue.queueMessage.edit(queue.nowPlayingMessage);
+					}
+
+					await ctx.message.reply({
+						embeds: [
+							new Embed({
+								author: {
+									name: "Bidome bot",
+									icon_url: ctx.client.user!.avatarURL(),
+								},
+								title: "Changed player position",
+								description: `The player's position has been moved to \`${formatMs(
+									position
+								)}\``,
+							}).setColor("green"),
+						],
+					});
+				}
+			} else {
+				await ctx.message.reply({
+					embeds: [
+						new Embed({
+							author: {
+								name: "Bidome bot",
+								icon_url: ctx.client.user!.avatarURL(),
+							},
+							title: "Unable to change volume",
+							description:
+								"You are missing the `ADMINISTRATOR` permission and you are not alone in the channel!",
+						}).setColor("red"),
+					],
+				});
+			}
+		}
+	}
+}

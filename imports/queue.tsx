@@ -9,6 +9,8 @@ import {
 	ActionRow,
 	BotUI,
 	Button,
+	Member,
+	VoiceChannel,
 } from "./harmony.ts";
 import { Cluster, Player, PlayerEvents } from "./lavadeno.ts";
 import { formatMs, removeDiscordFormatting } from "./tools.ts";
@@ -21,17 +23,31 @@ export const queues: Map<string, ServerQueue> = new Map();
 
 export let lavaCluster: Cluster;
 
+export const doPermCheck = async (user: Member, channel: VoiceChannel) => {
+	// We do a bit of trolling
+	if (client.owners.includes(user.id)) return true;
+	if (
+		((await channel.voiceStates.array()) ?? []).filter((u) => !u.user.bot)
+			.length < 2
+	)
+		return true;
+	if (user.permissions.has("ADMINISTRATOR")) return true;
+	if (channel.guild.ownerID === user.id) return true;
+	return false;
+};
+
 export class ServerQueue {
-	public player: Player;
+	public readonly player: Player;
 	public readonly guildId: string;
+	public voteSkipUsers: string[] = [];
 	public queue: Song[] = [];
 	public volume = 100;
-	private songLoop = false;
-	private queueLoop = false;
+	public songLoop = false;
+	public queueLoop = false;
 	private firstSong = true;
 
 	constructor(
-		private channel: string,
+		public channel: string,
 		private guild: Guild,
 		public queueMessage?: Message
 	) {
@@ -69,7 +85,24 @@ export class ServerQueue {
 				"trackStuck",
 			] as (keyof PlayerEvents)[]) {
 				this.player.on(errorEvent, () => {
-					this.queue.shift();
+					const song = this.queue.shift()!;
+
+					if (this.queueMessage != undefined) {
+						this.queueMessage.reply(undefined, {
+							embeds: [
+								new Embed({
+									author: {
+										name: "Bidome bot",
+										icon_url: client.user!.avatarURL(),
+									},
+									title: "Song removed",
+									description: `An error occured while playing [${removeDiscordFormatting(
+										song.title
+									)}](${song.url}) so it has been removed from the queue!`,
+								}).setColor("random"),
+							],
+						});
+					}
 
 					if (this.queue.length > 0) {
 						this.play();
@@ -93,12 +126,15 @@ export class ServerQueue {
 					this.deleteQueue();
 				}
 			});
+		} else {
+			// Prevent issues with playing
+			this.player.disconnect();
 		}
 
 		queues.set(this.guildId, this);
 	}
 
-	public async deleteQueue() {
+	public async deleteQueue(admin = false) {
 		if (this.queueMessage != undefined) {
 			await this.queueMessage.edit({
 				embeds: [
@@ -108,7 +144,9 @@ export class ServerQueue {
 							icon_url: client.user!.avatarURL(),
 						},
 						title: "Finished queue",
-						description: "I have finished playing this queue",
+						description: admin
+							? "I have stopped the player"
+							: "I have finished playing this queue",
 					}).setColor("random"),
 				],
 				components: [],
@@ -127,6 +165,8 @@ export class ServerQueue {
 		] as (keyof PlayerEvents)[]) {
 			this.player.off(key);
 		}
+		this.player.position = 0;
+		this.player.stop();
 		this.player.disconnect();
 		this.player.destroy();
 	}
@@ -146,7 +186,10 @@ export class ServerQueue {
 
 	private async play() {
 		// TODO: Make this proper or smth
-		if (this.queue.length < 1) return;
+		if (this.queue.length < 1) return this.deleteQueue();
+		this.voteSkipUsers = [];
+		this.player.position = 0;
+		this.player.seek(0);
 
 		const track = this.queue[0];
 		this.player.connect(BigInt(this.channel), {
@@ -210,6 +253,16 @@ export class ServerQueue {
 							)}/${formatMs(song.msLength)}`,
 							inline: true,
 						},
+						{
+							name: "Loop Status",
+							value:
+								!this.queueLoop && !this.songLoop
+									? "Disabled"
+									: this.queueLoop
+									? "Queue Loop"
+									: "Song Loop",
+							inline: true,
+						},
 					],
 					thumbnail: {
 						url: song.thumbnail,
@@ -225,14 +278,24 @@ export class ServerQueue {
 				<>
 					<ActionRow>
 						<Button
+							style={"red"}
+							emoji={{ name: getEmojiByName("black_square_for_stop") }}
+							id={"stop-song"}
+						/>
+						<Button
 							style={"blurple"}
 							emoji={{ name: getEmojiByName("fast_forward") }}
 							id={"skip-song"}
 						/>
 						<Button
-							style={"red"}
-							emoji={{ name: getEmojiByName("black_square_for_stop") }}
-							id={"stop-song"}
+							style={"green"}
+							emoji={{ name: getEmojiByName("twisted_rightwards_arrows") }}
+							id={"shuffle-songs"}
+						/>
+						<Button
+							style={"grey"}
+							emoji={{ name: getEmojiByName("arrows_counterclockwise") }}
+							id={"refresh-songs"}
 						/>
 					</ActionRow>
 				</>

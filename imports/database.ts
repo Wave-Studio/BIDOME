@@ -1,5 +1,6 @@
 import { initializeEco } from "eco";
 
+// TODO: Rewrite this to use a new/better db (maybe the one provided by our host?)
 export class JsonDB {
 	private data: {
 		[key: string]: unknown;
