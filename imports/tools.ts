@@ -158,3 +158,5 @@ export const toMs = (str: string) => {
 
 	return msValue + 1;
 };
+
+export const sleep = (length: number) => new Promise((resolve) => setTimeout(resolve, length));
