@@ -1,10 +1,9 @@
 import { ClusterNodeOptions } from "./lavadeno.ts";
 
-// Based off https://lavalink.darrennathanael.com/NoSSL/lavalink-without-ssl/
 export const nodes: ClusterNodeOptions[] = [{
-	host: "lavalink.oops.wtf",
-	port: 2000,
-	password: "www.freelavalink.ga",
+	host: Deno.env.get("LAVALINK_HOST")!,
+	port: parseInt(Deno.env.get("LAVALINK_PORT")!),
+	password: Deno.env.get("LAVALINK_PASSWORD")!,
 	id: "1",
 	reconnect: {
 		type: "basic",
