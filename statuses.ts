@@ -17,23 +17,15 @@ export const getRandomStatus = async (bot: CommandClient) => {
 			type: "WATCHING",
 		},
 		{
+			name: `American presindetio joe bi-`,
+			type: "WATCHING",
+		},
+		{
 			name: `people meme Bidome`,
 			type: "WATCHING",
 		},
 		{
 			name: `Biden say "malarkey"`,
-			type: "WATCHING",
-		},
-		{
-			name: `2022 happen`,
-			type: "WATCHING",
-		},
-		{
-			name: "The next wave of Covid",
-			type: "WATCHING",
-		},
-		{
-			name: "Biden mispronounce Omicron",
 			type: "WATCHING",
 		},
 	];
