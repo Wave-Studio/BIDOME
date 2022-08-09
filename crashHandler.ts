@@ -5,7 +5,7 @@ let lastLaunch = 0;
 let tooFastCrashes = 0;
 
 const createInstance = async () => {
-	for (const gitcmd of ["git reset --hard origin/music"]) {
+	for (const gitcmd of ["git fetch", "git reset --hard origin/music"]) {
 		const git = Deno.run({
 			cmd: gitcmd.split(" "),
 		});
@@ -41,7 +41,9 @@ while (true) {
 	if (Date.now() - lastLaunch < 1000 * 30) {
 		tooFastCrashes++;
 		if (tooFastCrashes > 5) {
-			console.log("Too many crashes have occured in a row, rebooting the container in 5 seconds");
+			console.log(
+				"Too many crashes have occured in a row, rebooting the container in 5 seconds"
+			);
 			await sleep(1000 * 5);
 			Deno.exit(1);
 		} else {
@@ -65,8 +67,9 @@ while (true) {
 							"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
 					},
 					title: "Bidome dev has crashed!",
-					description:
-						`Rebooting the bot, time bot was alive: ${formatMs(liveTime)}`,
+					description: `Rebooting the bot, time bot was alive: ${formatMs(
+						liveTime
+					)}`,
 				}).setColor("random"),
 			],
 			avatar:
