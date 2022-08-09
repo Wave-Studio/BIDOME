@@ -1,7 +1,7 @@
 import { MessageComponentInteraction, Embed } from "harmony";
 import { queues, doPermCheck } from "queue";
 
-export default async function reloadMusicEmbed(i: MessageComponentInteraction) {
+export default async function skip(i: MessageComponentInteraction) {
 	if (i.customID == "skip-song") {
 		if (!queues.has(i.guild!.id)) {
 			await i.respond({

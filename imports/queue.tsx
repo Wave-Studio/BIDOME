@@ -290,6 +290,11 @@ export class ServerQueue {
 				<>
 					<ActionRow>
 						<Button
+							style={"grey"}
+							emoji={{ name: getEmojiByName("question") }}
+							id={"help-song"}
+						/>
+						<Button
 							style={"red"}
 							emoji={{ name: getEmojiByName("black_square_for_stop") }}
 							id={"stop-song"}

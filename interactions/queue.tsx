@@ -11,7 +11,7 @@ import { getEmojiByName } from "emoji";
 import { queues } from "queue";
 import { formatMs, removeDiscordFormatting } from "tools";
 
-export default async function reloadMusicEmbed(i: MessageComponentInteraction) {
+export default async function queuePage(i: MessageComponentInteraction) {
 	if (i.customID.startsWith("queuepg-")) {
 		const pageOffset = parseInt(i.customID.split("-")[1]);
 		const startingValue = pageOffset * 10;

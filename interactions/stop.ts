@@ -5,7 +5,7 @@ import {
 } from "harmony";
 import { queues, doPermCheck } from "queue";
 
-export default async function reloadMusicEmbed(i: MessageComponentInteraction) {
+export default async function stop(i: MessageComponentInteraction) {
 	if (i.customID == "stop-song") {
 		if (!queues.has(i.guild!.id)) {
 			await i.respond({

@@ -5,7 +5,7 @@ import {
 import { shuffleArray } from "tools";
 import { queues, doPermCheck } from "queue";
 
-export default async function reloadMusicEmbed(i: MessageComponentInteraction) {
+export default async function shuffle(i: MessageComponentInteraction) {
 	if (i.customID == "shuffle-songs") {
 		if (!queues.has(i.guild!.id)) {
 			await i.respond({
