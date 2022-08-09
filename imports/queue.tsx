@@ -11,6 +11,7 @@ import {
 	Button,
 	Member,
 	VoiceChannel,
+	VoiceState
 } from "./harmony.ts";
 import { Cluster, Player, PlayerEvents } from "./lavadeno.ts";
 import { formatMs, removeDiscordFormatting } from "./tools.ts";
@@ -63,6 +64,8 @@ export class ServerQueue {
 
 		if (!playerExsists) {
 			this.player.on("trackStart", async () => {
+				this.voteSkipUsers = [];
+				
 				if (this.queueMessage != undefined) {
 					if (this.firstSong) {
 						this.firstSong = false;
@@ -184,17 +187,26 @@ export class ServerQueue {
 		}
 	}
 
+	public canSkip(voiceMembers: VoiceState[]) {
+		const skippingUsers = [];
+
+		for (const member of voiceMembers) {
+			if (this.voteSkipUsers.includes(member.user.id)) {
+				skippingUsers.push(member.user.id);
+			}
+		}
+
+		return voiceMembers.length < 2 || skippingUsers.length >= Math.floor(voiceMembers.length / 2) + 1;
+	}
+
 	private async play() {
-		// TODO: Make this proper or smth
 		if (this.queue.length < 1) return this.deleteQueue();
 		this.voteSkipUsers = [];
+		await this.player.stop();
 		this.player.position = 0;
-		this.player.seek(0);
+		await this.player.seek(0);
 
 		const track = this.queue[0];
-		this.player.connect(BigInt(this.channel), {
-			deafen: true,
-		});
 
 		await this.player.play(track.track, {
 			volume: this.volume,

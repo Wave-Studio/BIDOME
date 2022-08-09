@@ -41,7 +41,8 @@ while (true) {
 	if (Date.now() - lastLaunch < 1000 * 30) {
 		tooFastCrashes++;
 		if (tooFastCrashes > 5) {
-			console.log("Too many crashes have occured in a row, rebooting the container");
+			console.log("Too many crashes have occured in a row, rebooting the container in 5 seconds");
+			await sleep(1000 * 5);
 			Deno.exit(1);
 		} else {
 			console.log(

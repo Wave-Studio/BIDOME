@@ -21,8 +21,6 @@ export default async function reloadMusicEmbed(i: MessageComponentInteraction) {
 					}).setColor("red"),
 				],
 			});
-
-			await i.message.delete();
 		} else {
 			const queue = queues.get(i.guild!.id)!;
 			const states = await i.guild!.voiceStates.get(i.user.id);

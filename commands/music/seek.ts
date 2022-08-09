@@ -74,7 +74,7 @@ export default class Seek extends Command {
 								name: "Bidome bot",
 								icon_url: ctx.client.user!.avatarURL(),
 							},
-							title: "Unable to change volume",
+							title: "Unable to seek",
 							description:
 								"You are missing the `ADMINISTRATOR` permission and you are not alone in the channel!",
 						}).setColor("red"),

@@ -10,8 +10,6 @@ import { initDatabases } from "database";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
 
-import "https://deno.land/x/dotenv@v3.2.0/load.ts";
-
 const interactionHandlers: ((
 	i: MessageComponentInteraction
 ) => Promise<boolean | void>)[] = [];
