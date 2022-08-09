@@ -5,13 +5,14 @@ let lastLaunch = 0;
 let tooFastCrashes = 0;
 
 const createInstance = async () => {
-	for (const gitcmd of ["git reset --hard origin/dev"]) {
-		const git = Deno.run({
-			cmd: gitcmd.split(" "),
-		});
+	
+// 	for (const gitcmd of ["git reset --hard origin/dev"]) {
+// 		const git = Deno.run({
+// 			cmd: gitcmd.split(" "),
+// 		});
 
-		await git.status();
-	}
+// 		await git.status();
+// 	}
 
 	lastLaunch = Date.now();
 
