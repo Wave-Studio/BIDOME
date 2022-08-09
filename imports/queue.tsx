@@ -170,7 +170,6 @@ export class ServerQueue {
 		}
 		this.player.position = 0;
 		this.player.stop();
-		this.player.disconnect();
 		this.player.destroy();
 	}
 
@@ -211,6 +210,12 @@ export class ServerQueue {
 		await this.player.play(track.track, {
 			volume: this.volume,
 		});
+
+		if (!this.player.connected) {
+			this.player.connect(BigInt(this.channel), {
+				deafen: true,
+			});
+		}
 	}
 
 	public get queueLength() {
