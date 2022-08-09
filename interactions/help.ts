@@ -11,7 +11,7 @@ export default async function giveHelpEmbed(i: MessageComponentInteraction) {
 						name: "Bidome bot",
 						icon_url: i.client.user!.avatarURL(),
 					},
-					title: "button help menu",
+					title: "Now Playing - Help",
 					description: [
 						`${getEmojiByName("question")} - Show this menu`,
 						`${getEmojiByName("black_square_for_stop")} - Disconnect the player`,
