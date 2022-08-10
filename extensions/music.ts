@@ -37,9 +37,9 @@ export class extension extends Extension {
 		lavalink = new Cluster({
 			nodes: [
 				{
-					host: "lavalink.cloudblue.ml",
-					port: 1555,
-					password: "danbotbest",
+					host: "ash-01.thermalhosting.com",
+					port: 2003,
+					password: "thermalhosting.com",
 					id: "1",
 					reconnect: {
 						type: "basic",
