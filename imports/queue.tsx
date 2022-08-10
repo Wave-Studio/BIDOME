@@ -201,9 +201,9 @@ export class ServerQueue {
 	private async play() {
 		if (this.queue.length < 1) return this.deleteQueue();
 		this.voteSkipUsers = [];
-		await this.player.stop();
 		this.player.position = 0;
 		await this.player.seek(0);
+		await this.player.stop();
 
 		const track = this.queue[0];
 
