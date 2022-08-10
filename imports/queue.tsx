@@ -201,8 +201,6 @@ export class ServerQueue {
 	private async play() {
 		if (this.queue.length < 1) return this.deleteQueue();
 		this.voteSkipUsers = [];
-		this.player.position = 0;
-		await this.player.seek(0);
 		await this.player.stop();
 
 		const track = this.queue[0];
@@ -210,6 +208,9 @@ export class ServerQueue {
 		await this.player.play(track.track, {
 			volume: this.volume,
 		});
+
+		this.player.position = 0;
+		await this.player.seek(0);
 
 		if (!this.player.connected) {
 			this.player.connect(BigInt(this.channel), {
