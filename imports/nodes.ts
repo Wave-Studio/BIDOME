@@ -1,5 +1,6 @@
 import { ClusterNodeOptions } from "./lavadeno.ts";
 
+// Env loader because sorse
 const envfile = (await Deno.readTextFile(".env")).split("\n");
 
 for (const line of envfile) {
@@ -8,8 +9,8 @@ for (const line of envfile) {
 	Deno.env.set(key, newValue);
 }
 
+
 export const nodes: ClusterNodeOptions[] = [{
-	// Me when env isn't loading correctly
 	host: Deno.env.get("LAVALINK_HOST")!,
 	port: parseInt(Deno.env.get("LAVALINK_PORT")!),
 	password: Deno.env.get("LAVALINK_PASSWORD")!,

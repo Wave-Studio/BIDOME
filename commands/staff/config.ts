@@ -5,7 +5,8 @@ import {
 	InteractionResponseType,
 	isMessageComponentInteraction,
 } from "harmony";
-import { Database } from "database";
+import { getPrefix, setPrefix } from "supabase";
+
 export default class Config extends Command {
 	name = "config";
 	aliases = ["settings", "options"];
@@ -97,7 +98,7 @@ export default class Config extends Command {
 								},
 								description:
 									"Current prefix: `" +
-									(await Database.get(`guilds.${ctx.guild.id}.prefix`)) +
+									await getPrefix(ctx.guild!.id) +
 									"`",
 								footer: {
 									text: "Changing the prefix will time out in 30 seconds!",
@@ -222,10 +223,9 @@ export default class Config extends Command {
 									}
 								}
 								if (!shouldChangePrefix) return;
-								await Database.set(
-									`guilds.${ctx.guild.id}.prefix`,
-									prefix.content.toLowerCase()
-								);
+
+								setPrefix(ctx.guild!.id, prefix.content.toLowerCase());
+
 								await prefix.reply(undefined, {
 									embeds: [
 										new Embed({

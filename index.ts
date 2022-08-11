@@ -6,9 +6,9 @@ import {
 	MessageComponentInteraction,
 	isMessageComponentInteraction,
 } from "harmony";
-import { Database } from "database";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
+import { getPrefix } from "supabase";
 
 const interactionHandlers: ((
 	i: MessageComponentInteraction
@@ -16,15 +16,8 @@ const interactionHandlers: ((
 
 const bot = new CommandClient({
 	prefix: [],
-	getGuildPrefix(guildid: string): string {
-		const prefix = Database.get(`guilds.${guildid}.prefix`);
-
-		if (prefix != undefined) {
-			return prefix as string;
-		} else {
-			Database.set(`guilds.${guildid}.prefix`, "!");
-			return "!";
-		}
+	async getGuildPrefix(guildid: string): Promise<string> {
+		return await getPrefix(guildid);
 	},
 	allowBots: false,
 	allowDMs: false,
@@ -89,8 +82,6 @@ const loopFilesAndReturn = async (path: string) => {
 
 bot.on("ready", async () => {
 	console.log(`Logged in as ${bot.user!.tag}`);
-	console.log("Loading Database");
-	await Database.initDatabase();
 	console.log("Loading all commands!");
 
 	await initLava(bot);

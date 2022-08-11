@@ -8,9 +8,6 @@ temp/
 lavalink/Lavalink.jar
 logs/
 
-# Ignore database
-database/
-
 # Ignore replit files
 .deno/
 .replit

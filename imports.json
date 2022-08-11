@@ -1,12 +1,12 @@
 {
 	"imports": {
 		"harmony": "./imports/harmony.ts",
-		"database": "./imports/database.ts",
 		"tools": "./imports/tools.ts",
 		"lavadeno": "./imports/lavadeno.ts",
 		"queue": "./imports/queue.tsx",
 		"status": "./imports/status.ts",
 		"lavanodes": "./imports/nodes.ts",
-		"emoji": "./imports/emoji.ts"
+		"emoji": "./imports/emoji.ts",
+		"supabase": "./imports/supabase.ts"
 	}
 }

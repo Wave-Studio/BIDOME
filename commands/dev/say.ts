@@ -20,11 +20,7 @@ export default class Say extends Command {
 				}).setColor("random")],
 			});
 		} else {
-			await ctx.message.reply(ctx.argString, {
-				allowedMentions: {
-					parse: [],
-				},
-			});
+			await ctx.channel.send(ctx.argString);
 		}
 	}
 }

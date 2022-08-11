@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { Database } from "database";
+import { supabase } from "supabase";
 
 export default class Prefix extends Command {
 	name = "prefix";
@@ -7,6 +7,8 @@ export default class Prefix extends Command {
 	description = "Get the bot's prefix";
 	usage = "Prefix";
 	async execute(ctx: CommandContext) {
+		const { data } = await supabase.from("data").select("prefix").eq("server_id", ctx.guild!.id);
+
 		await ctx.message.reply(undefined, {
 			embeds: [new Embed({
 				author: {
@@ -14,7 +16,7 @@ export default class Prefix extends Command {
 					icon_url: ctx.client.user!.avatarURL(),
 				},
 				description:
-					`My current prefix for this server is: \`\` ${Database.get(`guilds.${ctx.guild!.id}.prefix`)} \`\``
+					`My current prefix for this server is: \`\` ${data![0].prefix} \`\``
 			}).setColor("random")],
 		});
 	}
