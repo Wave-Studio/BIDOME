@@ -6,7 +6,7 @@ import {
 	MessageComponentInteraction,
 	isMessageComponentInteraction,
 } from "harmony";
-import { initDatabases } from "database";
+import { Database } from "database";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
 
@@ -16,13 +16,15 @@ const interactionHandlers: ((
 
 const bot = new CommandClient({
 	prefix: [],
-	async getGuildPrefix(guildid: string): Promise<string[] | string> {
-		if (guildid == "725103887584985088") {
-			//return ["sex"];
-		}
+	getGuildPrefix(guildid: string): string {
+		const prefix = Database.get(`guilds.${guildid}.prefix`);
 
-		// Make it shut up about no async
-		return await [];
+		if (prefix != undefined) {
+			return prefix as string;
+		} else {
+			Database.set(`guilds.${guildid}.prefix`, "!");
+			return "!";
+		}
 	},
 	allowBots: false,
 	allowDMs: false,
@@ -35,9 +37,10 @@ const bot = new CommandClient({
 		},
 		status: "idle",
 	},
-	enableSlash: false,
+	enableSlash: true,
 	spacesAfterPrefix: true,
 	owners: ["314166178144583682", "423258218035150849"],
+	shardCount: "auto",
 });
 
 bot.on("gatewayError", (_err) => {
@@ -87,7 +90,7 @@ const loopFilesAndReturn = async (path: string) => {
 bot.on("ready", async () => {
 	console.log(`Logged in as ${bot.user!.tag}`);
 	console.log("Loading Database");
-	initDatabases();
+	await Database.initDatabase();
 	console.log("Loading all commands!");
 
 	await initLava(bot);

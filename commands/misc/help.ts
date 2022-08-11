@@ -95,7 +95,7 @@ export default class Help extends Command {
 						: command.userPermissions;
 					let hasPerms = true;
 					for (const perm of perms) {
-						if (!ctx.message.member!.permissions.has(perm)) {
+						if (!ctx.message.member!.permissions.has(perm) && !ctx.client.owners.includes(ctx.author!.id)) {
 							hasPerms = false;
 						}
 					}

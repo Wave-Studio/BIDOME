@@ -1,55 +1,51 @@
-import { initializeEco } from "eco";
+interface RecursiveThing {
+	[key: string]: RecursiveThing | unknown;
+}
 
-// TODO: Rewrite this to use a new/better db (maybe the one provided by our host?)
 export class JsonDB {
-	private data: {
-		[key: string]: unknown;
-	} = {};
-	constructor(private path = "./database/core.json", _autoSave = true) {
-		return;
-		// 	const dirCheck = path.startsWith('./')
-		// 		? path.substring(2)
-		// 		: path.startsWith('/')
-		// 		? path.substring(1)
-		// 		: path;
+	private data: RecursiveThing = {};
 
-		// 	const directories = dirCheck.split('/').reverse().slice(1).reverse();
-
-		// 	if (directories.length > 0) {
-		// 		let currentPath = '.';
-		// 		for (const directory of directories) {
-		// 			currentPath += `/${directory}`;
-		// 			try {
-		// 				Deno.lstatSync(currentPath);
-		// 			} catch {
-		// 				Deno.mkdirSync(currentPath);
-		// 			}
-		// 		}
-		// 	}
-
-		// 	try {
-		// 		Deno.lstatSync(path);
-		// 	} catch (err) {
-		// 		if (err instanceof Deno.errors.NotFound) {
-		// 			Deno.writeTextFileSync(path, '{}');
-		// 		}
-		// 	}
-		// 	this.data = JSON.parse(Deno.readTextFileSync(path));
-
-		// 	// Auto save database every 5 minutes
-		// 	if (autoSave) {
-		// 	setInterval(() => {
-		// 		this.saveDatabase();
-		// 	}, 5 * 60 * 1000);
-		// }
+	public constructor(private path = "./database/data.json", autoSave = true) {
+		if (autoSave) {
+			setInterval(() => {
+				this.save();
+			}, 5 * 60 * 1000);
+		}
 	}
 
-	private saveDatabase() {
-		return;
-		//Deno.writeTextFileSync(this.path, JSON.stringify(this.data, null, '\t'));
+	public async initDatabase() {
+		try {
+			await Deno.mkdir(this.path.substring(0, this.path.lastIndexOf("/")), {
+				recursive: true,
+			});
+		} catch {
+			// Ignore
+		}
+
+		try {
+			await Deno.readTextFile(this.path);
+		} catch {
+			await Deno.writeTextFile(this.path, JSON.stringify({ dbversion: "1.0" }));
+		}
+
+		const fileData = await Deno.readTextFile(this.path);
+		this.data = JSON.parse(fileData);
 	}
 
-	set(key: string, value: unknown) {
+	public async save() {
+		// Prevent database from being corrupted if an error occurs (Either the backup or the original file would become corrupt but not both)
+		await Deno.writeTextFile(
+			`${this.path.replace(".json", ".backup.json")}`,
+			await Deno.readTextFile(this.path)
+		);
+		await Deno.writeTextFile(this.path, JSON.stringify(this.data));
+		await Deno.writeTextFile(
+			`${this.path.replace(".json", ".backup.json")}`,
+			JSON.stringify(this.data)
+		);
+	}
+
+	public set(key: string, value: unknown) {
 		let object = this.data;
 		const parts = key.split(".");
 		const dbKey = parts[parts.length - 1];
@@ -64,10 +60,10 @@ export class JsonDB {
 			object = object[part];
 		}
 		object[dbKey] = value;
-		this.saveDatabase();
+		this.save();
 	}
 
-	get<T>(key: string): T {
+	public get<T>(key: string): T {
 		let object = this.data;
 		const parts = key.split(".");
 		const dbKey = parts[parts.length - 1];
@@ -84,16 +80,10 @@ export class JsonDB {
 		return object[dbKey] as T;
 	}
 
-	reload() {
-		return;
-		//this.data = JSON.parse(Deno.readTextFileSync(this.path));
+
+	public async reload() {
+		this.data = JSON.parse(await Deno.readTextFile(this.path));
 	}
 }
 
 export const Database = new JsonDB();
-export const GlobalEco = new JsonDB("./database/eco/global.json");
-export const ServerEco = new JsonDB("./database/eco/server.json");
-
-export const initDatabases = () => {
-	initializeEco();
-};

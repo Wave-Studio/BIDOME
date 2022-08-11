@@ -6,8 +6,6 @@
 		"lavadeno": "./imports/lavadeno.ts",
 		"queue": "./imports/queue.tsx",
 		"status": "./imports/status.ts",
-		"eco": "./imports/eco.ts",
-		"jobs": "./imports/jobs.ts",
 		"lavanodes": "./imports/nodes.ts",
 		"emoji": "./imports/emoji.ts"
 	}

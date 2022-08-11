@@ -4,7 +4,7 @@ import {
 	Embed,
 	isMessageComponentInteraction,
 } from "harmony";
-import { Database, GlobalEco, JsonDB, ServerEco } from "database";
+import { Database, JsonDB } from "database";
 
 export default class ReloadDB extends Command {
 	name = "reloaddb";
@@ -33,20 +33,8 @@ export default class ReloadDB extends Command {
 					components: [
 						{
 							type: 2,
-							label: "Core",
-							customID: `core-${now}`,
-							style: "BLURPLE",
-						},
-						{
-							type: 2,
-							label: "Global Eco",
-							customID: `geco-${now}`,
-							style: "BLURPLE",
-						},
-						{
-							type: 2,
-							label: "Server Eco",
-							customID: `seco-${now}`,
+							label: "Main",
+							customID: `main-${now}`,
 							style: "BLURPLE",
 						},
 					],
@@ -80,11 +68,8 @@ export default class ReloadDB extends Command {
 			let DatabaseToReload: JsonDB = Database;
 
 			switch (response.customID.split("-")[0]) {
-				case "geco":
-					DatabaseToReload = GlobalEco;
-					break;
-				case "seco":
-					DatabaseToReload = ServerEco;
+				case "main":
+					DatabaseToReload = Database;
 					break;
 			}
 
