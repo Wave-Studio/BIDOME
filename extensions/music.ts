@@ -37,9 +37,9 @@ export class extension extends Extension {
 		lavalink = new Cluster({
 			nodes: [
 				{
-					host: "ash-01.thermalhosting.com",
-					port: 2003,
-					password: "thermalhosting.com",
+					host: "nyc-04.thermalhosting.com",
+					port: 2014,
+					password: "NYC-04",
 					id: "1",
 					reconnect: {
 						type: "basic",
