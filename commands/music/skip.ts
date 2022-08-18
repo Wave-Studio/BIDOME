@@ -1,5 +1,7 @@
 import { Command, CommandContext, Embed } from "harmony";
+import { TrackEndReason } from "https://deno.land/x/lavalink_types@2.0.6/mod.ts";
 import { queues, doPermCheck } from "queue";
+
 
 export default class Skip extends Command {
 	name = "skip";
@@ -43,7 +45,7 @@ export default class Skip extends Command {
 				queue.songLoop = false;
 				queue.queueLoop = false;
 
-				queue.player.seek(queue.queue[0].msLength - 100);
+				await queue.player.emit("trackEnd", queue.queue[0].track, TrackEndReason.Finished);
 
 				await ctx.message.reply({
 					embeds: [
