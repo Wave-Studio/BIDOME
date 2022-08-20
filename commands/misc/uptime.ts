@@ -16,6 +16,7 @@ export default class Uptime extends Command {
 				description: `Bidome has been online for \`${
 					formatMs(
 						ctx.client.uptime,
+						true
 					)
 				}\``,
 			}).setColor("random")],
