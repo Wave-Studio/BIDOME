@@ -22,12 +22,12 @@ but if you want to host your own version continue reading.
 ### Selfhosting
 
     1. Create a file called `.env` with the contents of `.env.example`
-    1. Set up lavalink:
+    2. Set up lavalink:
         * If you already have a lavalink node:
             - Place your Lavalink credentials in .env
         * If you don't have a lavalink node:
             - Download Lavalink from [Github](https://github.com/freyacodes/Lavalink)
             - Set the credentials in .env to what is in `application.yml`
-    1. Set the Supabase URL and secret_role values in the .env
-    1. Enable the `presence`, `message content`, and `server members` intent on the discord dashboard
-    1. Run the bot
+    3. Set the Supabase URL and secret_role values in the .env
+    4. Enable the `presence`, `message content`, and `server members` intent on the discord dashboard
+    5. Run the bot
