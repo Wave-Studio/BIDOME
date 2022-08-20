@@ -1,6 +1,14 @@
 import { Embed, Webhook } from "./imports/harmony.ts";
 import { formatMs, sleep } from "./imports/tools.ts";
 
+const envfile = (await Deno.readTextFile(".env")).split("\n");
+
+for (const line of envfile) {
+	const [key, ...value] = line.split("=");
+	const newValue = value.join("=").startsWith("\"") && value.join("=").endsWith("\"") ? value.join("=").slice(1, -1) : value.join("=");
+	Deno.env.set(key, newValue);
+}
+
 let lastLaunch = 0;
 let tooFastCrashes = 0;
 
@@ -62,11 +70,11 @@ while (true) {
 			embeds: [
 				new Embed({
 					author: {
-						name: "Bidome Dev Crash Handler",
+						name: Deno.env.get("WEBHOOK_NAME") ?? "Bidome Crash Handler",
 						icon_url:
 							"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
 					},
-					title: "Bidome dev has crashed!",
+					title: "Bidome has crashed!",
 					description: `Rebooting the bot, time bot was alive: ${formatMs(
 						liveTime
 					)}`,
@@ -74,7 +82,7 @@ while (true) {
 			],
 			avatar:
 				"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
-			name: "Bidome Crash Handler",
+			name: Deno.env.get("WEBHOOK_NAME") ?? "Bidome Crash Handler",
 		});
 	}
 }
