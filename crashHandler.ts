@@ -9,6 +9,16 @@ for (const line of envfile) {
 	Deno.env.set(key, newValue);
 }
 
+const logFunction = console.log;
+
+console.log = (...args: unknown[]) => {
+	const date = new Date();
+	const amOrPm = date.getHours() > 12 ? "PM" : "AM";
+	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
+
+	logFunction(`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${date.getMinutes()}${amOrPm}]`, ...args);
+}
+
 let lastLaunch = 0;
 let tooFastCrashes = 0;
 

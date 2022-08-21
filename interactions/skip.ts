@@ -93,6 +93,7 @@ export default async function skip(i: MessageComponentInteraction) {
 					});
 				} else {
 					await i.respond({
+						ephemeral: true,
 						embeds: [
 							new Embed({
 								author: {
