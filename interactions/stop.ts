@@ -23,7 +23,7 @@ export default async function stop(i: MessageComponentInteraction) {
 			});
 		} else {
 			const queue = queues.get(i.guild!.id)!;
-			const states = await i.guild!.voiceStates.get(i.user.id);
+			const states = await i.guild!.voiceStates.get(i.client.user!.id);
 			if (await doPermCheck(i.member!, states!.channel!)) {
 				queue.deleteQueue(true);
 				await i.respond({
