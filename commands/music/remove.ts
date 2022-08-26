@@ -11,7 +11,8 @@ export default class Remove extends Command {
 	async execute(ctx: CommandContext) {
 		if (ctx.guild == undefined) return;
 		const queue = queues.get(ctx.guild.id);
-		if (queue == undefined) {
+		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
+		if (queue == undefined || botState == undefined || botState.channel == undefined) {
 			await ctx.message.reply(undefined, {
 				embeds: [
 					new Embed({
@@ -24,10 +25,13 @@ export default class Remove extends Command {
 					}).setColor("red"),
 				],
 			});
+
+			if (queue != undefined) {
+				queue.deleteQueue();
+			}
 		} else {
 			const queue = queues.get(ctx.guild!.id)!;
-			const states = await ctx.guild!.voiceStates.get(ctx.author.id);
-			if (await doPermCheck(ctx.member!, states!.channel!)) {
+			if (await doPermCheck(ctx.member!, botState.channel)) {
 				if (queue.queue.length < 2) {
 					await ctx.message.reply({
 						embeds: [

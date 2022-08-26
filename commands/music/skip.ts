@@ -12,7 +12,8 @@ export default class Skip extends Command {
 	async execute(ctx: CommandContext) {
 		if (ctx.guild == undefined) return;
 		const queue = queues.get(ctx.guild.id);
-		if (queue == undefined) {
+		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
+		if (queue == undefined || botState == undefined || botState.channel == undefined) {
 			await ctx.message.reply(undefined, {
 				embeds: [
 					new Embed({
@@ -25,9 +26,12 @@ export default class Skip extends Command {
 					}).setColor("red"),
 				],
 			});
+
+			if (queue != undefined) {
+				queue.deleteQueue();
+			}
 		} else {
 			const queue = queues.get(ctx.guild!.id)!;
-			const states = await ctx.guild!.voiceStates.get(ctx.author.id);
 			const doesUserNeedToBeAdded = !queue.voteSkipUsers.includes(ctx.author.id);
 
 			if (doesUserNeedToBeAdded) {
@@ -35,7 +39,7 @@ export default class Skip extends Command {
 			}
 
 			const canVoteSkip = queue.canSkip(
-				(await states!.channel!.voiceStates.array()).filter((s) => !s.user.bot)
+				(await botState.channel.voiceStates.array()).filter((s) => !s.user.bot)
 			);
 
 			if (canVoteSkip) {
@@ -66,7 +70,7 @@ export default class Skip extends Command {
 				queue.queueLoop = isQueueLoop;
 			} else {
 				const voiceMembers = (
-					await states!.channel!.voiceStates.array()
+					await botState.channel.voiceStates.array()
 				).filter((s) => !s.user.bot);
 				const skippingUsers = [];
 
@@ -89,7 +93,7 @@ export default class Skip extends Command {
 									skippingUsers.length
 								}/${Math.floor(voiceMembers.length / 2) + 1}`,
 								footer: {
-									text: (await doPermCheck(ctx.member!, states!.channel!))
+									text: (await doPermCheck(ctx.member!, botState.channel))
 										? "Use forceskip to skip without a vote"
 										: "",
 								},
@@ -109,7 +113,7 @@ export default class Skip extends Command {
 									skippingUsers.length
 								}/${Math.floor(voiceMembers.length / 2) + 1}`,
 								footer: {
-									text: (await doPermCheck(ctx.member!, states!.channel!))
+									text: (await doPermCheck(ctx.member!, botState.channel))
 										? "Use forceskip to skip without a vote"
 										: "",
 								},

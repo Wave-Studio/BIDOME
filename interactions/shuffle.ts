@@ -7,7 +7,8 @@ import { queues, doPermCheck } from "queue";
 
 export default async function shuffle(i: MessageComponentInteraction) {
 	if (i.customID == "shuffle-songs") {
-		if (!queues.has(i.guild!.id)) {
+		const botState = await i.guild!.voiceStates.get(i.client.user!.id);
+		if (!queues.has(i.guild!.id) || botState == undefined || botState.channel == undefined) {
 			await i.respond({
 				ephemeral: true,
 				embeds: [
@@ -21,10 +22,13 @@ export default async function shuffle(i: MessageComponentInteraction) {
 					}).setColor("red"),
 				],
 			});
+
+			if (queues.get(i.guild!.id) != undefined) {
+				queues.get(i.guild!.id)!.deleteQueue();
+			}
 		} else {
 			const queue = queues.get(i.guild!.id)!;
-			const states = await i.guild!.voiceStates.get(i.user.id);
-			if (await doPermCheck(i.member!, states!.channel!)) {
+			if (await doPermCheck(i.member!, botState.channel)) {
 				const nowPlaying = queue.queue[0];
 				const toMixSongs = queue.queue.slice(1);
 

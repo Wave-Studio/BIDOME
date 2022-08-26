@@ -4,7 +4,12 @@ import { queues, doPermCheck } from "queue";
 
 export default async function skip(i: MessageComponentInteraction) {
 	if (i.customID == "skip-song") {
-		if (!queues.has(i.guild!.id)) {
+		const botState = await i.guild!.voiceStates.get(i.client.user!.id);
+		if (
+			!queues.has(i.guild!.id) ||
+			botState == undefined ||
+			botState.channel == undefined
+		) {
 			await i.respond({
 				ephemeral: true,
 				embeds: [
@@ -18,9 +23,12 @@ export default async function skip(i: MessageComponentInteraction) {
 					}).setColor("red"),
 				],
 			});
+
+			if (queues.get(i.guild!.id) != undefined) {
+				queues.get(i.guild!.id)!.deleteQueue();
+			}
 		} else {
 			const queue = queues.get(i.guild!.id)!;
-			const states = await i.guild!.voiceStates.get(i.user.id);
 			const doesUserNeedToBeAdded = !queue.voteSkipUsers.includes(i.user.id);
 
 			if (doesUserNeedToBeAdded) {
@@ -28,7 +36,7 @@ export default async function skip(i: MessageComponentInteraction) {
 			}
 
 			const canVoteSkip = queue.canSkip(
-				(await states!.channel!.voiceStates.array()).filter((s) => !s.user.bot)
+				(await botState.channel.voiceStates.array()).filter((s) => !s.user.bot)
 			);
 
 			if (canVoteSkip) {
@@ -38,7 +46,11 @@ export default async function skip(i: MessageComponentInteraction) {
 				queue.songLoop = false;
 				queue.queueLoop = false;
 
-				await queue.player.emit("trackEnd", queue.queue[0].track, TrackEndReason.Finished);
+				await queue.player.emit(
+					"trackEnd",
+					queue.queue[0].track,
+					TrackEndReason.Finished
+				);
 
 				await i.respond({
 					ephemeral: true,
@@ -60,7 +72,7 @@ export default async function skip(i: MessageComponentInteraction) {
 				queue.queueLoop = isQueueLoop;
 			} else {
 				const voiceMembers = (
-					await states!.channel!.voiceStates.array()
+					await botState.channel.voiceStates.array()
 				).filter((s) => !s.user.bot);
 				const skippingUsers = [];
 
@@ -84,7 +96,7 @@ export default async function skip(i: MessageComponentInteraction) {
 									skippingUsers.length
 								}/${Math.floor(voiceMembers.length / 2) + 1}`,
 								footer: {
-									text: (await doPermCheck(i.member!, states!.channel!))
+									text: (await doPermCheck(i.member!, botState.channel))
 										? "Use forceskip to skip without a vote"
 										: "",
 								},
@@ -105,7 +117,7 @@ export default async function skip(i: MessageComponentInteraction) {
 									skippingUsers.length
 								}/${Math.floor(voiceMembers.length / 2) + 1}`,
 								footer: {
-									text: (await doPermCheck(i.member!, states!.channel!))
+									text: (await doPermCheck(i.member!, botState.channel))
 										? "Use forceskip to skip without a vote"
 										: "",
 								},
