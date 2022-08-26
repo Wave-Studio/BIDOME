@@ -5,7 +5,10 @@ const envfile = (await Deno.readTextFile(".env")).split("\n");
 
 for (const line of envfile) {
 	const [key, ...value] = line.split("=");
-	const newValue = value.join("=").startsWith("\"") && value.join("=").endsWith("\"") ? value.join("=").slice(1, -1) : value.join("=");
+	const newValue =
+		value.join("=").startsWith('"') && value.join("=").endsWith('"')
+			? value.join("=").slice(1, -1)
+			: value.join("=");
 	Deno.env.set(key, newValue);
 }
 
@@ -16,8 +19,11 @@ console.log = (...args: unknown[]) => {
 	const amOrPm = date.getHours() > 12 ? "PM" : "AM";
 	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
 
-	logFunction(`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${date.getMinutes()}${amOrPm}]`, ...args);
-}
+	logFunction(
+		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${date.getMinutes()}${amOrPm}]`,
+		...args
+	);
+};
 
 let lastLaunch = 0;
 let tooFastCrashes = 0;
@@ -50,7 +56,7 @@ while (true) {
 	const launchTime = Date.now();
 	const instance = await createInstance();
 	console.log("Instance created");
-	await instance.status();
+	const status = await instance.status();
 	await instance.close();
 	console.log("Instance crashed!");
 	const crashTime = Date.now();
@@ -84,7 +90,9 @@ while (true) {
 						icon_url:
 							"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
 					},
-					title: "Bidome has crashed!",
+					title: `Bidome has ${
+						status.code == 420 ? "Rebooted at a request" : "Crashed"
+					}!`,
 					description: `Rebooting the bot, time bot was alive: ${formatMs(
 						liveTime
 					)}`,

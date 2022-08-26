@@ -63,9 +63,9 @@ export default class Reload extends Command {
 				for (const file of commandFiles) {	
 					const cmdName = file.toLowerCase().substring(file.lastIndexOf("/"), file.lastIndexOf("."));
 					if (cmdName == command.name.toLowerCase()) {
+						didFindCommand = true;
 						const imported = (await import(`${new URL(file, "../../").href}#${Math.random().toString().substring(2)}`)).default;
 						ctx.client.commands.add(imported);
-						didFindCommand = true;
 						break;
 					}
 				}
