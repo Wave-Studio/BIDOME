@@ -22,23 +22,12 @@ export default class Eval extends Command {
 			}).setColor("random")],
 		});
 
+		let executed: string;
+
 		try {
-			const executed = await eval(code);
-			console.log(
-				"Output from command " + code + ", ",
-				executed ?? "No output!",
-			);
-			await message.edit(
-				new Embed({
-					author: {
-						name: "Bidome bot",
-						icon_url: ctx.message.client.user!.avatarURL(),
-					},
-					title: "Executed code",
-					description: "Please check console for an output!",
-				}).setColor("random"),
-			);
+			executed = (`${await eval(code) ?? "No output!"}`).replace(ctx.client.token!, "lol you thought");
 		} catch (e: unknown) {
+			const executed = (`${e ?? "No output!"}`).replace(ctx.client.token!, "lol you thought");
 			console.log(
 				"An error occured while executing the eval command " +
 					code +
@@ -52,10 +41,25 @@ export default class Eval extends Command {
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Error occured while executing!",
-					description: "Please check console for an error!",
+					description: `${executed.length > 2000 ? "Output too long to send!" : executed}`,
 				}).setColor("random"),
 			);
 			return;
+		} finally {
+			console.log(
+				"Output from command " + code + ", ",
+				executed!,
+			);
+			await message.edit(
+				new Embed({
+					author: {
+						name: "Bidome bot",
+						icon_url: ctx.message.client.user!.avatarURL(),
+					},
+					title: "Executed code",
+					description: `${executed!.length > 2000 ? "Output too long to send!" : executed!}`,
+				}).setColor("random"),
+			);
 		}
 	}
 }

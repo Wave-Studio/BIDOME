@@ -9,6 +9,7 @@ import {
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
 import { getPrefix } from "supabase";
+import { loopFilesAndReturn } from "tools";
 
 const logFunction = console.log;
 
@@ -61,34 +62,6 @@ bot.on("resumed", () => {
 bot.on("error", (_err) => {
 	console.log("Error occured");
 });
-
-const loopFilesAndReturn = async (path: string) => {
-	const files: string[] = [];
-
-	try {
-		await Deno.mkdir(path, { recursive: true });
-	} catch {
-		// Ignore
-	}
-
-	for await (const file of Deno.readDir(path)) {
-		if (file.name.trim().startsWith("-")) continue;
-		const uri = `${path}${path.endsWith("/") ? "" : "/"}${file.name}`;
-		if (file.isFile) {
-			for (const ext of [".ts", ".tsx", ".js", ".jsx"]) {
-				if (file.name.trim().toLowerCase().endsWith(ext)) {
-					files.push(uri);
-				}
-			}
-		} else {
-			if (file.isDirectory) {
-				files.push(...(await loopFilesAndReturn(uri)));
-			}
-		}
-	}
-
-	return files;
-};
 
 bot.on("ready", async () => {
 	console.log(`Logged in as ${bot.user!.tag}`);

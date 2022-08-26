@@ -160,3 +160,31 @@ export const toMs = (str: string) => {
 };
 
 export const sleep = (length: number) => new Promise((resolve) => setTimeout(resolve, length));
+
+export const loopFilesAndReturn = async (path: string) => {
+	const files: string[] = [];
+
+	try {
+		await Deno.mkdir(path, { recursive: true });
+	} catch {
+		// Ignore
+	}
+
+	for await (const file of Deno.readDir(path)) {
+		if (file.name.trim().startsWith("-")) continue;
+		const uri = `${path}${path.endsWith("/") ? "" : "/"}${file.name}`;
+		if (file.isFile) {
+			for (const ext of [".ts", ".tsx", ".js", ".jsx"]) {
+				if (file.name.trim().toLowerCase().endsWith(ext)) {
+					files.push(uri);
+				}
+			}
+		} else {
+			if (file.isDirectory) {
+				files.push(...(await loopFilesAndReturn(uri)));
+			}
+		}
+	}
+
+	return files;
+};

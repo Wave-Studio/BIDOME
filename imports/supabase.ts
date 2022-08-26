@@ -22,7 +22,7 @@ export const supabase = createClient(
 const prefixCache: Record<string, { value: string; lastUpdate: number }> = {};
 
 export const getPrefix = async (guild: string) => {
-	if (prefixCache[guild]) return prefixCache[guild];
+	if (prefixCache[guild]) return prefixCache[guild].value;
 	const { data } = (await supabase
 		.from("data")
 		.select("prefix")
