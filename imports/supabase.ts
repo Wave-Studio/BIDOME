@@ -19,15 +19,15 @@ export const supabase = createClient(
 	Deno.env.get("SERVICE_ROLE_KEY")!
 );
 
-const prefixCache: Record<string, string> = {};
+const prefixCache: Record<string, { value: string; lastUpdate: number }> = {};
 
 export const getPrefix = async (guild: string) => {
 	if (prefixCache[guild]) return prefixCache[guild];
-	const { data } = await supabase
+	const { data } = (await supabase
 		.from("data")
 		.select("prefix")
-		.eq("server_id", guild);
-	
+		.eq("server_id", guild)) as { data: { prefix: string }[] | undefined };
+
 	if (data == null || data.length < 1) {
 		await supabase.from("data").insert({
 			server_id: guild,
@@ -36,7 +36,10 @@ export const getPrefix = async (guild: string) => {
 		return "!";
 	}
 
-	prefixCache[guild] = data![0].prefix;
+	prefixCache[guild] = {
+		value: data[0].prefix,
+		lastUpdate: Date.now(),
+	};
 	return data![0].prefix;
 };
 
@@ -47,11 +50,25 @@ export const setPrefix = async (guild: string, prefix: string) => {
 			prefix,
 		})
 		.eq("server_id", guild);
-	prefixCache[guild] = prefix;
+	prefixCache[guild] = {
+		value: prefix,
+		lastUpdate: Date.now(),
+	};
 };
+
+export const purgeCache = () => {
+	for (const [key, value] of Object.entries(prefixCache)) {
+		const lastUpdateInterval = Date.now() - value.lastUpdate;
+		if (lastUpdateInterval > 60 * 60 * 1000) {
+			delete prefixCache[key];
+		}
+	}
+};
+
+setInterval(purgeCache, 30 * 60 * 1000);
 
 export const resetCache = () => {
 	for (const key in prefixCache) {
 		delete prefixCache[key];
 	}
-}
+};

@@ -170,6 +170,7 @@ export class ServerQueue {
 		}
 		this.player.position = 0;
 		this.player.stop();
+		this.player.disconnect();
 		this.player.destroy();
 	}
 
