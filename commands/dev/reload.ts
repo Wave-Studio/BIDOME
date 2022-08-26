@@ -45,18 +45,6 @@ export default class Reload extends Command {
 					}).setColor("random")],
 				});
 
-				ctx.client.commands.delete(command.name);
-
-				if (command.aliases != undefined) {
-					if (typeof command.aliases == "string") {
-						ctx.client.commands.delete(command.aliases);
-					} else {
-						for (const alias of command.aliases) {
-							ctx.client.commands.delete(alias);
-						}
-					}
-				}
-
 				let didFindCommand = false;
 
 				const commandFiles = await loopFilesAndReturn("./commands/");
@@ -67,6 +55,18 @@ export default class Reload extends Command {
 						const imported = (await import(`${new URL(file, "../../").href}#${Math.random().toString().substring(2)}`)).default;
 						ctx.client.commands.add(imported);
 						break;
+					}
+				}
+
+				ctx.client.commands.delete(command.name);
+
+				if (command.aliases != undefined) {
+					if (typeof command.aliases == "string") {
+						ctx.client.commands.delete(command.aliases);
+					} else {
+						for (const alias of command.aliases) {
+							ctx.client.commands.delete(alias);
+						}
 					}
 				}
 
