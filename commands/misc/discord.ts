@@ -13,7 +13,7 @@ export default class Discord extends Command {
 					icon_url: ctx.client.user!.avatarURL(),
 				},
 				description:
-					"To access Bidome related channels please DM me after joining our [**Discord**](https://discord.gg/Y4USEwV)",
+					"Bidome's support and general chat is located inside of [Wave Studios](https://discord.gg/yrwUpMcfcR)",
 			}).setColor("random")],
 		});
 	}
