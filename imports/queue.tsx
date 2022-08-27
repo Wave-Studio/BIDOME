@@ -11,7 +11,7 @@ import {
 	Button,
 	Member,
 	VoiceChannel,
-	VoiceState
+	VoiceState,
 } from "./harmony.ts";
 import { Cluster, Player, PlayerEvents } from "./lavadeno.ts";
 import { formatMs, removeDiscordFormatting } from "./tools.ts";
@@ -65,7 +65,7 @@ export class ServerQueue {
 		if (!playerExsists) {
 			this.player.on("trackStart", async () => {
 				this.voteSkipUsers = [];
-				
+
 				if (this.queueMessage != undefined) {
 					if (this.firstSong) {
 						this.firstSong = false;
@@ -196,7 +196,10 @@ export class ServerQueue {
 			}
 		}
 
-		return voiceMembers.length < 2 || skippingUsers.length >= Math.floor(voiceMembers.length / 2) + 1;
+		return (
+			voiceMembers.length < 2 ||
+			skippingUsers.length >= Math.floor(voiceMembers.length / 2) + 1
+		);
 	}
 
 	private async play() {
@@ -232,6 +235,22 @@ export class ServerQueue {
 
 	public get nowPlayingMessage(): AllMessageOptions {
 		const song = this.queue[0];
+
+		if (song == undefined) {
+			return {
+				embeds: [
+					new Embed({
+						author: {
+							name: "Bidome bot",
+							icon_url: client.user!.avatarURL(),
+						},
+						title: "No songs in queue",
+						description: "Why don't you add some?"
+					}).setColor("random"),
+				],
+				components: [],
+			};
+		}
 
 		return {
 			embeds: [
