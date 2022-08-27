@@ -28,7 +28,6 @@ const interactionHandlers: ((
 const bot = new CommandClient({
 	prefix: [],
 	async getGuildPrefix(guildid: string): Promise<string> {
-		return "sex";
 		return await getPrefix(guildid);
 	},
 	allowBots: false,
