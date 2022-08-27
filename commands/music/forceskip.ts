@@ -1,5 +1,4 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { TrackEndReason } from "https://deno.land/x/lavalink_types@2.0.6/mod.ts";
 import { queues, doPermCheck } from "queue";
 
 export default class ForceSkip extends Command {
@@ -40,7 +39,7 @@ export default class ForceSkip extends Command {
 				queue.songLoop = false;
 				queue.queueLoop = false;
 
-				await queue.player.emit("trackEnd", queue.queue[0].track, TrackEndReason.Finished);
+				await queue.player.stop();
 
 				await ctx.message.reply({
 					embeds: [

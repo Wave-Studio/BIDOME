@@ -1,5 +1,4 @@
 import { MessageComponentInteraction, Embed } from "harmony";
-import { TrackEndReason } from "https://deno.land/x/lavalink_types@2.0.6/mod.ts";
 import { queues, doPermCheck } from "queue";
 
 export default async function skip(i: MessageComponentInteraction) {
@@ -46,11 +45,7 @@ export default async function skip(i: MessageComponentInteraction) {
 				queue.songLoop = false;
 				queue.queueLoop = false;
 
-				await queue.player.emit(
-					"trackEnd",
-					queue.queue[0].track,
-					TrackEndReason.Finished
-				);
+				await queue.player.stop();
 
 				await i.respond({
 					ephemeral: true,
