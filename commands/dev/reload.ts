@@ -45,17 +45,7 @@ export default class Reload extends Command {
 					}).setColor("random")],
 				});
 
-				ctx.client.commands.delete(command.name);
-
-				if (command.aliases != undefined) {
-					if (typeof command.aliases == "string") {
-						ctx.client.commands.delete(command.aliases);
-					} else {
-						for (const alias of command.aliases) {
-							ctx.client.commands.delete(alias);
-						}
-					}
-				}
+				ctx.client.commands.list.delete(`${command.name}-0`)
 
 				let didFindCommand = false;
 
