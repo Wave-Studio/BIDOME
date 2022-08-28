@@ -116,6 +116,7 @@ export const toMs = (str: string) => {
 		msValue +=
 			parseInt(unitValue) *
 			({
+				// Shortened
 				ms: TimeUnit.MILISECOND,
 				s: TimeUnit.SECOND,
 				m: TimeUnit.MINUTE,
@@ -124,12 +125,32 @@ export const toMs = (str: string) => {
 				w: TimeUnit.WEEK,
 				mo: TimeUnit.MONTH,
 				y: TimeUnit.YEAR,
+
+				// Full
+				millisecond: TimeUnit.MILISECOND,
+				second: TimeUnit.SECOND,
+				minute: TimeUnit.MINUTE,
+				hour: TimeUnit.HOUR,
+				day: TimeUnit.DAY,
+				week: TimeUnit.WEEK,
+				month: TimeUnit.MONTH,
+				year: TimeUnit.YEAR,
+
+				// Full plural
+				milliseconds: TimeUnit.MILISECOND,
+				seconds: TimeUnit.SECOND,
+				minutes: TimeUnit.MINUTE,
+				hours: TimeUnit.HOUR,
+				days: TimeUnit.DAY,
+				weeks: TimeUnit.WEEK,
+				months: TimeUnit.MONTH,
+				years: TimeUnit.YEAR,
 			}[unitType] as number);
 		unitType = "";
 		unitValue = "";
 	};
 
-	for (const char of str) {
+	for (const char of str.toLowerCase()) {
 		if (char == " ") continue;
 		if (!isNaN(parseInt(char))) {
 			if (unitType !== "") {
