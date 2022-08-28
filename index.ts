@@ -63,6 +63,10 @@ bot.on("error", (_err) => {
 	console.log("Error occured");
 });
 
+bot.on("debug", (message) => {
+	console.log("Debug:", message);
+})
+
 bot.on("ready", async () => {
 	console.log(`Logged in as ${bot.user!.tag}`);
 	console.log("Loading all commands!");
