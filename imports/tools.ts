@@ -96,15 +96,8 @@ export const shuffleArray = <T>(array: T[]) => {
 	return elements;
 };
 
-// No clue how this dumbfuckery works so i'm replacing it even though it works
-// export const shuffleArray = (array: unknown[]) => {
-// 	for (let i = array.length - 1; i > 0; i--) {
-// 		const j = Math.floor(Math.random() * (i + 1));
-// 		[array[i], array[j]] = [array[j], array[i]];
-// 	}
-// };
-
 export enum TimeUnit {
+	MILISECOND = 1,
 	SECOND = 1000,
 	MINUTE = 60 * 1000,
 	HOUR = 60 * 60 * 1000,
@@ -123,6 +116,7 @@ export const toMs = (str: string) => {
 		msValue +=
 			parseInt(unitValue) *
 			({
+				ms: TimeUnit.MILISECOND,
 				s: TimeUnit.SECOND,
 				m: TimeUnit.MINUTE,
 				h: TimeUnit.HOUR,
@@ -136,6 +130,7 @@ export const toMs = (str: string) => {
 	};
 
 	for (const char of str) {
+		if (char == " ") continue;
 		if (!isNaN(parseInt(char))) {
 			if (unitType !== "") {
 				convertToMS();

@@ -50,7 +50,7 @@ export default class Eval extends Command {
 					},
 					title: "Error occured while executing!",
 					description: `${
-						executed.length > 2000 ? "Output too long to send!" : executed
+						executed.length > 2000 - 10 ? "Output too long to send!" : "```ts\n" + executed + "\n```"
 					}`,
 				}).setColor("random")
 			);
@@ -67,7 +67,7 @@ export default class Eval extends Command {
 					},
 					title: "Executed code",
 					description: `${
-						executed!.length > 2000 ? "Output too long to send!" : executed!
+						executed!.length > 2000 - 10 ? "Output too long to send!" : "```ts\n" + executed + "\n```"
 					}`,
 				}).setColor("random")
 			);

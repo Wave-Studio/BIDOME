@@ -11,48 +11,58 @@ export default class Reload extends Command {
 	async execute(ctx: CommandContext) {
 		if (ctx.argString === "") {
 			await ctx.message.reply(undefined, {
-				embeds: [new Embed({
-					author: {
-						name: "Bidome bot",
-						icon_url: ctx.message.client.user!.avatarURL(),
-					},
-					title: "Bidome Reload",
-					description: "You need to provide a command!",
-				}).setColor("red")],
+				embeds: [
+					new Embed({
+						author: {
+							name: "Bidome bot",
+							icon_url: ctx.message.client.user!.avatarURL(),
+						},
+						title: "Bidome Reload",
+						description: "You need to provide a command!",
+					}).setColor("red"),
+				],
 			});
 		} else {
 			const command = ctx.client.commands.find(ctx.argString);
 			if (command == undefined) {
 				await ctx.message.reply(undefined, {
-					embeds: [new Embed({
-						author: {
-							name: "Bidome bot",
-							icon_url: ctx.message.client.user!.avatarURL(),
-						},
-						title: "Bidome Reload",
-						description: "Unknown command!",
-					}).setColor("red")],
+					embeds: [
+						new Embed({
+							author: {
+								name: "Bidome bot",
+								icon_url: ctx.message.client.user!.avatarURL(),
+							},
+							title: "Bidome Reload",
+							description: "Unknown command!",
+						}).setColor("red"),
+					],
 				});
 			} else {
 				const message = await ctx.message.reply(undefined, {
-					embeds: [new Embed({
-						author: {
-							name: "Bidome bot",
-							icon_url: ctx.message.client.user!.avatarURL(),
-						},
-						title: "Bidome Reload",
-						description: "Reloading...",
-					}).setColor("random")],
+					embeds: [
+						new Embed({
+							author: {
+								name: "Bidome bot",
+								icon_url: ctx.message.client.user!.avatarURL(),
+							},
+							title: "Bidome Reload",
+							description: "Reloading...",
+						}).setColor("random"),
+					],
 				});
 
-				ctx.client.commands.list.delete(`${command.name}-0`)
+				ctx.client.commands.list.delete(`${command.name}-0`);
 
 				let didFindCommand = false;
 
 				const commandFiles = await loopFilesAndReturn("./commands/");
-				for (const file of commandFiles) {	
-					const cmdName = file.toLowerCase().substring(file.lastIndexOf("/") + 1, file.lastIndexOf("."));
-					const importFilePath = `../.${file}#${Math.random().toString().substring(2)}`
+				for (const file of commandFiles) {
+					const cmdName = file
+						.toLowerCase()
+						.substring(file.lastIndexOf("/") + 1, file.lastIndexOf("."));
+					const importFilePath = `../.${file}#${Math.random()
+						.toString()
+						.substring(2)}`;
 					if (cmdName == command.name.toLowerCase()) {
 						didFindCommand = true;
 						const imported = (await import(importFilePath)).default;
@@ -62,14 +72,20 @@ export default class Reload extends Command {
 				}
 
 				await message.edit(undefined, {
-					embeds: [new Embed({
-						author: {
-							name: "Bidome bot",
-							icon_url: ctx.message.client.user!.avatarURL(),
-						},
-						title: "Bidome Reloaded",
-						description: `Command has been ${didFindCommand ? "reloaded!" : "unloaded as it could not be found locally!"}`,
-					}).setColor("random")],
+					embeds: [
+						new Embed({
+							author: {
+								name: "Bidome bot",
+								icon_url: ctx.message.client.user!.avatarURL(),
+							},
+							title: "Bidome Reloaded",
+							description: `Command has been ${
+								didFindCommand
+									? "reloaded!"
+									: "unloaded as it could not be found locally!"
+							}`,
+						}).setColor("random"),
+					],
 				});
 			}
 		}
