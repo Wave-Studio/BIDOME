@@ -165,4 +165,6 @@ bot.connect(Deno.env.get("token"), [
 	GatewayIntents.GUILD_VOICE_STATES,
 	GatewayIntents.GUILD_PRESENCES,
 	GatewayIntents.GUILD_MEMBERS,
+	// MESSAGE_CONTENT (Not added in harmony yet)
+	(1 << 15)
 ]);
