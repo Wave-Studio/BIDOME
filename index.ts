@@ -28,6 +28,9 @@ const interactionHandlers: ((
 const bot = new CommandClient({
 	prefix: [],
 	async getGuildPrefix(guildid: string): Promise<string> {
+		if (Deno.env.get("IS_DEV")) {
+			return ">>";
+		}
 		return await getPrefix(guildid);
 	},
 	allowBots: false,

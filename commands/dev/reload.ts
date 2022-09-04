@@ -60,9 +60,7 @@ export default class Reload extends Command {
 					const cmdName = file
 						.toLowerCase()
 						.substring(file.lastIndexOf("/") + 1, file.lastIndexOf("."));
-					const importFilePath = `../.${file}#${Math.random()
-						.toString()
-						.substring(2)}`;
+					const importFilePath = `../.${file}#${Date.now()}`;
 					if (cmdName == command.name.toLowerCase()) {
 						didFindCommand = true;
 						const imported = (await import(importFilePath)).default;
