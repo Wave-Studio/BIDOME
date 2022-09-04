@@ -57,6 +57,10 @@ export default async function skip(i: MessageComponentInteraction) {
 							title: "Skipped",
 							description:
 								"Enough users have voted so the song has been skipped!",
+							footer: {
+								icon_url: i.user.avatarURL(),
+								text: `Skipped by ${i.user.tag}`,
+							},
 						}).setColor("green"),
 					],
 				});
@@ -89,9 +93,13 @@ export default async function skip(i: MessageComponentInteraction) {
 									skippingUsers.length
 								}/${Math.floor(voiceMembers.length / 2) + 1}`,
 								footer: {
-									text: (await doPermCheck(i.member!, botState.channel) || queue.queue[0].requestedBy == i.member!.id)
-										? "Use forceskip to skip without a vote"
-										: "",
+									icon_url: i.user.avatarURL(),
+									text: `Vote by ${i.user.tag}${
+										(await doPermCheck(i.member!, botState.channel)) ||
+										queue.queue[0].requestedBy == i.member!.id
+											? " | Use forceskip to skip without a vote"
+											: ""
+									}`,
 								},
 							}).setColor("green"),
 						],
