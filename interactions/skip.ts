@@ -48,7 +48,6 @@ export default async function skip(i: MessageComponentInteraction) {
 				await queue.player.stop();
 
 				await i.respond({
-					ephemeral: true,
 					embeds: [
 						new Embed({
 							author: {
@@ -79,7 +78,6 @@ export default async function skip(i: MessageComponentInteraction) {
 
 				if (doesUserNeedToBeAdded) {
 					await i.respond({
-						ephemeral: true,
 						embeds: [
 							new Embed({
 								author: {
@@ -91,7 +89,7 @@ export default async function skip(i: MessageComponentInteraction) {
 									skippingUsers.length
 								}/${Math.floor(voiceMembers.length / 2) + 1}`,
 								footer: {
-									text: (await doPermCheck(i.member!, botState.channel))
+									text: (await doPermCheck(i.member!, botState.channel) || queue.queue[0].requestedBy == i.member!.id)
 										? "Use forceskip to skip without a vote"
 										: "",
 								},

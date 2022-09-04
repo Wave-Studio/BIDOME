@@ -31,7 +31,7 @@ export default class ForceSkip extends Command {
 
 		} else {
 			const queue = queues.get(ctx.guild!.id)!;
-			if (await doPermCheck(ctx.member!, botState.channel!)) {
+			if (await doPermCheck(ctx.member!, botState.channel!) || queue.queue[0].requestedBy == ctx.author.id) {
 				// Convert these into variables that don't change
 				const isSongLoop = !!queue.songLoop;
 				const isQueueLoop = !!queue.queueLoop;
@@ -68,7 +68,7 @@ export default class ForceSkip extends Command {
 							},
 							title: "Unable to skip",
 							description:
-								"You are missing the `ADMINISTRATOR` permission and you are not alone in the channel!",
+								"You are not an `ADMINISTRATOR`, Alone in the channel, or the song requester",
 						}).setColor("red"),
 					],
 				});

@@ -92,7 +92,7 @@ export default class Skip extends Command {
 									skippingUsers.length
 								}/${Math.floor(voiceMembers.length / 2) + 1}`,
 								footer: {
-									text: (await doPermCheck(ctx.member!, botState.channel))
+									text: (await doPermCheck(ctx.member!, botState.channel) || queue.queue[0].requestedBy == ctx.author.id)
 										? "Use forceskip to skip without a vote"
 										: "",
 								},
