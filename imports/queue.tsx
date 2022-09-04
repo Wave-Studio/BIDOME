@@ -213,7 +213,6 @@ export class ServerQueue {
 		});
 
 		this.player.position = 0;
-		await this.player.seek(0);
 
 		if (!this.player.connected) {
 			this.player.connect(BigInt(this.channel), {
