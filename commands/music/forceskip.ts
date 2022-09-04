@@ -39,6 +39,7 @@ export default class ForceSkip extends Command {
 				queue.songLoop = false;
 				queue.queueLoop = false;
 
+				await queue.player.seek(0);
 				await queue.player.stop();
 
 				await ctx.message.reply({

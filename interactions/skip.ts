@@ -45,6 +45,7 @@ export default async function skip(i: MessageComponentInteraction) {
 				queue.songLoop = false;
 				queue.queueLoop = false;
 
+				await queue.player.seek(0);
 				await queue.player.stop();
 
 				await i.respond({

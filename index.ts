@@ -18,8 +18,11 @@ console.log = (...args: unknown[]) => {
 	const amOrPm = date.getHours() > 12 ? "PM" : "AM";
 	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
 
-	logFunction(`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${date.getMinutes()}${amOrPm}]`, ...args);
-}
+	logFunction(
+		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${date.getMinutes()}${amOrPm}]`,
+		...args
+	);
+};
 
 const interactionHandlers: ((
 	i: MessageComponentInteraction
@@ -42,12 +45,16 @@ const bot = new CommandClient({
 			name: "Bidome Bot | Starting up",
 			type: "PLAYING",
 		},
-		status: "idle",
+		status: "online",
 	},
 	enableSlash: true,
 	spacesAfterPrefix: true,
 	owners: ["314166178144583682", "423258218035150849"],
 	shardCount: "auto",
+	clientProperties: {
+		// Mild amount of tomfoolery
+		browser: "Discord iOS",
+	},
 });
 
 bot.on("gatewayError", (_err) => {
@@ -68,7 +75,7 @@ bot.on("error", (_err) => {
 
 bot.on("debug", (message) => {
 	console.log("Debug:", message);
-})
+});
 
 bot.on("ready", async () => {
 	console.log(`Logged in as ${bot.user!.tag}`);
@@ -168,5 +175,5 @@ bot.connect(Deno.env.get("token"), [
 	GatewayIntents.GUILD_VOICE_STATES,
 	GatewayIntents.GUILD_PRESENCES,
 	GatewayIntents.GUILD_MEMBERS,
-	GatewayIntents.MESSAGE_CONTENT
+	GatewayIntents.MESSAGE_CONTENT,
 ]);
