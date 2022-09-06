@@ -1,14 +1,8 @@
 # Ignore ENV vars
-.env
+/.env
 
 # Ignore temporary files (for dev)
-temp/
+/temp/
 
-# Ignore lavalink
-lavalink/Lavalink.jar
-logs/
-
-# Ignore replit files
-.deno/
-.replit
-lock.json
+# Ignore copyrightable assets (I think)
+/assets/fonts/

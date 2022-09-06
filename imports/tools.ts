@@ -175,7 +175,8 @@ export const toMs = (str: string) => {
 	return msValue + 1;
 };
 
-export const sleep = (length: number) => new Promise((resolve) => setTimeout(resolve, length));
+export const sleep = (length: number) =>
+	new Promise((resolve) => setTimeout(resolve, length));
 
 export const loopFilesAndReturn = async (path: string) => {
 	const files: string[] = [];
@@ -203,4 +204,41 @@ export const loopFilesAndReturn = async (path: string) => {
 	}
 
 	return files;
+};
+
+export enum NumberUnit {
+	THOUSAND = 1000,
+	MILLION = 1000000,
+	BILLION = 1000000000,
+	TRILLION = 1000000000000,
+	QUADRILLION = 1000000000000000,
+	// Might not fit in an integer
+	// QUINTILLION = 1000000000000000000,
+	// SEXTILLION = 1000000000000000000000,
+	// SEPTILLION = 1000000000000000000000000,
+	// OCTILLION = 1000000000000000000000000000,
+	// NONILLION = 1000000000000000000000000000000,
+	// DECILLION = 1000000000000000000000000000000000,
+}
+
+export const formatNumber = (num: number) => {
+	const prefix = {
+		[NumberUnit.QUADRILLION]: "Q",
+		[NumberUnit.TRILLION]: "T",
+		[NumberUnit.BILLION]: "B",
+		[NumberUnit.MILLION]: "M",
+		[NumberUnit.THOUSAND]: "K",
+	};
+
+	for (const [key, value] of Object.entries(prefix)) {
+		if (num >= parseInt(key)) {
+			const numberValue = (num / parseInt(key)).toFixed(1);
+			if (numberValue.endsWith(".0")) {
+				return `${numberValue.slice(0, -2)}${value}`;
+			}
+			return `${numberValue}${value}`;
+		}
+	}
+	
+	return num.toString();
 };
