@@ -19,7 +19,9 @@ console.log = (...args: unknown[]) => {
 	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
 
 	logFunction(
-		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${date.getMinutes()}${amOrPm}]`,
+		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${
+			date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
+		}${amOrPm}]`,
 		...args
 	);
 };
