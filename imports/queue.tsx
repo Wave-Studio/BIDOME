@@ -213,12 +213,6 @@ export class ServerQueue {
 		});
 
 		this.player.position = 0;
-
-		if (!this.player.connected) {
-			this.player.connect(BigInt(this.channel), {
-				deafen: true,
-			});
-		}
 	}
 
 	public get queueLength() {
