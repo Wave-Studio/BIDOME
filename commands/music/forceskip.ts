@@ -9,9 +9,20 @@ export default class ForceSkip extends Command {
 
 	async execute(ctx: CommandContext) {
 		if (ctx.guild == undefined) return;
-		const queue = queues.get(ctx.guild.id);
 		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
-		if (queue == undefined || botState == undefined || botState.channel == undefined) {
+		if (
+			queues.has(ctx.guild!.id) &&
+			(botState == undefined || botState.channel == undefined)
+		) {
+			queues.get(ctx.guild!.id)!.deleteQueue();
+		}
+		
+		const queue = queues.get(ctx.guild.id);
+		if (
+			queue == undefined ||
+			botState == undefined ||
+			botState.channel == undefined
+		) {
 			await ctx.message.reply(undefined, {
 				embeds: [
 					new Embed({
@@ -28,10 +39,12 @@ export default class ForceSkip extends Command {
 			if (queue != undefined) {
 				queue.deleteQueue();
 			}
-
 		} else {
 			const queue = queues.get(ctx.guild!.id)!;
-			if (await doPermCheck(ctx.member!, botState.channel!) || queue.queue[0].requestedBy == ctx.author.id) {
+			if (
+				(await doPermCheck(ctx.member!, botState.channel!)) ||
+				queue.queue[0].requestedBy == ctx.author.id
+			) {
 				// Convert these into variables that don't change
 				const isSongLoop = !!queue.songLoop;
 				const isQueueLoop = !!queue.queueLoop;
@@ -50,8 +63,7 @@ export default class ForceSkip extends Command {
 								icon_url: ctx.client.user!.avatarURL(),
 							},
 							title: "Skipped",
-							description:
-								"I have skipped the current song",
+							description: "I have skipped the current song",
 						}).setColor("green"),
 					],
 				});

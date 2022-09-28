@@ -15,7 +15,7 @@ import { removeDiscordFormatting } from "tools";
 
 export default class Play extends Command {
 	name = "play";
-	aliases = ["p", "enqueue", "add"]
+	aliases = ["p", "enqueue", "add"];
 	category = "music";
 	description = "Play a song";
 	usage = "play <song query or URL>";
@@ -36,8 +36,15 @@ export default class Play extends Command {
 				],
 			});
 		} else {
-			const vc = await ctx.guild.voiceStates.get(ctx.author.id);
-			if (vc == undefined || vc.channel == undefined) {
+			const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
+			if (
+				queues.has(ctx.guild!.id) &&
+				(botState == undefined || botState.channel == undefined)
+			) {
+				queues.get(ctx.guild!.id)!.deleteQueue();
+			}
+			
+			if (botState == undefined || botState.channel == undefined) {
 				await ctx.message.reply(undefined, {
 					embeds: [
 						new Embed({
@@ -68,12 +75,11 @@ export default class Play extends Command {
 					/(https?:\/\/)?(www\.)?([a-zA-Z0-9][a-zA-Z0-9\-]{1,}[a-zA-Z0-9]\.?){1,}(\.[a-zA-Z]{2})?\.[a-zA-Z]{2,63}/i.test(
 						ctx.argString
 					);
-				const { tracks, loadType } =
-					await lavaCluster.rest.loadTracks(
-						isLink || /(yt|sc)search\:/i.test(ctx.argString)
-							? ctx.argString
-							: `ytsearch:${ctx.argString}`
-					);
+				const { tracks, loadType } = await lavaCluster.rest.loadTracks(
+					isLink || /(yt|sc)search\:/i.test(ctx.argString)
+						? ctx.argString
+						: `ytsearch:${ctx.argString}`
+				);
 
 				if (
 					tracks.length == 0 ||
@@ -152,7 +158,9 @@ export default class Play extends Command {
 											(track, i) =>
 												`${
 													emojiMap[i as 0 | 1 | 2 | 3 | 4]
-												} - [${removeDiscordFormatting(track.info.title)}](${track.info.uri})`
+												} - [${removeDiscordFormatting(track.info.title)}](${
+													track.info.uri
+												})`
 										)
 										.join("\n"),
 									footer: {
@@ -189,11 +197,16 @@ export default class Play extends Command {
 							(i) =>
 								isMessageComponentInteraction(i) &&
 								i.user.id == ctx.author.id &&
-								i.channel!.id == ctx.channel.id && i.message.id == message.id,
+								i.channel!.id == ctx.channel.id &&
+								i.message.id == message.id,
 							30 * 1000
 						);
 
-						if (response == undefined || !isMessageComponentInteraction(response) || response.customID == `${now}-cancel`) {
+						if (
+							response == undefined ||
+							!isMessageComponentInteraction(response) ||
+							response.customID == `${now}-cancel`
+						) {
 							await message.edit(undefined, {
 								embeds: [
 									new Embed({
@@ -218,7 +231,7 @@ export default class Play extends Command {
 					const isNewQueue = queues.has(ctx.guild.id);
 					const queue: ServerQueue = isNewQueue
 						? queues.get(ctx.guild.id)!
-						: new ServerQueue(vc.channel.id, ctx.guild);
+						: new ServerQueue(botState.channel.id, ctx.guild);
 
 					if (songsToAdd.length > 1) {
 						await message.edit(undefined, {
@@ -233,8 +246,10 @@ export default class Play extends Command {
 										songsToAdd.length > 1 ? "s" : ""
 									} to the queue!`,
 									footer: {
-										text: `Songs in queue: ${queue.queue.length + songsToAdd.length}`,
-									}
+										text: `Songs in queue: ${
+											queue.queue.length + songsToAdd.length
+										}`,
+									},
 								}).setColor("random"),
 							],
 							components: [],
@@ -248,10 +263,12 @@ export default class Play extends Command {
 										icon_url: ctx.client.user!.avatarURL(),
 									},
 									title: "Enqueued song",
-									description: `Added [${removeDiscordFormatting(songsToAdd[0].title)}](${songsToAdd[0].url}) to the queue!`,
+									description: `Added [${removeDiscordFormatting(
+										songsToAdd[0].title
+									)}](${songsToAdd[0].url}) to the queue!`,
 									footer: {
 										text: `Songs in queue: ${queue.queue.length + 1}`,
-									}
+									},
 								}).setColor("random"),
 							],
 							components: [],
@@ -261,7 +278,9 @@ export default class Play extends Command {
 					queue.addSongs(songsToAdd);
 
 					if (queue.queueMessage == undefined) {
-						queue.queueMessage = await ctx.channel.send(queue.nowPlayingMessage)
+						queue.queueMessage = await ctx.channel.send(
+							queue.nowPlayingMessage
+						);
 					}
 				}
 			}

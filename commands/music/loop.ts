@@ -9,9 +9,20 @@ export default class Loop extends Command {
 
 	async execute(ctx: CommandContext) {
 		if (ctx.guild == undefined) return;
-		const queue = queues.get(ctx.guild.id);
 		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
-		if (queue == undefined || botState == undefined || botState.channel == undefined) {
+		if (
+			queues.has(ctx.guild!.id) &&
+			(botState == undefined || botState.channel == undefined)
+		) {
+			queues.get(ctx.guild!.id)!.deleteQueue();
+		}
+		
+		const queue = queues.get(ctx.guild.id);
+		if (
+			queue == undefined ||
+			botState == undefined ||
+			botState.channel == undefined
+		) {
 			await ctx.message.reply(undefined, {
 				embeds: [
 					new Embed({
@@ -28,7 +39,6 @@ export default class Loop extends Command {
 			if (queue != undefined) {
 				queue.deleteQueue();
 			}
-
 		} else {
 			const queue = queues.get(ctx.guild!.id)!;
 			if (await doPermCheck(ctx.member!, botState.channel)) {
