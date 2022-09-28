@@ -169,8 +169,12 @@ export class ServerQueue {
 			this.player.off(key);
 		}
 		this.player.position = 0;
-		this.player.stop();
-		this.player.disconnect();
+
+		if (this.player.playing) {
+			this.player.stop();
+			this.player.disconnect();
+		}
+		
 		this.player.destroy();
 	}
 
