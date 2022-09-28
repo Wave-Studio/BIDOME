@@ -5,6 +5,7 @@ import {
 	GatewayIntents,
 	MessageComponentInteraction,
 	isMessageComponentInteraction,
+	InteractionResponseType
 } from "harmony";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
@@ -144,11 +145,17 @@ bot.on("interactionCreate", async (i) => {
 	if (i.message.author.id != bot.user!.id) return;
 	if (i.guild == undefined) return;
 
-	for (const handler of interactionHandlers) {
-		const res = await handler(i);
-		if (typeof res == "boolean") {
-			if (!res) {
-				return;
+	if (i.customID.startsWith("disabled")) {
+		await i.respond({
+			type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
+		});
+	} else {
+		for (const handler of interactionHandlers) {
+			const res = await handler(i);
+			if (typeof res == "boolean") {
+				if (!res) {
+					return;
+				}
 			}
 		}
 	}

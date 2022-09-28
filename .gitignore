@@ -6,3 +6,6 @@
 
 # Ignore copyrightable assets (I think)
 /assets/fonts/
+
+# Temp
+calculator.tsx

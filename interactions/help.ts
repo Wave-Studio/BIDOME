@@ -19,7 +19,7 @@ export default async function giveHelpEmbed(i: MessageComponentInteraction) {
 						`${getEmojiByName("twisted_rightwards_arrows")} - Shuffle the queue`,
 						`${getEmojiByName("arrows_counterclockwise")} - Refresh the nowplaying embed`,
 					].join("\n"),
-				}).setColor("red"),
+				}).setColor("random"),
 			],
 		});
 		return false;
