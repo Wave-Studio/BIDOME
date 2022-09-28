@@ -43,8 +43,9 @@ export default class Play extends Command {
 			) {
 				queues.get(ctx.guild!.id)!.deleteQueue();
 			}
-			
-			if (botState == undefined || botState.channel == undefined) {
+
+			const vc = await ctx.guild!.voiceStates.get(ctx.author.id);
+			if (vc == undefined || vc.channel == undefined) {
 				await ctx.message.reply(undefined, {
 					embeds: [
 						new Embed({
@@ -231,7 +232,7 @@ export default class Play extends Command {
 					const isNewQueue = queues.has(ctx.guild.id);
 					const queue: ServerQueue = isNewQueue
 						? queues.get(ctx.guild.id)!
-						: new ServerQueue(botState.channel.id, ctx.guild);
+						: new ServerQueue(vc.channel.id, ctx.guild);
 
 					if (songsToAdd.length > 1) {
 						await message.edit(undefined, {
