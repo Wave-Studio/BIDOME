@@ -15,9 +15,4 @@ export const nodes: ClusterNodeOptions[] = [{
 	port: parseInt(Deno.env.get("LAVALINK_PORT")!),
 	password: Deno.env.get("LAVALINK_PASSWORD")!,
 	id: "1",
-	reconnect: {
-		type: "basic",
-		tries: -1,
-		delay: 5 * 1000,
-	},
 }];

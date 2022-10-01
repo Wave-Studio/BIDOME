@@ -13,7 +13,7 @@ import {
 	VoiceChannel,
 	VoiceState,
 } from "./harmony.ts";
-import { Cluster, Player, PlayerEvents } from "./lavadeno.ts";
+import { Cluster, Player, PlayerEvents, NodeState } from "./lavadeno.ts";
 import { formatMs, removeDiscordFormatting } from "./tools.ts";
 import { nodes } from "./nodes.ts";
 import { getEmojiByName } from "./emoji.ts";
@@ -174,7 +174,7 @@ export class ServerQueue {
 			this.player.stop();
 			this.player.disconnect();
 		}
-		
+
 		this.player.destroy();
 	}
 
@@ -248,7 +248,7 @@ export class ServerQueue {
 							icon_url: client.user!.avatarURL(),
 						},
 						title: "No songs in queue",
-						description: "Why don't you add some?"
+						description: "Why don't you add some?",
 					}).setColor("random"),
 				],
 				components: [],
@@ -361,6 +361,7 @@ export interface Song {
 }
 
 export const initLava = (bot: CommandClient) => {
+	let reconnectingIDs: string[] = [];
 	client = bot;
 
 	const cluster = new Cluster({
@@ -376,7 +377,24 @@ export const initLava = (bot: CommandClient) => {
 	});
 	lavaCluster = cluster;
 
+	setInterval(() => {
+		if (reconnectingIDs.length > 0) {
+			try {
+				cluster.nodes.forEach((node) => {
+					if (reconnectingIDs.includes(node.id)) {
+						if (node.state === NodeState.Disconnected) {
+							node.connect(BigInt(bot.user!.id));
+						}
+					}
+				});
+			} catch {
+				console.log("Failed to reconnect to Lavalink. Retrying...");
+			}
+		}
+	}, 5000);
+
 	cluster.on("nodeConnect", (node, took, reconnect) => {
+		reconnectingIDs = reconnectingIDs.filter((id) => id !== node.id);
 		console.log(
 			`[Lavalink] Connected to node ${node.id} in ${formatMs(
 				took,
@@ -385,14 +403,11 @@ export const initLava = (bot: CommandClient) => {
 		);
 	});
 
-	cluster.on("nodeDisconnect", (node, code, reason, reconnecting) => {
+	cluster.on("nodeDisconnect", (node, code, reason) => {
 		console.log(
-			`[Lavalink] Disconnected from node ${
-				node.id
-			} with code: ${code} | ${reason} Reconnecting: ${
-				reconnecting ? "Yes" : "No"
-			}`
+			`[Lavalink] Disconnected from node ${node.id} with code ${code} and reason ${reason}. Attempting to reconnect`
 		);
+		reconnectingIDs.push(node.id);
 	});
 
 	cluster.on("nodeError", (node, error) => {
