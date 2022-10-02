@@ -29,6 +29,37 @@ export enum LoadType {
 	LoadFailed = "LOAD_FAILED",
 }
 
+export enum TrackEndReason {
+	/**
+	 * This means the track itself emitted a terminator. This is usually caused by the track reaching the end,
+	 * however it will also be used when it ends due to an exception.
+	 */
+	Finished = "FINISHED",
+
+	/**
+	 * This means that the track failed to start, throwing an exception before providing any audio.
+	 */
+	LoadFailed = "LOAD_FAILED",
+
+	/**
+	 * The track was stopped due to the player being stopped by the "stop" operation.
+	 */
+	Stopped = "STOPPED",
+
+	/**
+	 * The track stopped playing because a new track started playing. Note that with this reason, the old track will still
+	 * play until either it's buffer runs out or audio from the new track is available.
+	 */
+	Replaced = "REPLACED",
+
+	/**
+	 * The track was stopped because the cleanup threshold for the audio player has reached. This triggers when the amount
+	 * of time passed since the last frame fetch has reached the threshold specified in the player manager.
+	 * This may also indicate either a leaked audio player which has discarded, but not stopped.
+	 */
+	Cleanup = "CLEANUP",
+}
+
 /**
  * A base64 encoded track, due to lavalink being developed in java it cannot be decoded "normally".
  *

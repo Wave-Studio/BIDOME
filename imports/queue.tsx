@@ -13,7 +13,13 @@ import {
 	VoiceChannel,
 	VoiceState,
 } from "./harmony.ts";
-import { Cluster, Player, PlayerEvents, NodeState } from "./lavadeno.ts";
+import {
+	Cluster,
+	Player,
+	PlayerEvents,
+	NodeState,
+	TrackEndReason,
+} from "./lavadeno.ts";
 import { formatMs, removeDiscordFormatting } from "./tools.ts";
 import { nodes } from "./nodes.ts";
 import { getEmojiByName } from "./emoji.ts";
@@ -116,6 +122,7 @@ export class ServerQueue {
 			}
 
 			this.player.on("trackEnd", () => {
+				this.player.stop();
 				if (!this.songLoop) {
 					const finishedSong = this.queue.shift()!;
 					if (this.queueLoop) {
