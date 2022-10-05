@@ -15,4 +15,13 @@ export const nodes: ClusterNodeOptions[] = [{
 	port: parseInt(Deno.env.get("LAVALINK_PORT")!),
 	password: Deno.env.get("LAVALINK_PASSWORD")!,
 	id: "1",
+	reconnect: {
+		type: "exponential",
+		maxDelay: 15000,
+		initialDelay: 1000,
+		tries: -1 // unlimited
+	},
+	resuming: {
+		key: `Bidome-${Date.now()}`
+	}
 }];

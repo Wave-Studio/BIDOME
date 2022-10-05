@@ -59,75 +59,54 @@ export class ServerQueue {
 		public queueMessage?: Message
 	) {
 		this.guildId = this.guild.id;
-		const playerExsists =
-			lavaCluster.players.get(BigInt(this.guildId)) != undefined;
-		this.player =
-			lavaCluster.players.get(BigInt(this.guildId)) ??
-			lavaCluster.createPlayer(BigInt(this.guildId));
+
+		this.player = lavaCluster.createPlayer(BigInt(this.guildId));
 		this.player.connect(BigInt(this.channel), {
 			deafen: true,
 		});
 
-		if (!playerExsists) {
-			this.player.on("trackStart", async () => {
-				this.voteSkipUsers = [];
+		this.player.on("trackStart", async () => {
+			this.voteSkipUsers = [];
+
+			if (this.queueMessage != undefined) {
+				if (this.firstSong) {
+					this.firstSong = false;
+				} else {
+					await this.queueMessage.edit(this.nowPlayingMessage);
+				}
+			}
+		});
+
+		this.player.on("channelMove", (_, to) => {
+			this.channel = to.toString();
+		});
+
+		this.player.on("channelLeave", () => {
+			this.deleteQueue();
+		});
+
+		for (const errorEvent of [
+			"trackException",
+			"trackStuck",
+		] as (keyof PlayerEvents)[]) {
+			this.player.on(errorEvent, () => {
+				const song = this.queue.shift()!;
 
 				if (this.queueMessage != undefined) {
-					if (this.firstSong) {
-						this.firstSong = false;
-					} else {
-						await this.queueMessage.edit(this.nowPlayingMessage);
-					}
-				}
-			});
-
-			this.player.on("channelMove", (_, to) => {
-				this.channel = to.toString();
-			});
-
-			this.player.on("channelLeave", () => {
-				this.deleteQueue();
-			});
-
-			for (const errorEvent of [
-				"trackException",
-				"trackStuck",
-			] as (keyof PlayerEvents)[]) {
-				this.player.on(errorEvent, () => {
-					const song = this.queue.shift()!;
-
-					if (this.queueMessage != undefined) {
-						this.queueMessage.reply(undefined, {
-							embeds: [
-								new Embed({
-									author: {
-										name: "Bidome bot",
-										icon_url: client.user!.avatarURL(),
-									},
-									title: "Song removed",
-									description: `An error occured while playing [${removeDiscordFormatting(
-										song.title
-									)}](${song.url}) so it has been removed from the queue!`,
-								}).setColor("random"),
-							],
-						});
-					}
-
-					if (this.queue.length > 0) {
-						this.play();
-					} else {
-						this.deleteQueue();
-					}
-				});
-			}
-
-			this.player.on("trackEnd", () => {
-				this.player.stop();
-				if (!this.songLoop) {
-					const finishedSong = this.queue.shift()!;
-					if (this.queueLoop) {
-						this.queue.push(finishedSong);
-					}
+					this.queueMessage.reply(undefined, {
+						embeds: [
+							new Embed({
+								author: {
+									name: "Bidome bot",
+									icon_url: client.user!.avatarURL(),
+								},
+								title: "Song removed",
+								description: `An error occured while playing [${removeDiscordFormatting(
+									song.title
+								)}](${song.url}) so it has been removed from the queue!`,
+							}).setColor("random"),
+						],
+					});
 				}
 
 				if (this.queue.length > 0) {
@@ -136,10 +115,23 @@ export class ServerQueue {
 					this.deleteQueue();
 				}
 			});
-		} else {
-			// Prevent issues with playing
-			this.player.disconnect();
 		}
+
+		this.player.on("trackEnd", () => {
+			this.player.stop();
+			if (!this.songLoop) {
+				const finishedSong = this.queue.shift()!;
+				if (this.queueLoop) {
+					this.queue.push(finishedSong);
+				}
+			}
+
+			if (this.queue.length > 0) {
+				this.play();
+			} else {
+				this.deleteQueue();
+			}
+		});
 
 		queues.set(this.guildId, this);
 	}
@@ -178,11 +170,11 @@ export class ServerQueue {
 		this.player.position = 0;
 
 		if (this.player.playing) {
-			this.player.stop();
+			await this.player.stop();
 			this.player.disconnect();
 		}
 
-		this.player.destroy();
+		await this.player.destroy();
 	}
 
 	public addSongs(song: Song | Song[]) {
