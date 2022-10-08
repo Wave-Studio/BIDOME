@@ -171,8 +171,9 @@ export class ServerQueue {
 
 		if (this.player.playing) {
 			await this.player.stop();
-			this.player.disconnect();
 		}
+
+		this.player.disconnect();
 
 		await this.player.destroy();
 	}
