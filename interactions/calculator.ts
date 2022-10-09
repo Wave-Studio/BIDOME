@@ -74,7 +74,7 @@ export default async function calculator(i: MessageComponentInteraction) {
 
 			try {
 				// This would be a security hazard but it's limited to numbers and operators
-				solution = eval(previousInputs.replace(/^/g, "**"));
+				solution = eval(previousInputs.replace(/\^/g, "**"));
 			} catch {
 				solution = "Error";
 			}
@@ -86,7 +86,7 @@ export default async function calculator(i: MessageComponentInteraction) {
 				embeds: [
 					new Embed({
 						...i.message.embeds[0].toJSON(),
-						description: "```\n" + previousInputs + "\n```",
+						description: "```\n" + (previousInputs.trim() == "" ? "Press any button" : previousInputs) + "\n```",
 						fields: [
 							{
 								name: "\u200B",
@@ -100,7 +100,7 @@ export default async function calculator(i: MessageComponentInteraction) {
 							},
 							{
 								name: "Result",
-								value: "`" + (solution == null ? "0" : solution.trim() == "" ? "Press any key" : solution) + "`",
+								value: "`" + (solution == null ? "0" : solution) + "`",
 								inline: true,
 							},
 						],
