@@ -60,7 +60,7 @@ export class ServerQueue {
 	) {
 		this.guildId = this.guild.id;
 
-		this.player = lavaCluster.createPlayer(BigInt(this.guildId));
+		this.player = lavaCluster.players.get(BigInt(this.guildId)) ?? lavaCluster.createPlayer(BigInt(this.guildId));
 		this.player.connect(BigInt(this.channel), {
 			deafen: true,
 		});
