@@ -100,7 +100,7 @@ export default async function calculator(i: MessageComponentInteraction) {
 							},
 							{
 								name: "Result",
-								value: "`" + (solution == null ? "0" : solution) + "`",
+								value: "`" + (solution == null ? "0" : solution == "" ? "Press any key" : solution) + "`",
 								inline: true,
 							},
 						],

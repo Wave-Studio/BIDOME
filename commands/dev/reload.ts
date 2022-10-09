@@ -1,5 +1,6 @@
 import { Command, CommandContext, Embed } from "harmony";
 import { loopFilesAndReturn } from "tools";
+import { interactionHandlers } from "shared";
 
 export default class Reload extends Command {
 	name = "reload";
@@ -69,6 +70,10 @@ export default class Reload extends Command {
 					}
 				}
 
+				for (const int of await loopFilesAndReturn("./interactions/")) {
+					interactionHandlers.push((await import(`../.${int}#${Date.now()}`)).default);
+				}
+
 				await message.edit(undefined, {
 					embeds: [
 						new Embed({
@@ -77,7 +82,7 @@ export default class Reload extends Command {
 								icon_url: ctx.message.client.user!.avatarURL(),
 							},
 							title: "Bidome Reloaded",
-							description: `Command has been ${
+							description: `All interactions have been reloaded and command has ${didFindCommand ? "also " : ""}been ${
 								didFindCommand
 									? "reloaded!"
 									: "unloaded as it could not be found locally!"

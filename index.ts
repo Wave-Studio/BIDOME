@@ -3,7 +3,6 @@ import {
 	CommandContext,
 	Embed,
 	GatewayIntents,
-	MessageComponentInteraction,
 	isMessageComponentInteraction,
 	InteractionResponseType
 } from "harmony";
@@ -11,6 +10,7 @@ import { getRandomStatus } from "status";
 import { initLava } from "queue";
 import { getPrefix } from "supabase";
 import { loopFilesAndReturn } from "tools";
+import { interactionHandlers } from "shared";
 
 const logFunction = console.log;
 
@@ -26,10 +26,6 @@ console.log = (...args: unknown[]) => {
 		...args
 	);
 };
-
-const interactionHandlers: ((
-	i: MessageComponentInteraction
-) => Promise<boolean | void>)[] = [];
 
 const bot = new CommandClient({
 	prefix: [],
