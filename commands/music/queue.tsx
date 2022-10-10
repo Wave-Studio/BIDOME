@@ -70,6 +70,7 @@ export default class Queue extends Command {
 							)
 							.join("\n"),
 						footer: {
+							icon_url: ctx.author.avatarURL(),
 							text: `Songs in queue: ${queue.queue.length} | Length: ${formatMs(
 								queue.queueLength
 							)}`,

@@ -7,7 +7,9 @@ import {
 export default async function calculator(i: MessageComponentInteraction) {
 	if (i.customID.startsWith("calc")) {
 		if (
-			i.message.embeds[0].footer!.text == `Requested by ${i.member!.user.tag}`
+			i.message.embeds[0]
+				.footer!.icon_url!.split("/avatars/")[1]
+				.split("/")[0] === i.user.id
 		) {
 			let previousInputs = i.message.embeds[0].description!.split("\n")[1];
 			let solution = null;
@@ -86,7 +88,12 @@ export default async function calculator(i: MessageComponentInteraction) {
 				embeds: [
 					new Embed({
 						...i.message.embeds[0].toJSON(),
-						description: "```\n" + (previousInputs.trim() == "" ? "Press any button" : previousInputs) + "\n```",
+						description:
+							"```\n" +
+							(previousInputs.trim() == ""
+								? "Press any button"
+								: previousInputs) +
+							"\n```",
 						fields: [
 							{
 								name: "\u200B",
