@@ -30,7 +30,7 @@ console.log = (...args: unknown[]) => {
 const bot = new CommandClient({
 	prefix: [],
 	async getGuildPrefix(guildid: string): Promise<string> {
-		if (Deno.env.get("IS_DEV") != "true") {
+		if (Deno.env.get("IS_DEV") == "true") {
 			return ">>";
 		}
 		return await getPrefix(guildid);
