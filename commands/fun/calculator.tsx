@@ -44,7 +44,7 @@ export default class Calculator extends Command {
 					],
 					footer: {
 						icon_url: ctx.author.avatarURL(),
-						text: ""
+						text: `Requested by ${ctx.author.tag}`,
 					},
 				}).setColor("random"),
 			],

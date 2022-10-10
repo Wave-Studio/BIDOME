@@ -78,6 +78,7 @@ export default async function queuePage(i: MessageComponentInteraction) {
 								)
 								.join("\n"),
 							footer: {
+								icon_url: i.user.avatarURL(),
 								text: `Songs in queue: ${
 									queue.queue.length
 								} | Length: ${formatMs(queue.queueLength)}`,
