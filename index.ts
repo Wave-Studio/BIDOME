@@ -124,7 +124,7 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 					title: "An error occured!",
 					description:
 						"An error occured while executing this command! If this command continues erroring please alert a developer!",
-				}).setColor("random"),
+				}).setColor("red"),
 			],
 		});
 	} catch {
@@ -155,6 +155,22 @@ bot.on("interactionCreate", async (i) => {
 			}
 		}
 	}
+});
+
+bot.on("commandUserMissingPermissions", async (ctx: CommandContext, missing: string[]) => {
+	await ctx.message.reply(undefined, {
+		embeds: [
+			new Embed({
+				author: {
+					name: "Bidome bot",
+					icon_url: ctx.message.client.user!.avatarURL(),
+				},
+				title: "Missing permissions!",
+				description:
+					`You are missing the following permissions to run this command: \`${missing.join(", ")}\`!`,
+			}).setColor("red"),
+		],
+	});
 });
 
 const nextStatus = async () => {

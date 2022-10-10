@@ -5,9 +5,19 @@ const envfile = (await Deno.readTextFile(".env")).split("\n");
 
 for (const line of envfile) {
 	const [key, ...value] = line.split("=");
-	const newValue = value.join("=").startsWith("\"") && value.join("=").endsWith("\"") ? value.join("=").slice(1, -1) : value.join("=");
+	if (key.trim() == "" || key.startsWith("#")) continue;
+	const newValue =
+		value.join("=").startsWith('"') && value.join("=").endsWith('"')
+			? value.join("=").slice(1, -1)
+			: value.join("=");
 	Deno.env.set(key, newValue);
 }
+
+// for (const line of envfile) {
+// 	const [key, ...value] = line.split("=").filter((l) => l.trim() != "" && !l.startsWith("#"));
+// 	const newValue = value.join("=").startsWith("\"") && value.join("=").endsWith("\"") ? value.join("=").slice(1, -1) : value.join("=");
+// 	Deno.env.set(key, newValue);
+// }
 
 
 export const nodes: ClusterNodeOptions[] = [{

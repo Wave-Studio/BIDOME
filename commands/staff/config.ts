@@ -13,14 +13,10 @@ export default class Config extends Command {
 	category = "staff";
 	description = "Change settings regarding bidome";
 	usage = "Config";
+	userPermissions = "MANAGE_GUILD";
 
 	async execute(ctx: CommandContext) {
 		if (!ctx.guild?.id) return;
-		if (
-			!ctx.member?.permissions.has("MANAGE_GUILD") &&
-			!ctx.client.owners.includes(ctx.author.id)
-		)
-			return;
 		const currentTime = Date.now();
 		const message = await ctx.message.reply(undefined, {
 			embeds: [
