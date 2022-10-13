@@ -1,4 +1,4 @@
-export * from "https://deno.land/x/lavadeno@3.2.3/mod.ts";
+export * from "https://deno.land/x/lavadeno@3.3.0/mod.ts";
 
 // Non exported types
 
