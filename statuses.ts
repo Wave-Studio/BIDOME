@@ -6,6 +6,8 @@ export interface BotStatus {
 	status?: StatusType;
 }
 
+let statusIndex = 0;
+
 export const getRandomStatus = async (bot: CommandClient) => {
 	const statuses: BotStatus[] = [
 		{
@@ -13,12 +15,12 @@ export const getRandomStatus = async (bot: CommandClient) => {
 			type: "WATCHING",
 		},
 		{
-			name: `!status`,
-			type: "WATCHING",
-		},
-		{
 			name: `American presindetio joe bi-`,
 			type: "PLAYING",
+		},
+		{
+			name: `!status`,
+			type: "WATCHING",
 		},
 		{
 			name: `people meme Bidome`,
@@ -29,5 +31,10 @@ export const getRandomStatus = async (bot: CommandClient) => {
 			type: "PLAYING",
 		}
 	];
-	return statuses[Math.floor(Math.random() * statuses.length)];
+
+	if (statusIndex >= statuses.length) {
+		statusIndex = 0;
+	}
+
+	return statuses[statusIndex];
 };
