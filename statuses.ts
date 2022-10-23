@@ -18,16 +18,16 @@ export const getRandomStatus = async (bot: CommandClient) => {
 		},
 		{
 			name: `American presindetio joe bi-`,
-			type: "WATCHING",
+			type: "PLAYING",
 		},
 		{
 			name: `people meme Bidome`,
 			type: "WATCHING",
 		},
 		{
-			name: `Biden say "malarkey"`,
-			type: "WATCHING",
-		},
+			name: "H",
+			type: "PLAYING",
+		}
 	];
 	return statuses[Math.floor(Math.random() * statuses.length)];
 };
