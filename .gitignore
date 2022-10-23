@@ -1,8 +1,9 @@
 # Ignore ENV vars
 /.env
 
+# Ignore Cache files
+/.cache
+
 # Ignore temporary files (for dev)
 /temp/
-
-# Ignore copyrightable assets (I think)
-/assets/fonts/
+dlemotes.ts

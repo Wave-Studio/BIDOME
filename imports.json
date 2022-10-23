@@ -8,6 +8,7 @@
 		"lavanodes": "./imports/nodes.ts",
 		"emoji": "./imports/emoji.ts",
 		"supabase": "./imports/supabase.ts",
-		"shared": "./imports/shared.ts"
+		"shared": "./imports/shared.ts",
+		"cache": "./imports/cache.ts"
 	}
 }

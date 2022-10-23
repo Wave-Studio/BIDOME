@@ -197,4 +197,5 @@ bot.connect(Deno.env.get("token"), [
 	GatewayIntents.GUILD_PRESENCES,
 	GatewayIntents.GUILD_MEMBERS,
 	GatewayIntents.MESSAGE_CONTENT,
+	GatewayIntents.GUILD_EMOJIS_AND_STICKERS,
 ]);
