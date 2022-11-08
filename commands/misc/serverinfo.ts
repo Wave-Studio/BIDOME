@@ -1,6 +1,6 @@
 import { Command, CommandContext, Embed } from "harmony";
 
-export class command extends Command {
+export default class ServerInfo extends Command {
 	name = "serverinfo";
 	category = "misc";
 	description = "Get information regarding this server";
@@ -25,10 +25,10 @@ export class command extends Command {
 
 		const isCachedUsers = data.accounts != data.humans + data.bots;
 		await ctx.message.reply(undefined, {
-			embed: new Embed({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
+					icon_url: ctx.message.client.user!.avatarURL(),
 				},
 				fields: [
 					{
@@ -65,7 +65,7 @@ export class command extends Command {
 				footer: {
 					text: `${isCachedUsers ? "* Cached users" : ""}`,
 				},
-			}).setColor("random"),
+			}).setColor("random")],
 		});
 	}
 }

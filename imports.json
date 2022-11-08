@@ -1,12 +1,14 @@
 {
 	"imports": {
 		"harmony": "./imports/harmony.ts",
-		"database": "./imports/database.ts",
 		"tools": "./imports/tools.ts",
 		"lavadeno": "./imports/lavadeno.ts",
-		"queue": "./imports/queue.ts",
+		"queue": "./imports/queue.tsx",
 		"status": "./imports/status.ts",
-		"eco": "./imports/eco.ts",
-		"jobs": "./imports/jobs.ts"
+		"lavanodes": "./imports/nodes.ts",
+		"emoji": "./imports/emoji.ts",
+		"supabase": "./imports/supabase.ts",
+		"shared": "./imports/shared.ts",
+		"cache": "./imports/cache.ts"
 	}
 }

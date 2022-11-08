@@ -7,5 +7,10 @@
 			"proseWrap": "always",
 			"indentWidth": 4
 		}
+	},
+	"compilerOptions": {
+		"jsx": "react",
+		"jsxFactory": "BotUI.createElement",
+		"jsxFragmentFactory": "fragment"
 	}
 }

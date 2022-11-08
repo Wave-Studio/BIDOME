@@ -1,6 +1,6 @@
 import { Command, CommandContext, Embed } from "harmony";
 
-export class command extends Command {
+export default class CoinFlip extends Command {
 	name = "coinflip";
 	aliases = ["cf", "coin"];
 	description = "Flip a coin";
@@ -9,27 +9,27 @@ export class command extends Command {
 	async execute(ctx: CommandContext) {
 		const sides = ["Heads", "Tails"];
 		const message = await ctx.message.reply(undefined, {
-			embed: new Embed({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
+					icon_url: ctx.message.client.user!.avatarURL(),
 				},
 				title: "Coin flip",
 				description: "Flipping the coin!",
-			}).setColor("random"),
+			}).setColor("random")],
 		});
 		await setTimeout(async () => {
 			await message.edit(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Coin flip",
 					description: `The coin landed on \`${
 						sides[Math.floor(Math.random() * 2)]
 					}\``,
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		}, 2000);
 	}

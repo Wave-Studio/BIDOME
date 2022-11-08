@@ -1,4 +1,4 @@
-export const formatMs = (ms: number, nontext = false): string => {
+export const formatMs = (ms: number, long = false): string => {
 	let seconds = Math.floor(ms / 1000);
 	let minutes = Math.floor(seconds / 60);
 	seconds -= minutes * 60;
@@ -8,21 +8,13 @@ export const formatMs = (ms: number, nontext = false): string => {
 	hours -= days * 24;
 	const weeks = Math.floor(days / 7);
 	days -= weeks * 7;
-	if (!nontext) {
+	if (long) {
 		return [
 			`${weeks > 0 ? ` ${weeks} Week${weeks > 1 ? "s" : ""}` : ""}`,
 			`${days > 0 ? ` ${days} Day${days > 1 ? "s" : ""}` : ""}`,
 			`${hours > 0 ? ` ${hours} Hour${hours > 1 ? "s" : ""}` : ""}`,
-			`${
-				minutes > 0
-					? ` ${minutes} Minute${minutes > 1 ? "s" : ""}`
-					: ""
-			}`,
-			`${
-				seconds > 0
-					? ` ${seconds} Second${seconds > 1 ? "s" : ""}`
-					: ""
-			}`,
+			`${minutes > 0 ? ` ${minutes} Minute${minutes > 1 ? "s" : ""}` : ""}`,
+			`${seconds > 0 ? ` ${seconds} Second${seconds > 1 ? "s" : ""}` : ""}`,
 		]
 			.join("")
 			.substring(1);
@@ -57,18 +49,15 @@ export const areAllGreaterThan0 = (...args: number[]): boolean => {
 };
 
 export const format = (name: string): string => {
-	return `${name.substring(0, 1).toUpperCase()}${
-		name
-			.substring(1)
-			.toLowerCase()
-	}`;
+	return `${name.substring(0, 1).toUpperCase()}${name
+		.substring(1)
+		.toLowerCase()}`;
 };
 
 export const removeDiscordFormatting = (text: string): string => {
-	return text
+	return removeDiscordCodeBlocks(text)
 		.replace(/\_/, "\\_")
 		.replace(/\*/, "\\*")
-		.replace(/\`/, "\\`")
 		.replace(/\[/, "\\[")
 		.replace(/\]/, "\\]")
 		.replace(/\)/, "\\)")
@@ -86,14 +75,29 @@ export const getRandomInteger = (min: number, max: number): number => {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-export const shuffleArray = (array: unknown[]) => {
-	for (let i = array.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[array[i], array[j]] = [array[j], array[i]];
+export const shuffleArray = <T>(array: T[]) => {
+	let elements = array;
+
+	for (let i = 0; i < elements.length; i++) {
+		const shuffledArray: T[] = [];
+
+		for (const element of elements) {
+			const before = Math.random() < 0.5 ? true : false;
+			if (before) {
+				shuffledArray.unshift(element);
+			} else {
+				shuffledArray.push(element);
+			}
+		}
+
+		elements = shuffledArray;
 	}
+
+	return elements;
 };
 
 export enum TimeUnit {
+	MILISECOND = 1,
 	SECOND = 1000,
 	MINUTE = 60 * 1000,
 	HOUR = 60 * 60 * 1000,
@@ -104,25 +108,50 @@ export enum TimeUnit {
 }
 
 export const toMs = (str: string) => {
-	let msValue = 0;
+	let msValue = -1;
 	let unitType = "";
 	let unitValue = "";
 
 	const convertToMS = () => {
-		msValue += parseInt(unitValue) * ({
-			s: TimeUnit.SECOND,
-			m: TimeUnit.MINUTE,
-			h: TimeUnit.HOUR,
-			d: TimeUnit.DAY,
-			w: TimeUnit.WEEK,
-			mo: TimeUnit.MONTH,
-			y: TimeUnit.YEAR,
-		}[unitType] as number);
+		msValue +=
+			parseInt(unitValue) *
+			({
+				// Shortened
+				ms: TimeUnit.MILISECOND,
+				s: TimeUnit.SECOND,
+				m: TimeUnit.MINUTE,
+				h: TimeUnit.HOUR,
+				d: TimeUnit.DAY,
+				w: TimeUnit.WEEK,
+				mo: TimeUnit.MONTH,
+				y: TimeUnit.YEAR,
+
+				// Full
+				millisecond: TimeUnit.MILISECOND,
+				second: TimeUnit.SECOND,
+				minute: TimeUnit.MINUTE,
+				hour: TimeUnit.HOUR,
+				day: TimeUnit.DAY,
+				week: TimeUnit.WEEK,
+				month: TimeUnit.MONTH,
+				year: TimeUnit.YEAR,
+
+				// Full plural
+				milliseconds: TimeUnit.MILISECOND,
+				seconds: TimeUnit.SECOND,
+				minutes: TimeUnit.MINUTE,
+				hours: TimeUnit.HOUR,
+				days: TimeUnit.DAY,
+				weeks: TimeUnit.WEEK,
+				months: TimeUnit.MONTH,
+				years: TimeUnit.YEAR,
+			}[unitType] as number);
 		unitType = "";
 		unitValue = "";
 	};
 
-	for (const char of str) {
+	for (const char of str.toLowerCase()) {
+		if (char == " ") continue;
 		if (!isNaN(parseInt(char))) {
 			if (unitType !== "") {
 				convertToMS();
@@ -139,7 +168,79 @@ export const toMs = (str: string) => {
 		convertToMS();
 	}
 
-	return msValue;
+	if (msValue < 0) {
+		return -1;
+	}
+
+	return msValue + 1;
+};
+
+export const sleep = (length: number) =>
+	new Promise((resolve) => setTimeout(resolve, length));
+
+export const loopFilesAndReturn = async (path: string) => {
+	const files: string[] = [];
+
+	try {
+		await Deno.mkdir(path, { recursive: true });
+	} catch {
+		// Ignore
+	}
+
+	for await (const file of Deno.readDir(path)) {
+		if (file.name.trim().startsWith("-")) continue;
+		const uri = `${path}${path.endsWith("/") ? "" : "/"}${file.name}`;
+		if (file.isFile) {
+			for (const ext of [".ts", ".tsx", ".js", ".jsx"]) {
+				if (file.name.trim().toLowerCase().endsWith(ext)) {
+					files.push(uri);
+				}
+			}
+		} else {
+			if (file.isDirectory) {
+				files.push(...(await loopFilesAndReturn(uri)));
+			}
+		}
+	}
+
+	return files;
+};
+
+export enum NumberUnit {
+	THOUSAND = 1000,
+	MILLION = 1000000,
+	BILLION = 1000000000,
+	TRILLION = 1000000000000,
+	QUADRILLION = 1000000000000000,
+	// Might not fit in an integer
+	// QUINTILLION = 1000000000000000000,
+	// SEXTILLION = 1000000000000000000000,
+	// SEPTILLION = 1000000000000000000000000,
+	// OCTILLION = 1000000000000000000000000000,
+	// NONILLION = 1000000000000000000000000000000,
+	// DECILLION = 1000000000000000000000000000000000,
+}
+
+export const formatNumber = (num: number) => {
+	const prefix = {
+		[NumberUnit.QUADRILLION]: "Q",
+		[NumberUnit.TRILLION]: "T",
+		[NumberUnit.BILLION]: "B",
+		[NumberUnit.MILLION]: "M",
+		[NumberUnit.THOUSAND]: "K",
+	};
+
+	for (const [key, value] of Object.entries(prefix)) {
+		if (num >= parseInt(key)) {
+			const numberValue = (num / parseInt(key)).toFixed(1);
+			if (numberValue.endsWith(".0")) {
+				return `${numberValue.slice(0, -2)}${value}`;
+			}
+			return `${numberValue}${value}`;
+		}
+	}
+	
+	return num.toString();
 };
 
 export const sleep = (length: number) => new Promise((resolve) => setTimeout(resolve, length));

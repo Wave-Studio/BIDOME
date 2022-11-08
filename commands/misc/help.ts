@@ -8,7 +8,7 @@ import {
 
 import { format } from "tools";
 
-export class command extends Command {
+export default class Help extends Command {
 	name = "help";
 	category = "misc";
 	aliases = ["cmds", "commands"];
@@ -18,15 +18,15 @@ export class command extends Command {
 		if (ctx.argString != "") {
 			if (!ctx.client.commands.exists(ctx.argString)) {
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome help",
 						description:
 							"Unknown command! Please make sure it's a valid command!",
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 			} else {
 				const description = [
@@ -59,10 +59,10 @@ export class command extends Command {
 					}\``,
 				];
 				await ctx.message.reply(undefined, {
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome help",
 						fields: [
@@ -74,7 +74,7 @@ export class command extends Command {
 						footer: {
 							text: "[Arg] = Optional | <Arg> = Required",
 						},
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 			}
 		} else {
@@ -95,7 +95,7 @@ export class command extends Command {
 						: command.userPermissions;
 					let hasPerms = true;
 					for (const perm of perms) {
-						if (!ctx.message.member!.permissions.has(perm)) {
+						if (!ctx.message.member!.permissions.has(perm) && !ctx.client.owners.includes(ctx.author!.id)) {
 							hasPerms = false;
 						}
 					}
@@ -142,10 +142,10 @@ export class command extends Command {
 			}
 
 			const message = await ctx.message.reply(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome help",
 					description:
@@ -153,7 +153,7 @@ export class command extends Command {
 					footer: {
 						text: "This will expire in 30 seconds!",
 					},
-				}).setColor("random"),
+				}).setColor("random")],
 				components: components,
 			});
 			const response = await ctx.message.client.waitFor(
@@ -168,14 +168,14 @@ export class command extends Command {
 			if (!response[0]) {
 				await message.edit({
 					components: [],
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Bidome help",
 						description: "Help prompt timed out!",
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 				return;
 			} else {
@@ -191,10 +191,10 @@ export class command extends Command {
 
 				await message.edit({
 					components: [],
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: `${format(choice)} Commands`,
 						description: categorydata.length < 1
@@ -204,7 +204,7 @@ export class command extends Command {
 							text:
 								`Need help with something? Check out our discord using ${ctx.prefix}discord`,
 						},
-					}).setColor("random"),
+					}).setColor("random")],
 				});
 			}
 		}

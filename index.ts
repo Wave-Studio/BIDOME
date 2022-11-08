@@ -1,37 +1,39 @@
-import { CommandClient, CommandContext, Embed, GatewayIntents } from "harmony";
-import { Database, initDatabases } from "database";
+import {
+	CommandClient,
+	CommandContext,
+	Embed,
+	GatewayIntents,
+	isMessageComponentInteraction,
+	InteractionResponseType
+} from "harmony";
 import { getRandomStatus } from "status";
+import { initLava } from "queue";
+import { getPrefix } from "supabase";
+import { loopFilesAndReturn } from "tools";
+import { interactionHandlers } from "shared";
 
-import "https://deno.land/x/dotenv@v3.2.0/load.ts";
+const logFunction = console.log;
 
-const launchLava = Deno.env.get("RAILWAY_STATIC_URL") != undefined ||
-		Deno.args.map((a) => a.toLowerCase()).includes("--no-lava")
-	? false
-	: true;
+console.log = (...args: unknown[]) => {
+	const date = new Date();
+	const amOrPm = date.getHours() > 12 ? "PM" : "AM";
+	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
 
-if (launchLava) {
-	Deno.run({
-		cmd: ["java", "-jar", "lavalink/Lavalink.jar"],
-	});
-} else {
-	console.log(
-		"Lavalink disabled, this is either caused by the --no-lava flag or you're running this on railway which doesn't allow lavalink",
+	logFunction(
+		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${
+			date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
+		}${amOrPm}]`,
+		...args
 	);
-}
-
-const isProdTesting = true;
+};
 
 const bot = new CommandClient({
 	prefix: [],
-	async getGuildPrefix(guildid: string): Promise<string[] | string> {
-		if (isProdTesting) return [];
-
-		let prefix = await Database.get<string>("prefix." + guildid);
-		if (typeof prefix === "undefined") {
-			prefix = "!";
-			await Database.set("prefix." + guildid, prefix);
+	async getGuildPrefix(guildid: string): Promise<string> {
+		if (Deno.env.get("IS_DEV") == "true") {
+			return ">>";
 		}
-		return prefix;
+		return await getPrefix(guildid);
 	},
 	allowBots: false,
 	allowDMs: false,
@@ -42,15 +44,20 @@ const bot = new CommandClient({
 			name: "Bidome Bot | Starting up",
 			type: "PLAYING",
 		},
-		status: "idle",
+		status: "online",
 	},
-	enableSlash: false,
+	enableSlash: true,
 	spacesAfterPrefix: true,
 	owners: ["314166178144583682", "423258218035150849"],
+	shardCount: "auto",
+	clientProperties: {
+		// Mild amount of tomfoolery
+		browser: "Discord iOS",
+	},
 });
 
-bot.on("gatewayError", (err) => {
-	console.log("Gateway error occured:", err);
+bot.on("gatewayError", (_err) => {
+	console.log("Gateway error occured");
 });
 
 bot.on("reconnect", () => {
@@ -61,65 +68,30 @@ bot.on("resumed", () => {
 	console.log("Reconnected.");
 });
 
-bot.on("error", (err) => {
-	console.log("Error occured:", err);
+bot.on("error", (_err) => {
+	console.log("Error occured");
 });
 
-let loggedIn = false;
+bot.on("debug", (message) => {
+	console.log("Debug:", message);
+});
 
 bot.on("ready", async () => {
-	if (loggedIn) return;
-	loggedIn = true;
-	console.log(`Logged in as ${bot.user?.tag}`);
-	console.log("Loading Database");
-	initDatabases();
+	console.log(`Logged in as ${bot.user!.tag}`);
 	console.log("Loading all commands!");
-	for await (const commands of Deno.readDir("./commands/")) {
-		if (commands.name.startsWith("-")) continue;
-		if (
-			commands.isFile &&
-			(commands.name.endsWith(".ts") || commands.name.endsWith(".tsx")) &&
-			!commands.name.startsWith("-")
-		) {
-			bot.commands.add(
-				(await import(`./commands/${commands.name}`)).command,
-			);
-		} else {
-			if (commands.isDirectory) {
-				for await (
-					const subcommand of Deno.readDir(
-						`./commands/${commands.name}`,
-					)
-				) {
-					if (
-						subcommand.isFile &&
-						(subcommand.name.endsWith(".ts") ||
-							subcommand.name.endsWith(".tsx")) &&
-						!commands.name.startsWith("-")
-					) {
-						bot.commands.add(
-							(await import(
-								`./commands/${commands.name}/${subcommand.name}`
-							))
-								.command,
-						);
-					}
-				}
-			}
-		}
+
+	await initLava(bot);
+
+	for (const cmd of await loopFilesAndReturn("./commands/")) {
+		bot.commands.add((await import(cmd)).default);
 	}
 
-	for await (const extension of Deno.readDir("./extensions")) {
-		if (
-			extension.isFile &&
-			(extension.name.endsWith(".ts") ||
-				extension.name.endsWith(".tsx")) &&
-			!extension.name.startsWith("-")
-		) {
-			bot.extensions.load(
-				(await import(`./extensions/${extension.name}`)).extension,
-			);
-		}
+	for (const ext of await loopFilesAndReturn("./extensions/")) {
+		bot.extensions.load((await import(ext)).default);
+	}
+
+	for (const int of await loopFilesAndReturn("./interactions/")) {
+		interactionHandlers.push((await import(int)).default);
 	}
 
 	console.log(
@@ -127,7 +99,7 @@ bot.on("ready", async () => {
 			bot.commands.list.size == 1 ? "" : "s"
 		} and ${await bot.extensions.list.size} extension${
 			bot.extensions.list.size == 1 ? "" : "s"
-		}!`,
+		}!`
 	);
 	console.log("Loaded bot!");
 
@@ -138,20 +110,22 @@ bot.on("ready", async () => {
 
 bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 	console.log(
-		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`,
+		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`
 	);
 	console.log(err);
 	try {
 		await ctx.message.reply(undefined, {
-			embed: new Embed({
-				author: {
-					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
-				},
-				title: "An error occured!",
-				description:
-					"An error occured while executing this command! If this command continues erroring please alert a developer!",
-			}).setColor("random"),
+			embeds: [
+				new Embed({
+					author: {
+						name: "Bidome bot",
+						icon_url: ctx.message.client.user!.avatarURL(),
+					},
+					title: "An error occured!",
+					description:
+						"An error occured while executing this command! If this command continues erroring please alert a developer!",
+				}).setColor("red"),
+			],
 		});
 	} catch {
 		try {
@@ -160,6 +134,43 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 			return;
 		}
 	}
+});
+
+bot.on("interactionCreate", async (i) => {
+	if (!isMessageComponentInteraction(i)) return;
+	if (i.message.author.id != bot.user!.id) return;
+	if (i.guild == undefined) return;
+
+	if (i.customID.startsWith("disabled")) {
+		await i.respond({
+			type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
+		});
+	} else {
+		for (const handler of interactionHandlers) {
+			const res = await handler(i);
+			if (typeof res == "boolean") {
+				if (!res) {
+					return;
+				}
+			}
+		}
+	}
+});
+
+bot.on("commandUserMissingPermissions", async (ctx: CommandContext, missing: string[]) => {
+	await ctx.message.reply(undefined, {
+		embeds: [
+			new Embed({
+				author: {
+					name: "Bidome bot",
+					icon_url: ctx.message.client.user!.avatarURL(),
+				},
+				title: "Missing permissions!",
+				description:
+					`You are missing the following permissions to run this command: \`${missing.join(", ")}\`!`,
+			}).setColor("red"),
+		],
+	});
 });
 
 const nextStatus = async () => {
@@ -179,18 +190,12 @@ const nextStatus = async () => {
 	}
 };
 
-// Prevent console spam from lavalink
-// not being ready
-setTimeout(
-	() => {
-		bot.connect(Deno.env.get("token"), [
-			GatewayIntents.GUILDS,
-			GatewayIntents.GUILD_MESSAGES,
-			GatewayIntents.GUILD_VOICE_STATES,
-			GatewayIntents.GUILD_PRESENCES,
-			GatewayIntents.GUILD_MEMBERS,
-		]);
-	},
-	// Prevent users from waiting when lavalink isn't being launched
-	launchLava ? 1.5 * 1000 : 0,
-);
+bot.connect(Deno.env.get("token"), [
+	GatewayIntents.GUILDS,
+	GatewayIntents.GUILD_MESSAGES,
+	GatewayIntents.GUILD_VOICE_STATES,
+	GatewayIntents.GUILD_PRESENCES,
+	GatewayIntents.GUILD_MEMBERS,
+	GatewayIntents.MESSAGE_CONTENT,
+	GatewayIntents.GUILD_EMOJIS_AND_STICKERS,
+]);

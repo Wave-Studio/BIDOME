@@ -1,17 +1,9 @@
 # Ignore ENV vars
-.env
+/.env
+
+# Ignore Cache files
+/.cache
 
 # Ignore temporary files (for dev)
-temp/
-
-# Ignore lavalink
-lavalink/Lavalink.jar
-logs/
-
-# Ignore database
-database/
-
-# Ignore replit files
-.deno/
-.replit
-lock.json
+/temp/
+dlemotes.ts

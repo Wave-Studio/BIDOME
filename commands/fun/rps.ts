@@ -6,7 +6,7 @@ import {
 } from "harmony";
 import { format } from "tools";
 
-export class command extends Command {
+export default class RPS extends Command {
 	name = "rps";
 	aliases = ["rockpaperscissors"];
 	description = "Play RPS against the bot";
@@ -16,17 +16,17 @@ export class command extends Command {
 		const options = ["Scissors", "Rock", "Paper"];
 		const now = Date.now();
 		const message = await ctx.message.reply(undefined, {
-			embed: new Embed({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
+					icon_url: ctx.message.client.user!.avatarURL(),
 				},
 				title: "RPS",
 				description: "Select your move!",
 				footer: {
 					text: "This will time out in 30 seconds!",
 				},
-			}).setColor("random"),
+			}).setColor("random")],
 			components: [
 				{
 					type: 1,
@@ -48,14 +48,14 @@ export class command extends Command {
 		);
 		if (!choice[0]) {
 			await message.edit({
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "RPS",
 					description: "Selection timed out!",
-				}).setColor("random"),
+				}).setColor("random")],
 			});
 		} else {
 			if (!isMessageComponentInteraction(choice[0])) return;
@@ -64,10 +64,10 @@ export class command extends Command {
 			const playerchoice = format(choice[0].customID.split("-")[0]);
 			if (botchoice === playerchoice) {
 				await message.edit({
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "RPS",
 						fields: [
@@ -77,15 +77,15 @@ export class command extends Command {
 									`Bot: \`${botchoice}\`\n You: \`${playerchoice}\``,
 							},
 						],
-					}).setColor("random"),
+					}).setColor("random")],
 					components: [],
 				});
 			} else {
 				await message.edit({
-					embed: new Embed({
+					embeds: [new Embed({
 						author: {
 							name: "Bidome bot",
-							icon_url: ctx.message.client.user?.avatarURL(),
+							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "RPS",
 						fields: [
@@ -102,7 +102,7 @@ export class command extends Command {
 									`Bot: \`${botchoice}\`\n You: \`${playerchoice}\``,
 							},
 						],
-					}).setColor("random"),
+					}).setColor("random")],
 					components: [],
 				});
 			}

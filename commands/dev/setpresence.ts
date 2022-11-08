@@ -6,7 +6,7 @@ import {
 } from "harmony";
 import { format } from "tools";
 
-export class command extends Command {
+export default class SetPresence extends Command {
 	name = "setpresence";
 	ownerOnly = true;
 	category = "dev";
@@ -15,17 +15,17 @@ export class command extends Command {
 	async execute(ctx: CommandContext) {
 		const now = Date.now();
 		const message = await ctx.message.reply(undefined, {
-			embed: new Embed({
+			embeds: [new Embed({
 				author: {
 					name: "Bidome bot",
-					icon_url: ctx.message.client.user?.avatarURL(),
+					icon_url: ctx.message.client.user!.avatarURL(),
 				},
 				title: "Bot status",
 				description: "Please select the status type!",
 				footer: {
 					text: "This will time out in 30 seconds!",
 				},
-			}).setColor("random"),
+			}).setColor("random")],
 			components: [
 				{
 					type: 1,
@@ -51,14 +51,14 @@ export class command extends Command {
 		);
 		if (!choice[0]) {
 			await message.edit(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bot status",
 					description: "Presence change timed out!",
-				}).setColor("random"),
+				}).setColor("random")],
 				components: [],
 			});
 			return;
@@ -74,14 +74,14 @@ export class command extends Command {
 				activity: ctx.client.presence.activity,
 			});
 			await message.edit(undefined, {
-				embed: new Embed({
+				embeds: [new Embed({
 					author: {
 						name: "Bidome bot",
-						icon_url: ctx.message.client.user?.avatarURL(),
+						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bot status",
 					description: "Presence has been changed!",
-				}).setColor("random"),
+				}).setColor("random")],
 				components: [],
 			});
 		}
