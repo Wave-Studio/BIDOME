@@ -5,5 +5,5 @@
 /.cache
 
 # Ignore temporary files (for dev)
-/temp/
-dlemotes.ts
+/temp
+/.cache
