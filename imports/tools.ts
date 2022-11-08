@@ -242,3 +242,5 @@ export const formatNumber = (num: number) => {
 	
 	return num.toString();
 };
+
+export const sleep = (length: number) => new Promise((resolve) => setTimeout(resolve, length));
