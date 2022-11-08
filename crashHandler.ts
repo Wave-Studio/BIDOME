@@ -30,7 +30,7 @@ let lastLaunch = 0;
 let tooFastCrashes = 0;
 
 const createInstance = async () => {
-	for (const gitcmd of ["git fetch", "git reset --hard origin/music"]) {
+	for (const gitcmd of ["git fetch", `git reset --hard origin/${Deno.env.get("GH_BRANCH")}`]) {
 		const git = Deno.run({
 			cmd: gitcmd.split(" "),
 		});
