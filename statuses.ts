@@ -1,9 +1,8 @@
-import { ActivityType, CommandClient, StatusType } from "harmony";
+import { ActivityType, CommandClient } from "harmony";
 
 export interface BotStatus {
 	name: string;
 	type: ActivityType;
-	status?: StatusType;
 }
 
 let statusIndex = 0;

@@ -175,14 +175,13 @@ bot.on("commandUserMissingPermissions", async (ctx: CommandContext, missing: str
 
 const nextStatus = async () => {
 	if (bot.gateway.connected) {
-		const { type, name, status } = await getRandomStatus(bot);
+		const { type, name } = await getRandomStatus(bot);
 		try {
 			bot.setPresence({
 				activity: {
 					name,
 					type,
-				},
-				status: status ?? "idle",
+				}
 			});
 		} catch {
 			console.log("status failed to be set");
