@@ -24,7 +24,7 @@ export default class Calculator extends Command {
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: '"Ti 84"',
-					description: "```\n \n```",
+					description: "```\nPress any button\n```",
 					fields: [
 						{
 							name: "\u200B",

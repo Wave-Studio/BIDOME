@@ -11,7 +11,9 @@ export default async function calculator(i: MessageComponentInteraction) {
 				.footer!.icon_url!.split("/avatars/")[1]
 				.split("/")[0] === i.user.id
 		) {
-			let previousInputs = i.message.embeds[0].description!.split("\n")[1];
+			let previousInputs = i.message.embeds[0]
+				.description!.split("\n")[1]
+				.replace("Press any button", "");
 			let solution = null;
 
 			switch (i.customID.substring("calc-".length)) {
@@ -81,19 +83,13 @@ export default async function calculator(i: MessageComponentInteraction) {
 				solution = "Error";
 			}
 
-			previousInputs =
-				previousInputs.length > 1 ? previousInputs.replace(/ /g, "") : " ";
+			previousInputs = previousInputs.trim() == "" ? "Press any button" : previousInputs;
 
 			await i.message.edit(undefined, {
 				embeds: [
 					new Embed({
 						...i.message.embeds[0].toJSON(),
-						description:
-							"```\n" +
-							(previousInputs.trim() == ""
-								? "Press any button"
-								: previousInputs) +
-							"\n```",
+						description: "```\n" + previousInputs.trim() + "\n```",
 						fields: [
 							{
 								name: "\u200B",
