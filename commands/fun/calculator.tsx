@@ -11,8 +11,8 @@ import {
 
 export default class Calculator extends Command {
 	name = "calculator";
-	description = 'Who doesn\'t like a good ol "Ti 84"';
-	aliases = ["calc", "ti84", "shittyti84"];
+	description = 'Who doesn\'t like a good ol "MTX 84 Ti 16gb"';
+	aliases = ["calc", "84ti", "shitty84ti", "math"];
 	usage = "calculator";
 	category = "fun";
 	async execute(ctx: CommandContext) {
