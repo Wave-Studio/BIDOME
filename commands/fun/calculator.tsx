@@ -11,8 +11,8 @@ import {
 
 export default class Calculator extends Command {
 	name = "calculator";
-	description = 'Who doesn\'t like a good ol "Ti 84"';
-	aliases = ["calc", "ti84", "shittyti84"];
+	description = 'Who doesn\'t like a good ol "MTX 8040 Tl 16gb"';
+	aliases = ["calc", "8040tl", "shitty84tl", "math"];
 	usage = "calculator";
 	category = "fun";
 	async execute(ctx: CommandContext) {
@@ -23,7 +23,7 @@ export default class Calculator extends Command {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
-					title: '"Ti 84"',
+					title: '"MTX 8040 Tl 16gb"',
 					description: "```\nPress any button\n```",
 					fields: [
 						{
