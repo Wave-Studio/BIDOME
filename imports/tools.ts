@@ -192,6 +192,7 @@ export const loopFilesAndReturn = async (path: string, extensions: string[] = ["
 		const uri = `${path}${path.endsWith("/") ? "" : "/"}${file.name}`;
 		if (file.isFile) {
 			for (const ext of extensions) {
+				if (file.name.startsWith("-")) continue;
 				if (file.name.trim().toLowerCase().endsWith(ext)) {
 					files.push(uri);
 				}
