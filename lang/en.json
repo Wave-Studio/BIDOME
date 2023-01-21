@@ -1,0 +1,50 @@
+{
+	"language": {
+		"short": "en",
+		"full": "English"
+	},
+
+	"generic": {
+		"ownerOnly": "Owner only",
+		"noPerms": "No permissions required",
+		"noDescription": "No description provided",
+		"noUsage": "No usage provided",
+		"noCategory": "Uncategorized"
+	},
+
+	"commands": {
+		"help": {
+			"unknownCommand": {
+				"title": "Bidome help",
+				"description": "Unknown command! Please make sure it's a valid command!"
+			},
+			"commandInfo": {
+				"title": "Bidome help",
+				"field": {
+					"name": "Command information",
+					"value": [
+						"Name: `{0}`",
+						"Description: `{1}`",
+						"Usage: `{2}`",
+						"Permission: `{3}`",
+						"Category: `{4}`"
+					]
+				},
+				"footer": "[Arg] = Optional | <Arg> = Required"
+			}
+		}
+	},
+
+	"interactions": {},
+
+	"errors": {
+		"genericCommand": {
+			"title": "An error occurred!",
+			"description": "An error occured while executing this command! If this continues please alert a developer!"
+		},
+		"missingPerms": {
+			"title": "Missing Permissions!",
+			"description": "You are missing the following permissions: `{0}`!"
+		}
+	}
+}

@@ -9,6 +9,7 @@
 		"emoji": "./imports/emoji.ts",
 		"supabase": "./imports/supabase.ts",
 		"shared": "./imports/shared.ts",
-		"cache": "./imports/cache.ts"
+		"cache": "./imports/cache.ts",
+		"i18n": "./imports/i18n.ts"
 	}
 }

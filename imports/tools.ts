@@ -178,7 +178,7 @@ export const toMs = (str: string) => {
 export const sleep = (length: number) =>
 	new Promise((resolve) => setTimeout(resolve, length));
 
-export const loopFilesAndReturn = async (path: string) => {
+export const loopFilesAndReturn = async (path: string, extensions: string[] = [".ts", ".tsx", ".js", ".jsx"]) => {
 	const files: string[] = [];
 
 	try {
@@ -191,7 +191,7 @@ export const loopFilesAndReturn = async (path: string) => {
 		if (file.name.trim().startsWith("-")) continue;
 		const uri = `${path}${path.endsWith("/") ? "" : "/"}${file.name}`;
 		if (file.isFile) {
-			for (const ext of [".ts", ".tsx", ".js", ".jsx"]) {
+			for (const ext of extensions) {
 				if (file.name.trim().toLowerCase().endsWith(ext)) {
 					files.push(uri);
 				}

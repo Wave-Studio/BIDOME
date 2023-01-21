@@ -4,28 +4,14 @@ import {
 	Embed,
 	GatewayIntents,
 	isMessageComponentInteraction,
-	InteractionResponseType
+	InteractionResponseType,
 } from "harmony";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
 import { getPrefix } from "supabase";
 import { loopFilesAndReturn } from "tools";
 import { interactionHandlers } from "shared";
-
-const logFunction = console.log;
-
-console.log = (...args: unknown[]) => {
-	const date = new Date();
-	const amOrPm = date.getHours() > 12 ? "PM" : "AM";
-	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
-
-	logFunction(
-		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${
-			date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
-		}${amOrPm}]`,
-		...args
-	);
-};
+import { getString } from "i18n";
 
 const bot = new CommandClient({
 	prefix: [],
@@ -121,9 +107,8 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
-					title: "An error occured!",
-					description:
-						"An error occured while executing this command! If this command continues erroring please alert a developer!",
+					title: getString("en", "errors.genericCommand.title"),
+					description: getString("en", "errors.genericCommand.description"),
 				}).setColor("red"),
 			],
 		});
@@ -157,21 +142,27 @@ bot.on("interactionCreate", async (i) => {
 	}
 });
 
-bot.on("commandUserMissingPermissions", async (ctx: CommandContext, missing: string[]) => {
-	await ctx.message.reply(undefined, {
-		embeds: [
-			new Embed({
-				author: {
-					name: "Bidome bot",
-					icon_url: ctx.message.client.user!.avatarURL(),
-				},
-				title: "Missing permissions!",
-				description:
-					`You are missing the following permissions to run this command: \`${missing.join(", ")}\`!`,
-			}).setColor("red"),
-		],
-	});
-});
+bot.on(
+	"commandUserMissingPermissions",
+	async (ctx: CommandContext, missing: string[]) => {
+		await ctx.message.reply(undefined, {
+			embeds: [
+				new Embed({
+					author: {
+						name: "Bidome bot",
+						icon_url: ctx.message.client.user!.avatarURL(),
+					},
+					title: getString("en", "errors.missingPerms.title"),
+					description: getString(
+						"en",
+						"errors.missingPerms.description",
+						missing.join(", ")
+					),
+				}).setColor("red"),
+			],
+		});
+	}
+);
 
 const nextStatus = async () => {
 	if (bot.gateway.connected) {
@@ -181,7 +172,7 @@ const nextStatus = async () => {
 				activity: {
 					name,
 					type,
-				}
+				},
 			});
 		} catch {
 			console.log("status failed to be set");

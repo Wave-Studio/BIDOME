@@ -4,7 +4,7 @@ import { toMs } from "tools";
 export default class ConvertTime extends Command {
 	name = "converttime";
 	aliases = ["converttimestamp"];
-	category = "misc";
+	category = "utils";
 	description = "Convert a timestamp to a singular unit value";
 	async execute(ctx: CommandContext) {
 		if (ctx.argString == "") {

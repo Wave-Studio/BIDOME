@@ -5,7 +5,7 @@ import {
 	isMessageComponentInteraction,
 	MessageComponentData,
 } from "harmony";
-
+import { getString } from "i18n";
 import { format } from "tools";
 
 export default class Help extends Command {
@@ -15,6 +15,7 @@ export default class Help extends Command {
 	usage = "Help [command]";
 	description = "Get a list of commands or information regarding a command";
 	async execute(ctx: CommandContext) {
+		const userLanguage = 'en';
 		if (ctx.argString != "") {
 			if (!ctx.client.commands.exists(ctx.argString)) {
 				await ctx.message.reply(undefined, {
@@ -23,10 +24,10 @@ export default class Help extends Command {
 							name: "Bidome bot",
 							icon_url: ctx.message.client.user!.avatarURL(),
 						},
-						title: "Bidome help",
+						title: getString(userLanguage, "commands.help.unknownCommand.title"),
 						description:
-							"Unknown command! Please make sure it's a valid command!",
-					}).setColor("random")],
+						getString(userLanguage, "commands.help.unknownCommand.description"),
+					}).setColor("red")],
 				});
 			} else {
 				const description = [

@@ -4,7 +4,7 @@ import { toMs } from "tools";
 export default class Timestamp extends Command {
 	name = "timestamp";
 	aliases = ["ts", "time"];
-	category = "misc";
+	category = "utils";
 	description = "Create a discord timestamp";
 	async execute(ctx: CommandContext) {
 		if (ctx.argString == "") {
