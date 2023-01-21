@@ -23,7 +23,7 @@ export default class Pull extends Command {
 
 		const outputs = [];
 
-		for (const gitcmd of ["git fetch", "git reset --hard origin/music"]) {
+		for (const gitcmd of ["git fetch", `git reset --hard origin/${Deno.env.get("GH_BRANCH") ?? "master"}`]) {
 			const git = Deno.run({
 				cmd: gitcmd.split(" "),
 				stdout: "piped",
