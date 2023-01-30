@@ -123,6 +123,12 @@ export default class BetterEmotes extends Extension {
 					},
 				}).setColor("random")
 			)],
+			allowedMentions: {
+				parse: [],
+				replied_user: false,
+				roles: [],
+				users: [],
+			}
 		});
 		await msg.delete();
 	}
