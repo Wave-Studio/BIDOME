@@ -1,4 +1,1 @@
-export * from "../../harmony/mod.ts";
-
-//export * from "https://deno.land/x/harmony@v2.8.0/mod.ts";
-//export * from "https://deno.land/x/harmony@v2.8.0/src/types/endpoint.ts";
+export * from "https://raw.githubusercontent.com/Blocksnmore/harmony/main/mod.ts";
