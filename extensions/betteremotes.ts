@@ -10,6 +10,7 @@ import {
 import { getUserProfilePicture } from "cache";
 import { encode } from "https://deno.land/std@0.175.0/encoding/base64.ts";
 import { getEmojiByName } from "emoji";
+import { truncateString } from "tools";
 
 interface ServerEmoteList {
 	name: string;
@@ -41,7 +42,7 @@ export default class BetterEmotes extends Extension {
 
 		if (webhooks.length >= 8) return;
 
-		let webhook = webhooks.find((w) => w.name == "Bidome bot");
+		let webhook = webhooks.find((w) => w.name?.toLowerCase() == "bidome bot");
 		// TODO: Make this work
 		const serverEmojisArray = this.serverEmoteCache.has(msg.guild!.id)
 			? this.serverEmoteCache.get(msg.guild!.id)
@@ -76,10 +77,34 @@ export default class BetterEmotes extends Extension {
 			);
 		}
 
+		const messageEmbeds: Embed[] = [];
+
+		if (msg.messageReference != undefined) {
+			const refMsg = await msg.channel.messages.fetch(
+				msg.messageReference.message_id!
+			);
+			if (refMsg != undefined) {
+				messageEmbeds.push(new Embed({
+					author: {
+						name: "Bidome bot",
+						icon_url: msg.client.user!.avatarURL(),
+					},
+					title: "Replying to message",
+					fields: [
+						{
+							name: refMsg.author.tag,
+							value: truncateString(refMsg.content, 1020),
+						}
+					],
+					url: refMsg.url,
+				}).setColor("random"));
+			} 
+		}
+
 		await webhook.send(message, {
 			avatar: msg.author.avatarURL(),
 			name: msg.author.username,
-			embeds: msg.attachments.map((a) =>
+			embeds: [...messageEmbeds, ...msg.attachments.map((a) =>
 				new Embed({
 					author: {
 						name: "Bidome bot",
@@ -97,7 +122,7 @@ export default class BetterEmotes extends Extension {
 							: undefined,
 					},
 				}).setColor("random")
-			),
+			)],
 		});
 		await msg.delete();
 	}
