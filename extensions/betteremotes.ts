@@ -25,6 +25,7 @@ export default class BetterEmotes extends Extension {
 
 	@event("messageCreate")
 	async messageCreate(_: Extension, msg: Message) {
+		if (Deno.env.get("IS_DEV") != "true") return;
 		if (
 			msg.author.bot ||
 			msg.guild == undefined ||
@@ -76,6 +77,8 @@ export default class BetterEmotes extends Extension {
 				`<${emote.animated ? "a" : ""}:${emote.name}:${emote.id}>`
 			);
 		}
+
+		if (message == msg.content) return;
 
 		const messageEmbeds: Embed[] = [];
 
