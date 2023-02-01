@@ -43,7 +43,7 @@ export default class BetterEmotes extends Extension {
 
 		if (webhooks.length >= 8) return;
 
-		let webhook = webhooks.find((w) => w.name?.toLowerCase() == "bidome bot");
+		let webhook = webhooks.find((w) => w.name?.toLowerCase() == "bidome bot" && w.user?.id == msg.client.user?.id);
 		// TODO: Make this work
 		const serverEmojisArray = this.serverEmoteCache.has(msg.guild!.id)
 			? this.serverEmoteCache.get(msg.guild!.id)
@@ -89,17 +89,10 @@ export default class BetterEmotes extends Extension {
 			if (refMsg != undefined) {
 				messageEmbeds.push(new Embed({
 					author: {
-						name: "Bidome bot",
-						icon_url: msg.client.user!.avatarURL(),
+						name: `Replying to: ${refMsg.author.tag}`,
+						icon_url: refMsg.author.avatarURL(),
 					},
-					title: "Replying to message",
-					fields: [
-						{
-							name: refMsg.author.tag,
-							value: truncateString(refMsg.content, 1020),
-						}
-					],
-					url: refMsg.url,
+					description: `${truncateString(refMsg.content, 100)} \n\n[Click to jump to message](${refMsg.url})`,
 				}).setColor("random"));
 			} 
 		}
@@ -133,7 +126,7 @@ export default class BetterEmotes extends Extension {
 				users: [],
 			}
 		});
-		await msg.delete();
+		//await msg.delete();
 	}
 
 	@event("guildEmojiAdd")
