@@ -20,42 +20,76 @@ export const supabase = createClient(
 	Deno.env.get("SERVICE_ROLE_KEY")!
 );
 
-const prefixCache: Record<string, { value: string; lastUpdate: number }> = {};
+const prefixCache: Record<string, { values: string[]; lastUpdate: number }> = {};
 
-export const getPrefix = async (guild: string) => {
-	if (prefixCache[guild]) return prefixCache[guild].value;
-	const { data } = (await supabase
-		.from("data")
-		.select("prefix")
-		.eq("server_id", guild)) as { data: { prefix: string }[] | undefined };
+export const getPrefixes = async (guild: string) => {
+	const cacheValue = prefixCache[guild];
+	const lastUpdateInterval = Date.now() - (cacheValue?.lastUpdate ?? 0);
+
+	if (cacheValue != undefined && lastUpdateInterval < 30 * 60 * 1000) {
+		return cacheValue.values;
+	}
+
+	const { data } = (await supabase.from("servers").select("prefix").eq("server_id", guild)) as { data: { prefix: string[] }[] | undefined };
 
 	if (data == null || data.length < 1) {
-		await supabase.from("data").insert({
+		await supabase.from("servers").insert({
 			server_id: guild,
 		});
 
-		return "!";
+		prefixCache[guild] = {
+			values: ["!"],
+			lastUpdate: Date.now(),
+		};
+
+		return ["!"];
 	}
 
 	prefixCache[guild] = {
-		value: data[0].prefix,
+		values: data[0].prefix,
 		lastUpdate: Date.now(),
 	};
-	return data![0].prefix;
+
+	return data[0].prefix;
 };
 
-export const setPrefix = async (guild: string, prefix: string) => {
+export const setPrefixes = async (guild: string, prefixes: string[]) => {
 	await supabase
-		.from("data")
+		.from("servers")
 		.update({
-			prefix,
+			prefix: prefixes,
 		})
 		.eq("server_id", guild);
 	prefixCache[guild] = {
-		value: prefix,
+		values: prefixes,
 		lastUpdate: Date.now(),
 	};
-};
+}
+
+export const addPrefix = async (guild: string, prefix: string) => {
+	const prefixes = await getPrefixes(guild);
+	if (prefixes.includes(prefix)) return;
+	prefixes.push(prefix);
+	await setPrefixes(guild, prefixes);
+}
+
+export const removePrefix = async (guild: string, prefix: string) => {
+	const prefixes = await getPrefixes(guild);
+	if (!prefixes.includes(prefix)) return;
+	prefixes.splice(prefixes.indexOf(prefix), 1);
+	await setPrefixes(guild, prefixes);
+}
+
+supabase.from("servers").on("*",  (payload) => {
+	if (["UPDATE", "INSERT"].includes(payload.eventType)) {
+		prefixCache[payload.new.server_id] = {
+			values: payload.new.prefix,
+			lastUpdate: Date.now(),
+		};
+	} else {
+		delete prefixCache[payload.old.server_id];
+	}
+}).subscribe();
 
 export const purgeCache = () => {
 	for (const [key, value] of Object.entries(prefixCache)) {

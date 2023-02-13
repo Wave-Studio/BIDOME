@@ -3,6 +3,7 @@
 
 # Ignore Cache files
 /.cache
+deno.lock
 
 # Ignore temporary files (for dev)
 /temp

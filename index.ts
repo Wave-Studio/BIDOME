@@ -8,18 +8,18 @@ import {
 } from "harmony";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
-import { getPrefix } from "supabase";
+import { getPrefixes, supabase } from "supabase";
 import { loopFilesAndReturn } from "tools";
 import { interactionHandlers } from "shared";
 import { getString } from "i18n";
 
 const bot = new CommandClient({
 	prefix: [],
-	async getGuildPrefix(guildid: string): Promise<string> {
+	async getGuildPrefix(guildid: string): Promise<string | string[]> {
 		if (Deno.env.get("IS_DEV") == "true") {
 			return ">>";
 		}
-		return await getPrefix(guildid);
+		return await getPrefixes(guildid);
 	},
 	allowBots: false,
 	allowDMs: false,

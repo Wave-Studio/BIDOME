@@ -5,7 +5,7 @@ import {
 	InteractionResponseType,
 	isMessageComponentInteraction,
 } from "harmony";
-import { getPrefix, setPrefix } from "supabase";
+import { getPrefixes, addPrefix, removePrefix } from "supabase";
 
 export default class Config extends Command {
 	name = "config";
@@ -79,9 +79,15 @@ export default class Config extends Command {
 								components: [
 									{
 										type: 2,
+										label: "Add prefix",
+										customID: "addprefix-" + currentTime,
+										style: "GREEN",
+									},
+									{
+										type: 2,
 										label: "Change prefix",
-										customID: "changeprefix-" + currentTime,
-										style: "BLURPLE",
+										customID: "rmprefix-" + currentTime,
+										style: "RED",
 									},
 								],
 							},
@@ -93,9 +99,9 @@ export default class Config extends Command {
 									icon_url: ctx.client.user!.avatarURL(),
 								},
 								description:
-									"Current prefix: `" +
-									await getPrefix(ctx.guild!.id) +
-									"`",
+									"Current prefixes: ```" +
+									(await (await getPrefixes(ctx.guild!.id)).join("\n")) +
+									"```",
 								footer: {
 									text: "Changing the prefix will time out in 30 seconds!",
 								},
@@ -128,78 +134,62 @@ export default class Config extends Command {
 							],
 						});
 					} else {
-						await message.edit({
-							components: [],
-							embeds: [
-								new Embed({
-									author: {
-										name: "Bidome bot",
-										icon_url: ctx.client.user!.avatarURL(),
-									},
-									description: "Please send the new prefix in chat!",
-									fields: [
-										{
-											name: "Prefix rules",
-											value: [
-												"```yml",
-												" - Must be 5 characters or fewer in length",
-												" - Allowed characters: ",
-												"  - A-Z 0-9 !@#$%^&*()<>,.?/|;{}[]:+=-",
-												"```",
-											].join("\n"),
-										},
-									],
-									footer: {
-										text: "This will time out in 30 seconds!",
-									},
-								}).setColor("random"),
-							],
-						});
-						const [prefix] = await ctx.client.waitFor(
-							"messageCreate",
-							(i) =>
-								i.channel.id === ctx.channel.id &&
-								ctx.author.id === i.author.id,
-							30 * 1000
-						);
-
-						if (!prefix) {
-							await message.edit({
-								embeds: [
-									new Embed({
-										author: {
-											name: "Bidome bot",
-											icon_url: ctx.client.user!.avatarURL(),
-										},
-										description: "Prefix change timed out!",
-									}).setColor("random"),
-								],
-							});
-						} else {
-							const allowedChars =
-								"abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()<>,.?/|;{}[]:+=-".split(
-									""
-								);
-							if (prefix.content.length > 5) {
-								await prefix.reply(undefined, {
+						if (!isMessageComponentInteraction(willChange)) return;
+						switch (willChange.customID.split("-")[0]) {
+							case "addprefix": {
+								await message.edit({
+									components: [],
 									embeds: [
 										new Embed({
 											author: {
 												name: "Bidome bot",
-												icon_url: ctx.client.user?.avatarURL(),
+												icon_url: ctx.client.user!.avatarURL(),
 											},
-											description:
-												"Prefix length is longer than the maximum allowed! (5) \nPrefix change has been canceled",
+											description: "Please send the new prefix in chat!",
+											fields: [
+												{
+													name: "Prefix rules",
+													value: [
+														"```yml",
+														" - Must be 5 characters or fewer in length",
+														" - Allowed characters: ",
+														"  - A-Z 0-9 !@#$%^&*()<>,.?/|;{}[]:+=-",
+														"```",
+													].join("\n"),
+												},
+											],
+											footer: {
+												text: "This will time out in 30 seconds!",
+											},
 										}).setColor("random"),
 									],
 								});
-								return;
-							} else {
-								let shouldChangePrefix = true;
 
-								for (const letter of prefix.content.toLowerCase()) {
-									if (allowedChars.includes(letter)) continue;
-									else {
+								const [prefix] = await ctx.client.waitFor(
+									"messageCreate",
+									(i) =>
+										i.channel.id === ctx.channel.id &&
+										ctx.author.id === i.author.id,
+									30 * 1000
+								);
+								if (!prefix) {
+									await message.edit({
+										embeds: [
+											new Embed({
+												author: {
+													name: "Bidome bot",
+													icon_url: ctx.client.user!.avatarURL(),
+												},
+												description: "Prefix change timed out!",
+											}).setColor("random"),
+										],
+									});
+								} else {
+									const allowedChars =
+										"abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()<>,.?/|;{}[]:+=-".split(
+											""
+										);
+									if (prefix.content.length > 5) {
 										await prefix.reply(undefined, {
 											embeds: [
 												new Embed({
@@ -208,34 +198,144 @@ export default class Config extends Command {
 														icon_url: ctx.client.user?.avatarURL(),
 													},
 													description:
-														"An invalid character was provided! `` " +
-														letter +
-														" ``",
+														"Prefix length is longer than the maximum allowed! (5) \nPrefix change has been canceled",
 												}).setColor("random"),
 											],
 										});
-										shouldChangePrefix = false;
 										return;
+									} else {
+										let shouldChangePrefix = true;
+
+										for (const letter of prefix.content.toLowerCase()) {
+											if (allowedChars.includes(letter)) continue;
+											else {
+												await prefix.reply(undefined, {
+													embeds: [
+														new Embed({
+															author: {
+																name: "Bidome bot",
+																icon_url: ctx.client.user?.avatarURL(),
+															},
+															description:
+																"An invalid character was provided! `` " +
+																letter +
+																" ``",
+														}).setColor("random"),
+													],
+												});
+												shouldChangePrefix = false;
+												return;
+											}
+										}
+										if (!shouldChangePrefix) return;
+
+										addPrefix(ctx.guild!.id, prefix.content.toLowerCase());
+
+										await prefix.reply(undefined, {
+											embeds: [
+												new Embed({
+													author: {
+														name: "Bidome bot",
+														icon_url: ctx.client.user!.avatarURL(),
+													},
+													description:
+														"Added prefix `" +
+														prefix.content.toLowerCase() +
+														"`",
+												}).setColor("random"),
+											],
+										});
 									}
 								}
-								if (!shouldChangePrefix) return;
+								break;
+							}
 
-								setPrefix(ctx.guild!.id, prefix.content.toLowerCase());
-
-								await prefix.reply(undefined, {
+							case "rmprefix": {
+								await message.edit({
+									components: [],
 									embeds: [
 										new Embed({
 											author: {
 												name: "Bidome bot",
 												icon_url: ctx.client.user!.avatarURL(),
 											},
-											description:
-												"The prefix has been changed to `` " +
-												prefix.content.toLowerCase() +
-												" ``",
+											description: "Please send the prefix to remove in chat!",
+											fields: [
+												{
+													name: "Current prefixes",
+													value:
+														"```" +
+														(await (
+															await getPrefixes(ctx.guild.id)
+														).join("\n")) +
+														"```",
+												},
+											],
+											footer: {
+												text: "This will time out in 30 seconds!",
+											},
 										}).setColor("random"),
 									],
 								});
+
+								const [prefix] = await ctx.client.waitFor(
+									"messageCreate",
+									(i) =>
+										i.channel.id === ctx.channel.id &&
+										ctx.author.id === i.author.id,
+									30 * 1000
+								);
+								if (!prefix) {
+									await message.edit({
+										embeds: [
+											new Embed({
+												author: {
+													name: "Bidome bot",
+													icon_url: ctx.client.user!.avatarURL(),
+												},
+												description: "Prefix removal timed out!",
+											}).setColor("random"),
+										],
+									});
+								} else {
+									if (
+										!(await getPrefixes(ctx.guild.id)).includes(
+											prefix.content.toLowerCase()
+										)
+									) {
+										await prefix.reply(undefined, {
+											embeds: [
+												new Embed({
+													author: {
+														name: "Bidome bot",
+														icon_url: ctx.client.user?.avatarURL(),
+													},
+													description:
+														"This prefix is not in the list of prefixes!",
+												}).setColor("random"),
+											],
+										});
+										return;
+									} else {
+										removePrefix(ctx.guild!.id, prefix.content.toLowerCase());
+
+										await prefix.reply(undefined, {
+											embeds: [
+												new Embed({
+													author: {
+														name: "Bidome bot",
+														icon_url: ctx.client.user!.avatarURL(),
+													},
+													description:
+														"Removed prefix `" +
+														prefix.content.toLowerCase() +
+														"`",
+												}).setColor("random"),
+											],
+										});
+									}
+								}
+								break;
 							}
 						}
 					}
