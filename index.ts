@@ -172,6 +172,7 @@ const commandDataCache: {
 };
 
 bot.on("commandUsed", async (ctx: CommandContext) => {
+	if (Deno.env.get("IS_DEV") == "true") return;
 	if (commandDataCache.lastUpdated == undefined) {
 		commandDataCache.lastUpdated = new Date();
 	} else {
