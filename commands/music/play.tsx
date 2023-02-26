@@ -8,7 +8,7 @@ import {
 	fragment,
 	isMessageComponentInteraction,
 } from "harmony";
-import { lavaCluster, queues, ServerQueue, Song } from "queue";
+import { lavaCluster, queues, ServerQueue, Song, doPermCheck } from "queue";
 import { LoadType, Track } from "lavadeno";
 import { getEmojiByName } from "emoji";
 import { removeDiscordFormatting } from "tools";
@@ -232,7 +232,7 @@ export default class Play extends Command {
 					const isNewQueue = queues.has(ctx.guild.id);
 					const queue: ServerQueue = isNewQueue
 						? queues.get(ctx.guild.id)!
-						: new ServerQueue(vc.channel.id, ctx.guild);
+						: new ServerQueue(vc.channel.id, ctx.guild, vc.channel, await doPermCheck(ctx.member!, vc.channel));
 
 					if (songsToAdd.length > 1) {
 						await message.edit(undefined, {

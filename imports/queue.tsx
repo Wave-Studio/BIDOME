@@ -12,6 +12,7 @@ import {
 	Member,
 	VoiceChannel,
 	VoiceState,
+	ChannelTypes
 } from "./harmony.ts";
 import {
 	Cluster,
@@ -52,11 +53,13 @@ export class ServerQueue {
 	public songLoop = false;
 	public queueLoop = false;
 	private firstSong = true;
+	public queueMessage?: Message
 
 	constructor(
 		public channel: string,
 		private guild: Guild,
-		public queueMessage?: Message
+		channelObject: VoiceChannel,
+		setAsSpeaker = false,
 	) {
 		this.guildId = this.guild.id;
 
@@ -66,6 +69,11 @@ export class ServerQueue {
 		});
 
 		this.player.on("trackStart", async () => {
+			if (setAsSpeaker && this.firstSong) {
+				if (channelObject.type == ChannelTypes.GUILD_STAGE_VOICE) {
+					this.makeBotSpeak(channelObject);
+				}
+			}
 			this.voteSkipUsers = [];
 
 			if (this.queueMessage != undefined) {
@@ -176,6 +184,13 @@ export class ServerQueue {
 		this.player.disconnect();
 
 		await this.player.destroy();
+	}
+
+	private async makeBotSpeak(channelObject: VoiceChannel) { 
+		const botVoiceState = await channelObject.guild.voiceStates.get(client.user!.id);
+		if (botVoiceState == undefined) return;
+		// Unimplemented methods my beloved
+		await client.rest.api.guilds[this.guildId]["voice-states"][client.user!.id].patch({channel_id: this.channel, suppress: false });
 	}
 
 	public addSongs(song: Song | Song[]) {

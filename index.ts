@@ -164,6 +164,36 @@ bot.on(
 	}
 );
 
+const commandDataCache: {
+	lastUpdated?: Date;
+	data: Record<string, number>;
+} = {
+	data: {}
+};
+
+bot.on("commandUsed", async (ctx: CommandContext) => {
+	if (commandDataCache.lastUpdated == undefined) {
+		commandDataCache.lastUpdated = new Date();
+	} else {
+		if (commandDataCache.lastUpdated.getDay() != new Date().getDay()) {
+			commandDataCache.lastUpdated = new Date();
+			commandDataCache.data = {};
+		}
+	}
+
+	if (commandDataCache.data[ctx.command.name] == undefined) {
+		const { data } = await supabase.from("cmdanalytics").select("times").eq("name", ctx.command.name);
+		if (data == undefined || data.length == 0) {
+			commandDataCache.data[ctx.command.name] = 0;
+		} else {
+			commandDataCache.data[ctx.command.name] = data[0].times;
+		}
+	}
+
+	commandDataCache.data[ctx.command.name] = commandDataCache.data[ctx.command.name] + 1;
+	await supabase.from("cmdanalytics").update({ times: commandDataCache.data[ctx.command.name] }).eq("name", ctx.command.name);
+});
+
 const nextStatus = async () => {
 	if (bot.gateway.connected) {
 		const { type, name } = await getRandomStatus(bot);

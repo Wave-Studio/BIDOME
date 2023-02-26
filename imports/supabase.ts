@@ -33,12 +33,16 @@ export const getPrefixes = async (guild: string) => {
 	const { data } = (await supabase.from("servers").select("prefix").eq("server_id", guild)) as { data: { prefix: string[] }[] | undefined };
 
 	if (data == null || data.length < 1) {
-		await supabase.from("servers").insert({
+		let { data } = await supabase.from("servers").insert({
 			server_id: guild,
 		});
 
+		if (data == null || data.length < 1) {
+			data = [{ prefix: ["!"]}]
+		}
+
 		prefixCache[guild] = {
-			values: ["!"],
+			values: data![0].prefix,
 			lastUpdate: Date.now(),
 		};
 
