@@ -171,6 +171,10 @@ const commandDataCache: {
 	data: {}
 };
 
+const lifetimeCommandDataCache: {
+	[key: string]: number;
+} = {};
+
 bot.on("commandUsed", async (ctx: CommandContext) => {
 	if (Deno.env.get("IS_DEV") == "true") return;
 	if (commandDataCache.lastUpdated == undefined) {
@@ -193,7 +197,18 @@ bot.on("commandUsed", async (ctx: CommandContext) => {
 		}
 	}
 
+	if (lifetimeCommandDataCache[ctx.command.name] == undefined) {
+		const { data } = await supabase.from("lifetimecmdanalytics").select("times").eq("command", ctx.command.name);
+		if (data == undefined || data.length == 0) {
+			lifetimeCommandDataCache[ctx.command.name] = 0;
+			await supabase.from("lifetimecmdanalytics").insert({ times: commandDataCache.data[ctx.command.name], "command": ctx.command.name});
+		} else {
+			lifetimeCommandDataCache[ctx.command.name] = data[0].times;
+		}
+	}
+
 	commandDataCache.data[ctx.command.name] = commandDataCache.data[ctx.command.name] + 1;
+	lifetimeCommandDataCache[ctx.command.name] = lifetimeCommandDataCache[ctx.command.name] + 1;
 	console.log(commandDataCache);
 	await supabase.from("cmdanalytics").update({ times: commandDataCache.data[ctx.command.name] }).eq("command", ctx.command.name);
 });

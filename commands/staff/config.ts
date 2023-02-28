@@ -85,7 +85,7 @@ export default class Config extends Command {
 									},
 									{
 										type: 2,
-										label: "Change prefix",
+										label: "Remove prefix",
 										customID: "rmprefix-" + currentTime,
 										style: "RED",
 									},
