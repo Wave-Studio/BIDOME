@@ -95,7 +95,8 @@ while (true) {
 						status.code == 420 ? "Rebooted at a request" : "Crashed"
 					}!`,
 					description: `Rebooting the bot, time bot was alive: ${formatMs(
-						liveTime
+						liveTime,
+						true
 					)}`,
 				}).setColor("random"),
 			],

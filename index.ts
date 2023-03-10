@@ -42,8 +42,8 @@ const bot = new CommandClient({
 	},
 });
 
-bot.on("gatewayError", (_err) => {
-	console.log("Gateway error occured");
+bot.on("gatewayError", (err) => {
+	console.log("Gateway error occured", err);
 });
 
 bot.on("reconnect", () => {
@@ -201,7 +201,7 @@ bot.on("commandUsed", async (ctx: CommandContext) => {
 		const { data } = await supabase.from("lifetimecmdanalytics").select("times").eq("command", ctx.command.name);
 		if (data == undefined || data.length == 0) {
 			lifetimeCommandDataCache[ctx.command.name] = 0;
-			await supabase.from("lifetimecmdanalytics").insert({ times: commandDataCache.data[ctx.command.name], "command": ctx.command.name});
+			await supabase.from("lifetimecmdanalytics").insert({ times: lifetimeCommandDataCache[ctx.command.name], "command": ctx.command.name});
 		} else {
 			lifetimeCommandDataCache[ctx.command.name] = data[0].times;
 		}
@@ -211,6 +211,7 @@ bot.on("commandUsed", async (ctx: CommandContext) => {
 	lifetimeCommandDataCache[ctx.command.name] = lifetimeCommandDataCache[ctx.command.name] + 1;
 	console.log(commandDataCache);
 	await supabase.from("cmdanalytics").update({ times: commandDataCache.data[ctx.command.name] }).eq("command", ctx.command.name);
+	await supabase.from("lifetimecmdanalytics").update({ times: lifetimeCommandDataCache[ctx.command.name] }).eq("command", ctx.command.name);
 });
 
 const nextStatus = async () => {
