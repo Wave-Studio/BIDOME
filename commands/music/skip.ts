@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck } from "queue";
+import { queues, doPermCheck, LoopType } from "queue";
 
 
 export default class Skip extends Command {
@@ -42,11 +42,8 @@ export default class Skip extends Command {
 			);
 
 			if (canVoteSkip) {
-				const isSongLoop = !!queue.songLoop;
-				const isQueueLoop = !!queue.queueLoop;
-
-				queue.songLoop = false;
-				queue.queueLoop = false;
+				const isLooping = queue.loop;
+				queue.loop = LoopType.OFF;
 
 				await queue.player.seek(0);
 				await queue.player.stop();
@@ -66,8 +63,7 @@ export default class Skip extends Command {
 				});
 
 				// Reset the loop settings
-				queue.songLoop = isSongLoop;
-				queue.queueLoop = isQueueLoop;
+				queue.loop = isLooping;
 			} else {
 				const voiceMembers = (
 					await botState.channel.voiceStates.array()

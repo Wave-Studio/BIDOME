@@ -123,6 +123,7 @@ export default class Play extends Command {
 							track,
 							requestedBy: ctx.author.id,
 							thumbnail,
+							requestedByString: ctx.author.tag,
 						});
 					};
 
@@ -248,7 +249,7 @@ export default class Play extends Command {
 									} to the queue!`,
 									footer: {
 										text: `Songs in queue: ${
-											queue.queue.length + songsToAdd.length
+											queue.queue.length + songsToAdd.length + queue.playedSongQueue.length
 										}`,
 									},
 								}).setColor("random"),
@@ -268,7 +269,7 @@ export default class Play extends Command {
 										songsToAdd[0].title
 									)}](${songsToAdd[0].url}) to the queue!`,
 									footer: {
-										text: `Songs in queue: ${queue.queue.length + 1}`,
+										text: `Songs in queue: ${queue.queue.length + 1 + queue.playedSongQueue.length}`,
 									},
 								}).setColor("random"),
 							],

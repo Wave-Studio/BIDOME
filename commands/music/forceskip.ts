@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck } from "queue";
+import { queues, doPermCheck, LoopType } from "queue";
 
 export default class ForceSkip extends Command {
 	name = "forceskip";
@@ -45,12 +45,8 @@ export default class ForceSkip extends Command {
 				(await doPermCheck(ctx.member!, botState.channel!)) ||
 				queue.queue[0].requestedBy == ctx.author.id
 			) {
-				// Convert these into variables that don't change
-				const isSongLoop = !!queue.songLoop;
-				const isQueueLoop = !!queue.queueLoop;
-
-				queue.songLoop = false;
-				queue.queueLoop = false;
+				const isLooping = queue.loop;
+				queue.loop = LoopType.OFF;
 
 				await queue.player.seek(0);
 				await queue.player.stop();
@@ -68,9 +64,7 @@ export default class ForceSkip extends Command {
 					],
 				});
 
-				// Reset the loop settings
-				queue.songLoop = isSongLoop;
-				queue.queueLoop = isQueueLoop;
+				queue.loop = isLooping;
 			} else {
 				await ctx.message.reply({
 					embeds: [

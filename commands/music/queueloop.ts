@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck } from "queue";
+import { queues, doPermCheck, LoopType } from "queue";
 
 export default class QueueLoop extends Command {
 	name = "queueloop";
@@ -10,12 +10,19 @@ export default class QueueLoop extends Command {
 	async execute(ctx: CommandContext) {
 		if (ctx.guild == undefined) return;
 		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
-		if (queues.has(ctx.guild!.id) && (botState == undefined || botState.channel == undefined)) {
+		if (
+			queues.has(ctx.guild!.id) &&
+			(botState == undefined || botState.channel == undefined)
+		) {
 			queues.get(ctx.guild!.id)!.deleteQueue();
 		}
 		
 		const queue = queues.get(ctx.guild.id);
-		if (queue == undefined || botState == undefined || botState.channel == undefined ) {
+		if (
+			queue == undefined ||
+			botState == undefined ||
+			botState.channel == undefined
+		) {
 			await ctx.message.reply(undefined, {
 				embeds: [
 					new Embed({
@@ -35,13 +42,15 @@ export default class QueueLoop extends Command {
 		} else {
 			const queue = queues.get(ctx.guild!.id)!;
 			if (await doPermCheck(ctx.member!, botState.channel)) {
-				const isSongLoopEnabled = queue.songLoop;
+				const loopType = queue.loopType;
+				const loopTypeEnum = queue.loop;
+				const isLoopDisabled = queue.loop == LoopType.OFF;
 
-				if (isSongLoopEnabled) {
-					queue.songLoop = false;
+				if (isLoopDisabled) {
+					queue.loop = LoopType.QUEUE;
+				} else {
+					queue.loop = LoopType.OFF;
 				}
-
-				queue.queueLoop = !queue.queueLoop;
 
 				await ctx.message.reply({
 					embeds: [
@@ -52,9 +61,9 @@ export default class QueueLoop extends Command {
 							},
 							title: "Toggled queue loop",
 							description: `Queue looping is now ${
-								queue.queueLoop ? "Enabled" : "Disabled"
+								isLoopDisabled ? "Enabled" : "Disabled"
 							} ${
-								isSongLoopEnabled ? "and song looping is now disabled" : ""
+								loopTypeEnum != LoopType.OFF && isLoopDisabled ? `and ${loopType}ing is now disabled` : ""
 							}`,
 						}).setColor("green"),
 					],

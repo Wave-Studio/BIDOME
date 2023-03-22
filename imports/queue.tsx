@@ -12,24 +12,31 @@ import {
 	Member,
 	VoiceChannel,
 	VoiceState,
-	ChannelTypes
+	ChannelTypes,
 } from "./harmony.ts";
 import {
 	Cluster,
 	Player,
 	PlayerEvents,
 	NodeState,
-	TrackEndReason,
 } from "./lavadeno.ts";
-import { formatMs, removeDiscordFormatting } from "./tools.ts";
+import { formatMs, removeDiscordFormatting, shuffleArray } from "./tools.ts";
 import { nodes } from "./nodes.ts";
 import { getEmojiByName } from "./emoji.ts";
+import { supabase } from "supabase";
 
 let client: CommandClient;
 
 export const queues: Map<string, ServerQueue> = new Map();
 
 export let lavaCluster: Cluster;
+
+export enum LoopType {
+	SONG = "song",
+	QUEUE = "queue",
+	SHUFFLE = "shuffle",
+	OFF = "off",
+}
 
 export const doPermCheck = async (user: Member, channel: VoiceChannel) => {
 	// We do a bit of trolling
@@ -49,26 +56,42 @@ export class ServerQueue {
 	public readonly guildId: string;
 	public voteSkipUsers: string[] = [];
 	public queue: Song[] = [];
+	public playedSongQueue: Song[] = [];
 	public volume = 100;
-	public songLoop = false;
-	public queueLoop = false;
+	public loop = LoopType.OFF;
 	private firstSong = true;
-	public queueMessage?: Message
+	public queueMessage?: Message;
 
 	constructor(
 		public channel: string,
 		private guild: Guild,
 		channelObject: VoiceChannel,
-		setAsSpeaker = false,
+		setAsSpeaker = false
 	) {
 		this.guildId = this.guild.id;
 
-		this.player = lavaCluster.players.get(BigInt(this.guildId)) ?? lavaCluster.createPlayer(BigInt(this.guildId));
+		this.player =
+			lavaCluster.players.get(BigInt(this.guildId)) ??
+			lavaCluster.createPlayer(BigInt(this.guildId));
 		this.player.connect(BigInt(this.channel), {
 			deafen: true,
 		});
 
 		this.player.on("trackStart", async () => {
+			const dbData = {
+				server_id: this.guildId,
+				started: new Date(),
+				name: this.queue[0].title,
+				author: this.queue[0].author,
+				thumbnail: this.queue[0].thumbnail,
+				requestedby: this.queue[0].requestedByString,
+			}
+
+			await supabase.from("music_notifications").upsert(dbData, {
+				onConflict: "server_id",
+				ignoreDuplicates: false
+			}).select("*");
+
 			if (setAsSpeaker && this.firstSong) {
 				if (channelObject.type == ChannelTypes.GUILD_STAGE_VOICE) {
 					this.makeBotSpeak(channelObject);
@@ -127,10 +150,24 @@ export class ServerQueue {
 
 		this.player.on("trackEnd", () => {
 			this.player.stop();
-			if (!this.songLoop) {
-				const finishedSong = this.queue.shift()!;
-				if (this.queueLoop) {
-					this.queue.push(finishedSong);
+
+			switch (this.loop) {
+				case LoopType.SONG: {
+					break;
+				}
+				case LoopType.QUEUE: {
+					this.queue.push(this.queue.shift()!);
+					break;
+				}
+				case LoopType.SHUFFLE: {
+					this.playedSongQueue.push(this.queue.shift()!);
+					this.playedSongQueue = shuffleArray(this.playedSongQueue);
+
+					if (this.queue.length == 0) {
+						this.queue = this.playedSongQueue;
+						this.playedSongQueue = [];
+					}
+					break;
 				}
 			}
 
@@ -184,13 +221,19 @@ export class ServerQueue {
 		this.player.disconnect();
 
 		await this.player.destroy();
+
+		await supabase.from("music_notifications").delete().eq("server_id", this.guildId);
 	}
 
-	private async makeBotSpeak(channelObject: VoiceChannel) { 
-		const botVoiceState = await channelObject.guild.voiceStates.get(client.user!.id);
+	private async makeBotSpeak(channelObject: VoiceChannel) {
+		const botVoiceState = await channelObject.guild.voiceStates.get(
+			client.user!.id
+		);
 		if (botVoiceState == undefined) return;
 		// Unimplemented methods my beloved
-		await client.rest.api.guilds[this.guildId]["voice-states"][client.user!.id].patch({channel_id: this.channel, suppress: false });
+		await client.rest.api.guilds[this.guildId]["voice-states"][
+			client.user!.id
+		].patch({ channel_id: this.channel, suppress: false });
 	}
 
 	public addSongs(song: Song | Song[]) {
@@ -244,11 +287,20 @@ export class ServerQueue {
 	public get queueLength() {
 		let queueLength = 0;
 
-		for (const { msLength } of this.queue) {
+		for (const { msLength } of [...this.queue, ...this.playedSongQueue]) {
 			queueLength += msLength;
 		}
 
 		return queueLength;
+	}
+
+	public get loopType() {
+		return {
+			[LoopType.SONG]: "Song Loop",
+			[LoopType.QUEUE]: "Queue Loop",
+			[LoopType.SHUFFLE]: "Shuffle Loop",
+			[LoopType.OFF]: "Disabled",
+		}[this.loop];
 	}
 
 	public get nowPlayingMessage(): AllMessageOptions {
@@ -311,12 +363,7 @@ export class ServerQueue {
 						},
 						{
 							name: "Loop Status",
-							value:
-								!this.queueLoop && !this.songLoop
-									? "Disabled"
-									: this.queueLoop
-									? "Queue Loop"
-									: "Song Loop",
+							value: this.loopType,
 							inline: true,
 						},
 					],
@@ -324,9 +371,9 @@ export class ServerQueue {
 						url: song.thumbnail,
 					},
 					footer: {
-						text: `Songs in queue: ${this.queue.length} | Length: ${formatMs(
-							this.queueLength
-						)}`,
+						text: `Songs in queue: ${
+							this.queue.length + this.playedSongQueue.length
+						} | Length: ${formatMs(this.queueLength)}`,
 					},
 				}).setColor("random"),
 			],
@@ -372,6 +419,7 @@ export interface Song {
 	msLength: number;
 	track: string;
 	requestedBy: string;
+	requestedByString: string;
 	thumbnail?: string;
 }
 

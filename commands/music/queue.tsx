@@ -51,6 +51,7 @@ export default class Queue extends Command {
 				getEmojiByName("eight"),
 				getEmojiByName("nine"),
 			];
+			const queueEntries = [...queue.queue, ...queue.playedSongQueue];
 
 			await ctx.message.reply(undefined, {
 				embeds: [
@@ -60,7 +61,7 @@ export default class Queue extends Command {
 							icon_url: ctx.client.user!.avatarURL(),
 						},
 						title: "Server queue",
-						description: queue.queue
+						description: queueEntries
 							.slice(0, 10)
 							.map(
 								({ title, url }, index) =>
@@ -71,7 +72,7 @@ export default class Queue extends Command {
 							.join("\n"),
 						footer: {
 							icon_url: ctx.author.avatarURL(),
-							text: `Songs in queue: ${queue.queue.length} | Length: ${formatMs(
+							text: `Songs in queue: ${queueEntries.length} | Length: ${formatMs(
 								queue.queueLength
 							)}`,
 						},
@@ -91,7 +92,7 @@ export default class Queue extends Command {
 							<Button
 								style={"blurple"}
 								id={"queuepg-1"}
-								disabled={queue.queue.length <= 10}
+								disabled={queueEntries.length <= 10}
 								emoji={{
 									name: getEmojiByName("arrow_right"),
 								}}

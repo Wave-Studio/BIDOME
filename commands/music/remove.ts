@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck } from "queue";
+import { queues, doPermCheck, Song } from "queue";
 import { removeDiscordFormatting } from "tools";
 
 export default class Remove extends Command {
@@ -51,11 +51,12 @@ export default class Remove extends Command {
 						],
 					});
 				} else {
+					const queueEntries = [...queue.queue, ...queue.playedSongQueue];
 					if (
 						ctx.argString == "" ||
 						isNaN(parseInt(ctx.argString)) ||
 						parseInt(ctx.argString) < 1 ||
-						parseInt(ctx.argString) > queue.queue.length
+						parseInt(ctx.argString) > queueEntries.length
 					) {
 						await ctx.message.reply({
 							embeds: [
@@ -66,14 +67,19 @@ export default class Remove extends Command {
 									},
 									title: "Invalid argument",
 									description: `Please select the song's current position (1-${
-										queue.queue.length - 1
+										queueEntries.length - 1
 									})`,
 								}).setColor("red"),
 							],
 						});
 					} else {
 						const position = parseInt(ctx.argString);
-						const [song] = queue.queue.splice(position, 1);
+						let [song]: Song[] = queueEntries.splice(position, 1);
+						if (position > queueEntries.length ) {
+							[song] = queue.playedSongQueue.splice(position - queueEntries.length, 1);
+						} else {
+							[song] = queue.queue.splice(position, 1);
+						}
 						await ctx.message.reply({
 							embeds: [
 								new Embed({

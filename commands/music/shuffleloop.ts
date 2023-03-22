@@ -1,11 +1,11 @@
 import { Command, CommandContext, Embed } from "harmony";
 import { queues, doPermCheck, LoopType } from "queue";
 
-export default class Loop extends Command {
-	name = "loop";
-	aliases = ["replay", "l"];
+export default class ShuffleLoop extends Command {
+	name = "shuffleloop";
+	aliases = ["sl"];
 	category = "music";
-	description = "Loop the current song";
+	description = "Loop the current queue and shuffle it";
 
 	async execute(ctx: CommandContext) {
 		if (ctx.guild == undefined) return;
@@ -47,7 +47,7 @@ export default class Loop extends Command {
 				const isLoopDisabled = queue.loop == LoopType.OFF;
 
 				if (isLoopDisabled) {
-					queue.loop = LoopType.SONG;
+					queue.loop = LoopType.SHUFFLE;
 				} else {
 					queue.loop = LoopType.OFF;
 				}
@@ -60,7 +60,7 @@ export default class Loop extends Command {
 								icon_url: ctx.client.user!.avatarURL(),
 							},
 							title: "Toggled loop",
-							description: `Song looping is now ${
+							description: `Shuffle looping is now ${
 								isLoopDisabled ? "Enabled" : "Disabled"
 							} ${
 								loopTypeEnum != LoopType.OFF && isLoopDisabled ? `and ${loopType}ing is now disabled` : ""
