@@ -1,5 +1,5 @@
 import { MessageComponentInteraction, Embed } from "harmony";
-import { queues, doPermCheck } from "queue";
+import { queues, doPermCheck, LoopType } from "queue";
 
 export default async function skip(i: MessageComponentInteraction) {
 	if (i.customID == "skip-song") {
@@ -39,11 +39,8 @@ export default async function skip(i: MessageComponentInteraction) {
 			);
 
 			if (canVoteSkip) {
-				const isSongLoop = !!queue.songLoop;
-				const isQueueLoop = !!queue.queueLoop;
-
-				queue.songLoop = false;
-				queue.queueLoop = false;
+				const isLooping = queue.loop;
+				queue.loop = LoopType.OFF;
 
 				await queue.player.seek(0);
 				await queue.player.stop();
@@ -67,8 +64,7 @@ export default async function skip(i: MessageComponentInteraction) {
 				});
 
 				// Reset the loop settings
-				queue.songLoop = isSongLoop;
-				queue.queueLoop = isQueueLoop;
+				queue.loop = isLooping;
 			} else {
 				const voiceMembers = (
 					await botState.channel.voiceStates.array()

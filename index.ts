@@ -16,6 +16,9 @@ import { getString } from "i18n";
 const bot = new CommandClient({
 	prefix: [],
 	async getGuildPrefix(guildid: string): Promise<string | string[]> {
+		if (Deno.env.get("IS_LOCAL") == "true") {
+			return "!>"
+		}
 		if (Deno.env.get("IS_DEV") == "true") {
 			return ">>";
 		}

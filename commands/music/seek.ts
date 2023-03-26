@@ -78,29 +78,20 @@ export default class Seek extends Command {
 					});
 					const song = queue.queue[0];
 
-					// Even chatgpt can't figure out whats wrong.
-					const calculatePlaybackTime = (msLength: number, position: number): string => {
-						const startTime: number = new Date().getTime() - position;
-						const playbackTime: Date = new Date(startTime + msLength);
-						return playbackTime.toLocaleTimeString();
-					  };
-					  
-					console.log(calculatePlaybackTime(position, song.msLength));
+					const newPlayedAtDate = new Date(Date.now() - song.msLength - (song.msLength - position));
 
-					// const newPlayedAtDate = calculatePlaybackTime(song.msLength, position);
+					const dbData = {
+						server_id: ctx.guild.id,
+						started: newPlayedAtDate,
+						name: song.title,
+						author: song.author,
+						thumbnail: song.thumbnail,
+						requestedby: song.requestedByString,
+						length: song.msLength,
+					};
 
-					// const dbData = {
-					// 	server_id: ctx.guild.id,
-					// 	started: newPlayedAtDate,
-					// 	name: song.title,
-					// 	author: song.author,
-					// 	thumbnail: song.thumbnail,
-					// 	requestedby: song.requestedByString,
-					// 	length: song.msLength,
-					// };
-
-					// await supabase.from("music_notifications").update(dbData)
-					// 	.select("*").eq("server_id", ctx.guild.id);
+					await supabase.from("music_notifications").update(dbData)
+						.select("*").eq("server_id", ctx.guild.id);
 				}
 			} else {
 				await ctx.message.reply({
