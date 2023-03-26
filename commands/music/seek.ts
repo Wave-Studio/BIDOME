@@ -1,6 +1,7 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck } from "queue";
-import { toMs, formatMs } from "tools";
+import { doPermCheck, queues } from "queue";
+import { formatMs, toMs } from "tools";
+import { supabase } from "supabase";
 
 export default class Seek extends Command {
 	name = "seek";
@@ -12,7 +13,10 @@ export default class Seek extends Command {
 		if (ctx.guild == undefined) return;
 		const queue = queues.get(ctx.guild.id);
 		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
-		if (queue == undefined || botState == undefined || botState.channel == undefined) {
+		if (
+			queue == undefined || botState == undefined ||
+			botState.channel == undefined
+		) {
 			await ctx.message.reply(undefined, {
 				embeds: [
 					new Embed({
@@ -63,12 +67,40 @@ export default class Seek extends Command {
 									icon_url: ctx.client.user!.avatarURL(),
 								},
 								title: "Changed player position",
-								description: `The player's position has been moved to \`${formatMs(
-									position
-								)}\``,
+								description:
+									`The player's position has been moved to \`${
+										formatMs(
+											position,
+										)
+									}\``,
 							}).setColor("green"),
 						],
 					});
+					const song = queue.queue[0];
+
+					// Even chatgpt can't figure out whats wrong.
+					const calculatePlaybackTime = (msLength: number, position: number): string => {
+						const startTime: number = new Date().getTime() - position;
+						const playbackTime: Date = new Date(startTime + msLength);
+						return playbackTime.toLocaleTimeString();
+					  };
+					  
+					console.log(calculatePlaybackTime(position, song.msLength));
+
+					// const newPlayedAtDate = calculatePlaybackTime(song.msLength, position);
+
+					// const dbData = {
+					// 	server_id: ctx.guild.id,
+					// 	started: newPlayedAtDate,
+					// 	name: song.title,
+					// 	author: song.author,
+					// 	thumbnail: song.thumbnail,
+					// 	requestedby: song.requestedByString,
+					// 	length: song.msLength,
+					// };
+
+					// await supabase.from("music_notifications").update(dbData)
+					// 	.select("*").eq("server_id", ctx.guild.id);
 				}
 			} else {
 				await ctx.message.reply({

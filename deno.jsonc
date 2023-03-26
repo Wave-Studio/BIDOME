@@ -11,6 +11,7 @@
 	"compilerOptions": {
 		"jsx": "react",
 		"jsxFactory": "BotUI.createElement",
-		"jsxFragmentFactory": "fragment"
+		"jsxFragmentFactory": "fragment",
+		"lib": ["dom", "esnext", "deno.window"]
 	}
 }

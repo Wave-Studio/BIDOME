@@ -112,7 +112,7 @@ export default class Play extends Command {
 
 						if (uri.toLowerCase().startsWith("https://www.youtube.com/")) {
 							const videoID = uri.substring(uri.indexOf("=") + 1);
-							thumbnail = `https://i.ytimg.com/vi/${videoID}/hq720.jpg`;
+							thumbnail = `https://img.youtube.com/vi/${videoID}/hqdefault.jpg`
 						}
 
 						songsToAdd.push({

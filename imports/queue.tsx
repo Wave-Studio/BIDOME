@@ -85,6 +85,7 @@ export class ServerQueue {
 				author: this.queue[0].author,
 				thumbnail: this.queue[0].thumbnail,
 				requestedby: this.queue[0].requestedByString,
+				length: this.queue[0].msLength,
 			}
 
 			await supabase.from("music_notifications").upsert(dbData, {
@@ -167,6 +168,10 @@ export class ServerQueue {
 						this.queue = this.playedSongQueue;
 						this.playedSongQueue = [];
 					}
+					break;
+				}
+				default: {
+					this.queue.shift();
 					break;
 				}
 			}
