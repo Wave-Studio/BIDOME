@@ -80,7 +80,7 @@ export class ServerQueue {
 		this.player.on("trackStart", async () => {
 			const dbData = {
 				server_id: this.guildId,
-				started: new Date(),
+				started: new Date().toUTCString(),
 				name: this.queue[0].title,
 				author: this.queue[0].author,
 				thumbnail: this.queue[0].thumbnail,

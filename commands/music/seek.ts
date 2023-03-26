@@ -78,7 +78,9 @@ export default class Seek extends Command {
 					});
 					const song = queue.queue[0];
 
-					const newPlayedAtDate = new Date(Date.now() - song.msLength - (song.msLength - position));
+					const newPlayedAtDate = new Date(
+						Date.now() - (song.msLength - (song.msLength - position)),
+					).toUTCString();
 
 					const dbData = {
 						server_id: ctx.guild.id,
