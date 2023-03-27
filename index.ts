@@ -175,17 +175,17 @@ bot.on("commandUsed", async (ctx: CommandContext) => {
 	if (Deno.env.get("IS_DEV") == "true") return;
 
 	if (lifetimeCommandDataCache[ctx.command.name] == undefined) {
-		const { data } = await supabase.from("lifetimecmdanalytics").select("times").eq("command", ctx.command.name).eq("ran_on", Date.now());
+		const { data } = await supabase.from("cmd_analytics").select("times").eq("command", ctx.command.name).eq("ran_on", Date.now());
 		if (data == undefined || data.length == 0) {
 			lifetimeCommandDataCache[ctx.command.name] = 0;
-			await supabase.from("lifetimecmdanalytics").insert({ times: lifetimeCommandDataCache[ctx.command.name], "command": ctx.command.name});
+			await supabase.from("cmd_analytics").insert({ times: lifetimeCommandDataCache[ctx.command.name], "command": ctx.command.name});
 		} else {
 			lifetimeCommandDataCache[ctx.command.name] = data[0].times;
 		}
 	}
 
 	lifetimeCommandDataCache[ctx.command.name] = lifetimeCommandDataCache[ctx.command.name] + 1;
-	await supabase.from("lifetimecmdanalytics").update({ times: lifetimeCommandDataCache[ctx.command.name] }).eq("command", ctx.command.name);
+	await supabase.from("cmd_analytics").update({ times: lifetimeCommandDataCache[ctx.command.name] }).eq("command", ctx.command.name);
 });
 
 const nextStatus = async () => {
