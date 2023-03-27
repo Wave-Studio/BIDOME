@@ -167,41 +167,15 @@ bot.on(
 	}
 );
 
-const commandDataCache: {
-	lastUpdated?: Date;
-	data: Record<string, number>;
-} = {
-	data: {}
-};
-
 const lifetimeCommandDataCache: {
 	[key: string]: number;
 } = {};
 
 bot.on("commandUsed", async (ctx: CommandContext) => {
 	if (Deno.env.get("IS_DEV") == "true") return;
-	if (commandDataCache.lastUpdated == undefined) {
-		commandDataCache.lastUpdated = new Date();
-		commandDataCache.data = {};
-	} else {
-		if (commandDataCache.lastUpdated.getDay() != new Date().getDay()) {
-			commandDataCache.lastUpdated = new Date();
-			commandDataCache.data = {};
-		}
-	}
-
-	if (commandDataCache.data[ctx.command.name] == undefined) {
-		const { data } = await supabase.from("cmdanalytics").select("times").eq("command", ctx.command.name);
-		if (data == undefined || data.length == 0) {
-			commandDataCache.data[ctx.command.name] = 0;
-			await supabase.from("cmdanalytics").insert({ times: commandDataCache.data[ctx.command.name], "command": ctx.command.name});
-		} else {
-			commandDataCache.data[ctx.command.name] = data[0].times;
-		}
-	}
 
 	if (lifetimeCommandDataCache[ctx.command.name] == undefined) {
-		const { data } = await supabase.from("lifetimecmdanalytics").select("times").eq("command", ctx.command.name);
+		const { data } = await supabase.from("lifetimecmdanalytics").select("times").eq("command", ctx.command.name).eq("ran_on", Date.now());
 		if (data == undefined || data.length == 0) {
 			lifetimeCommandDataCache[ctx.command.name] = 0;
 			await supabase.from("lifetimecmdanalytics").insert({ times: lifetimeCommandDataCache[ctx.command.name], "command": ctx.command.name});
@@ -210,10 +184,7 @@ bot.on("commandUsed", async (ctx: CommandContext) => {
 		}
 	}
 
-	commandDataCache.data[ctx.command.name] = commandDataCache.data[ctx.command.name] + 1;
 	lifetimeCommandDataCache[ctx.command.name] = lifetimeCommandDataCache[ctx.command.name] + 1;
-	console.log(commandDataCache);
-	await supabase.from("cmdanalytics").update({ times: commandDataCache.data[ctx.command.name] }).eq("command", ctx.command.name);
 	await supabase.from("lifetimecmdanalytics").update({ times: lifetimeCommandDataCache[ctx.command.name] }).eq("command", ctx.command.name);
 });
 
