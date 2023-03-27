@@ -92,8 +92,8 @@ export default class Seek extends Command {
 						length: song.msLength,
 					};
 
-					await supabase.from("music_notifications").update(dbData)
-						.select("*").eq("server_id", ctx.guild.id);
+					await supabase.from("music_notifications").update(dbData).eq("server_id", ctx.guild.id)
+						.select("*");
 				}
 			} else {
 				await ctx.message.reply({

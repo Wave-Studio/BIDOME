@@ -1,6 +1,6 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@1.35.6";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.12.1";
 
-export * from "https://esm.sh/@supabase/supabase-js@1.35.6";
+export * from "https://esm.sh/@supabase/supabase-js@2.12.1";
 
 // Yes, this is the same loader as in nodes.ts, but for some reason env isn't set when accessing here
 const envfile = (await Deno.readTextFile(".env")).split("\n");
@@ -17,10 +17,11 @@ for (const line of envfile) {
 
 export const supabase = createClient(
 	Deno.env.get("PROJECT_URL")!,
-	Deno.env.get("SERVICE_ROLE_KEY")!
+	Deno.env.get("SERVICE_ROLE_KEY")!,
 );
 
-const prefixCache: Record<string, { values: string[]; lastUpdate: number }> = {};
+const prefixCache: Record<string, { values: string[]; lastUpdate: number }> =
+	{};
 
 export const getPrefixes = async (guild: string) => {
 	const cacheValue = prefixCache[guild];
@@ -30,15 +31,18 @@ export const getPrefixes = async (guild: string) => {
 		return cacheValue.values;
 	}
 
-	const { data } = (await supabase.from("servers").select("prefix").eq("server_id", guild)) as { data: { prefix: string[] }[] | undefined };
+	const { data } = await supabase.from("servers").select("prefix").eq(
+		"server_id",
+		guild,
+	);
 
 	if (data == null || data.length < 1) {
-		let { data } = await supabase.from("servers").insert({
+		let { data: newData } = await supabase.from("servers").insert({
 			server_id: guild,
-		});
+		}).select("prefix");
 
-		if (data == null || data.length < 1) {
-			data = [{ prefix: ["!"]}]
+		if (newData == null || newData.length < 1) {
+			newData = [{ prefix: ["!"] }];
 		}
 
 		prefixCache[guild] = {
@@ -68,32 +72,52 @@ export const setPrefixes = async (guild: string, prefixes: string[]) => {
 		values: prefixes,
 		lastUpdate: Date.now(),
 	};
-}
+};
 
 export const addPrefix = async (guild: string, prefix: string) => {
 	const prefixes = await getPrefixes(guild);
 	if (prefixes.includes(prefix)) return;
 	prefixes.push(prefix);
 	await setPrefixes(guild, prefixes);
-}
+};
 
 export const removePrefix = async (guild: string, prefix: string) => {
 	const prefixes = await getPrefixes(guild);
 	if (!prefixes.includes(prefix)) return;
 	prefixes.splice(prefixes.indexOf(prefix), 1);
 	await setPrefixes(guild, prefixes);
-}
+};
 
-supabase.from("servers").on("*",  (payload) => {
-	if (["UPDATE", "INSERT"].includes(payload.eventType)) {
-		prefixCache[payload.new.server_id] = {
-			values: payload.new.prefix,
-			lastUpdate: Date.now(),
-		};
-	} else {
-		delete prefixCache[payload.old.server_id];
-	}
-}).subscribe();
+type ServersTable = {
+	id: number;
+	invited_at: string;
+	prefix: string[];
+	server_id: number;
+};
+
+supabase
+	.channel("servers")
+	.on<ServersTable>(
+		"postgres_changes",
+		{
+			event: "*",
+			schema: "public",
+			table: "music_notifications",
+		},
+		(
+			payload,
+		) => {
+			if (["UPDATE", "INSERT"].includes(payload.eventType)) {
+				prefixCache[(payload.new as ServersTable).server_id] = {
+					values: (payload.new as ServersTable).prefix,
+					lastUpdate: Date.now(),
+				};
+			} else {
+				delete prefixCache[(payload.old as ServersTable).server_id];
+			}
+		},
+	)
+	.subscribe();
 
 export const purgeCache = () => {
 	for (const [key, value] of Object.entries(prefixCache)) {
