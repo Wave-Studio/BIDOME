@@ -32,10 +32,73 @@
 				},
 				"footer": "[Arg] = Optional | <Arg> = Required"
 			}
+		},
+		"createreminder": {
+			"error": {
+				"noargs": {
+					"title": "Invalid command use!",
+					"description": "Please provide a timestamp and a message. Example: `remindme 2d Implemement a feature`"
+				},
+				"nomessage": {
+					"title": "Invalid command use!",
+					"description": "Please provide a message to be reminded of."
+				},
+				"invalidtime": {
+					"title": "Invalid command use!",
+					"description": "Please provide a valid timestamp like `4h`, `1d`, or `1y1d`"
+				},
+				"toomany": {
+					"title": "Too many reminders!",
+					"description": "Sorry, but currently we have a limit of 10 reminders per user to save on database space. We're currently working on a long term solution for this!"
+				}
+			},
+			"success": {
+				"title": "Reminder {0} created!",
+				"description": "I will remind you {1} about `{2}`"
+			}
+		},
+		"listreminders": {
+			"noreminders": {
+				"title": "No Reminders!",
+				"description": "You do not have any reminders currently!"
+			},
+			"reminders": {
+				"title": "Your Reminders",
+				"description": "You can cancel reminders with `delreminder <id>`",
+				"field": {
+					"name": "Reminder {0}",
+					"value": "{0} [[Jump]]({1}): \n{2}"
+				}
+			}
+		},
+		"deletereminder": {
+			"error": {
+				"noargs": {
+					"title": "Invalid command use",
+					"description": "Please provide a reminder ID to delete"
+				},
+				"invalid": {
+					"title": "Invalid command use",
+					"description": "Please provide a valid reminder ID"
+				},
+				"notyours": {
+					"title": "Unable to delete reminder",
+					"description": "You must provide a reminder ID that is yours"
+				}
+			},
+			"success": {
+				"title": "Reminder {0} deleted",
+				"description": "I have deleted reminder {0}!"
+			}
 		}
 	},
 
-	"interactions": {},
+	"interactions": {
+		"reminder": {
+			"title": "Reminder {0}",
+			"description": "{0} you asked to be reminded about: \n{1}"
+		}
+	},
 
 	"errors": {
 		"genericCommand": {

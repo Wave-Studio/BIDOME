@@ -3,21 +3,22 @@ import {
 	CommandContext,
 	Embed,
 	GatewayIntents,
-	isMessageComponentInteraction,
 	InteractionResponseType,
+	isMessageComponentInteraction,
+	TextChannel,
 } from "harmony";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
-import { getPrefixes, supabase } from "supabase";
+import { getPrefixes, getReminders, removeReminder, supabase } from "supabase";
 import { loopFilesAndReturn } from "tools";
 import { interactionHandlers } from "shared";
-import { getString } from "i18n";
+import { getString, getUserLanguage } from "i18n";
 
 const bot = new CommandClient({
 	prefix: [],
 	async getGuildPrefix(guildid: string): Promise<string | string[]> {
 		if (Deno.env.get("IS_LOCAL") == "true") {
-			return "!>"
+			return "!>";
 		}
 		if (Deno.env.get("IS_DEV") == "true") {
 			return ">>";
@@ -88,7 +89,7 @@ bot.on("ready", async () => {
 			bot.commands.list.size == 1 ? "" : "s"
 		} and ${await bot.extensions.list.size} extension${
 			bot.extensions.list.size == 1 ? "" : "s"
-		}!`
+		}!`,
 	);
 	console.log("Loaded bot!");
 
@@ -99,7 +100,7 @@ bot.on("ready", async () => {
 
 bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 	console.log(
-		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`
+		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`,
 	);
 	console.log(err);
 	try {
@@ -111,7 +112,10 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: getString("en", "errors.genericCommand.title"),
-					description: getString("en", "errors.genericCommand.description"),
+					description: getString(
+						"en",
+						"errors.genericCommand.description",
+					),
 				}).setColor("red"),
 			],
 		});
@@ -148,6 +152,7 @@ bot.on("interactionCreate", async (i) => {
 bot.on(
 	"commandUserMissingPermissions",
 	async (ctx: CommandContext, missing: string[]) => {
+		const userLanguage = await getUserLanguage(ctx.author);
 		await ctx.message.reply(undefined, {
 			embeds: [
 				new Embed({
@@ -155,16 +160,16 @@ bot.on(
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
-					title: getString("en", "errors.missingPerms.title"),
+					title: getString(userLanguage, "errors.missingPerms.title"),
 					description: getString(
-						"en",
+						userLanguage,
 						"errors.missingPerms.description",
-						missing.join(", ")
+						missing.join(", "),
 					),
 				}).setColor("red"),
 			],
 		});
-	}
+	},
 );
 
 const lifetimeCommandDataCache: {
@@ -175,17 +180,24 @@ bot.on("commandUsed", async (ctx: CommandContext) => {
 	if (Deno.env.get("IS_DEV") == "true") return;
 
 	if (lifetimeCommandDataCache[ctx.command.name] == undefined) {
-		const { data } = await supabase.from("cmd_analytics").select("times").eq("command", ctx.command.name).eq("ran_on", Date.now());
+		const { data } = await supabase.from("cmd_analytics").select("times")
+			.eq("command", ctx.command.name).eq("ran_on", Date.now());
 		if (data == undefined || data.length == 0) {
 			lifetimeCommandDataCache[ctx.command.name] = 0;
-			await supabase.from("cmd_analytics").insert({ times: lifetimeCommandDataCache[ctx.command.name], "command": ctx.command.name});
+			await supabase.from("cmd_analytics").insert({
+				times: lifetimeCommandDataCache[ctx.command.name],
+				"command": ctx.command.name,
+			});
 		} else {
 			lifetimeCommandDataCache[ctx.command.name] = data[0].times;
 		}
 	}
 
-	lifetimeCommandDataCache[ctx.command.name] = lifetimeCommandDataCache[ctx.command.name] + 1;
-	await supabase.from("cmd_analytics").update({ times: lifetimeCommandDataCache[ctx.command.name] }).eq("command", ctx.command.name);
+	lifetimeCommandDataCache[ctx.command.name] =
+		lifetimeCommandDataCache[ctx.command.name] + 1;
+	await supabase.from("cmd_analytics").update({
+		times: lifetimeCommandDataCache[ctx.command.name],
+	}).eq("command", ctx.command.name);
 });
 
 const nextStatus = async () => {
@@ -203,6 +215,61 @@ const nextStatus = async () => {
 		}
 	}
 };
+
+setInterval(async () => {
+	if (bot.gateway.connected) {
+		for (const reminder of getReminders()) {
+			const remind_at = new Date(reminder.remind_at);
+			const now = Date.now();
+			if (remind_at.valueOf() <= now) {
+				const userLanguage = await getUserLanguage(reminder.user_id);
+				const user = await bot.users.get(reminder.user_id);
+				const createdAt = (new Date(reminder.created_at)
+					.getTime() / 1000)
+					.toFixed(0);
+
+				const reminderMessage = new Embed({
+					author: {
+						name: "Bidome bot",
+						icon_url: bot.user!.avatarURL(),
+					},
+					title: getString(
+						userLanguage,
+						"interactions.reminder.title",
+						`#${reminder.id}`,
+					),
+					description: getString(
+						userLanguage,
+						"interactions.reminder.description",
+						`<t:${createdAt}:R>`,
+						reminder.reminder,
+					),
+					url: `https://discord.com/channels/${reminder.server_id}/${reminder.channel_id}/${reminder.message_id}`,
+				}).setColor("random");
+
+				try {
+					await user?.send({
+						embeds: [reminderMessage],
+					});
+				} catch {
+					try {
+						const channel = await bot.channels.get(
+							reminder.channel_id,
+						) as TextChannel;
+						await channel.send({
+							content: `<@${reminder.user_id}>`,
+							embeds: [reminderMessage],
+						});
+					} catch {
+						// ignore
+					}
+				}
+
+				removeReminder(reminder.id)
+			}
+		}
+	}
+}, 5000);
 
 bot.connect(Deno.env.get("token"), [
 	GatewayIntents.GUILDS,

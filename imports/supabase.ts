@@ -135,3 +135,43 @@ export const resetCache = () => {
 		delete prefixCache[key];
 	}
 };
+
+let reminders = (await supabase.from("reminders").select("*")).data ?? [];
+
+export const getReminders = (user?: string) => {
+	if (user == undefined) return reminders;
+	return reminders.filter((r) => r.user_id == user);
+}
+
+export const removeReminder = async (id: number) => {
+	await supabase.from("reminders").delete().eq("id", id);
+	reminders = reminders.filter((r) => r.id != id);
+}
+
+supabase.channel("reminders").on("postgres_changes", {
+	event: "*",
+	schema: "public",
+	table: "reminders",
+}, (
+	payload,
+) => {
+	switch (payload.eventType) {
+		case "DELETE": {
+			const id = payload.old!.id;
+			reminders = reminders.filter((r) => r.id != id);
+			break;
+		}
+
+		case "INSERT": {
+			reminders.push(payload.new!);
+			break;
+		}
+
+		case "UPDATE": {
+			const id = payload.new!.id;
+			reminders = reminders.filter((r) => r.id != id);
+			reminders.push(payload.new!);
+			break;
+		}
+	}
+}).subscribe();
