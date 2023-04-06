@@ -1,7 +1,7 @@
 import { Command, CommandContext, Embed } from "harmony";
 import { toMs, truncateString } from "tools";
 import { createEmbedFromLangData, getUserLanguage } from "i18n";
-import { getReminders, supabase } from "supabase";
+import { createReminder, getReminders } from "supabase";
 
 export default class RemindMe extends Command {
 	name = "remindme";
@@ -79,16 +79,15 @@ export default class RemindMe extends Command {
 							],
 						});
 					} else {
-						const { data } = await supabase.from("reminders")
-							.insert({
-								remind_at: new Date(Date.now() + ms)
-									.toUTCString(),
-								user_id: ctx.author.id,
-								message_id: ctx.message.id,
-								channel_id: ctx.channel.id,
-								server_id: ctx.guild!.id,
-								reminder: truncateString(message, 100),
-							}).select();
+						const id = await createReminder({
+							remind_at: new Date(Date.now() + ms)
+								.toUTCString(),
+							user_id: ctx.author.id,
+							message_id: ctx.message.id,
+							channel_id: ctx.channel.id,
+							server_id: ctx.guild!.id,
+							reminder: truncateString(message, 100),
+						});
 
 						const time = (new Date().getTime() / 1000 + ms / 1000)
 							.toFixed(
@@ -101,8 +100,7 @@ export default class RemindMe extends Command {
 									...createEmbedFromLangData(
 										lang,
 										"commands.createreminder.success",
-										// No clue why it's 1 less but ok
-										`#${data![0].id + 1}`,
+										`#${id}`,
 										`<t:${time}:R>`,
 										truncateString(message, 100),
 									),

@@ -67,7 +67,7 @@ export function getString(
 		const [next, ...rest] = key.split(".");
 		if (rest.length == 0) {
 			// @ts-expect-error it should work
-			return currentObject[next];
+			return JSON.parse(JSON.stringify(currentObject[next]));
 		} else {
 			// @ts-expect-error it should work
 			const futureObject = currentObject[next];
@@ -92,6 +92,8 @@ export function getString(
 			fetchedString = fetchedString.replace(`{${i}}`, `${data[i]}`);
 		}
 	}
+
+	console.log(key, fetchedString);
 
 	return fetchedString;
 }
@@ -129,7 +131,7 @@ export function createEmbedFromLangData(
 		// @ts-expect-error it should work
 		const object = currentObject[next];
 		if (rest.length == 0) {
-			return object;
+			return JSON.parse(JSON.stringify(object));
 		} else {
 			return grabData(rest.join("."), object);
 		}

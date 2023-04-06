@@ -126,11 +126,12 @@ export default class BetterEmotes extends Extension {
 				users: [],
 			}
 		});
-		//await msg.delete();
+		await msg.delete();
 	}
 
 	@event("guildEmojiAdd")
 	async guildEmojiAdd(_: Extension, emoji: Emoji) {
+		if (emoji == undefined) return;
 		if (emoji.guild == undefined) return;
 		const serverEmojisArray = this.serverEmoteCache.has(emoji.guild.id)
 			? this.serverEmoteCache.get(emoji.guild.id)
@@ -151,6 +152,7 @@ export default class BetterEmotes extends Extension {
 
 	@event("guildEmojiDelete")
 	async guildEmojiDelete(_: Extension, emoji: Emoji) {
+		if (emoji == undefined) return;
 		if (emoji.guild == undefined) return;
 		const serverEmojisArray = this.serverEmoteCache.has(emoji.guild.id)
 			? this.serverEmoteCache.get(emoji.guild.id)
@@ -168,6 +170,7 @@ export default class BetterEmotes extends Extension {
 
 	@event("guildEmojiUpdate")
 	async guildEmojiUpdate(_: Extension, before: Emoji, after: Emoji) {
+		if (before == undefined || after == undefined) return;
 		if (before.guild == undefined) return;
 		let serverEmojisArray = this.serverEmoteCache.has(before.guild.id)
 			? this.serverEmoteCache.get(before.guild.id)

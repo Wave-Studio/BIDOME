@@ -89,6 +89,11 @@
 			"success": {
 				"title": "Reminder {0} deleted",
 				"description": "I have deleted reminder {0}!"
+			},
+			"successBulk": {
+				"title": "{0} Reminders deleted",
+				"success": "<a:check:1093342814919741440> {0}",
+				"failure": "<a:cross:1093342980519243927> {0}"
 			}
 		}
 	},

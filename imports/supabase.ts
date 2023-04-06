@@ -137,10 +137,24 @@ export const resetCache = () => {
 };
 
 let reminders = (await supabase.from("reminders").select("*")).data ?? [];
+let reminderId = 0;
 
 export const getReminders = (user?: string) => {
 	if (user == undefined) return reminders;
 	return reminders.filter((r) => r.user_id == user);
+}
+
+export const createReminder = async (payload: Record<string, unknown>): Promise<number> => {
+	const { data } = await supabase.from("reminders")
+	.insert(payload).select("id");
+
+	if (reminderId < data![0].id) {
+		reminderId = data![0].id;
+	} else {
+		reminderId++;
+	} 
+
+	return parseInt(reminderId.toString());
 }
 
 export const removeReminder = async (id: number) => {
