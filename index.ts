@@ -217,6 +217,7 @@ const nextStatus = async () => {
 };
 
 setInterval(async () => {
+	if (Deno.env.get("IS_DEV") == "true") return;
 	if (bot.gateway.connected) {
 		for (const reminder of getReminders()) {
 			const remind_at = new Date(reminder.remind_at);
