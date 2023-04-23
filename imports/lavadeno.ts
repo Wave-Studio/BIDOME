@@ -1,4 +1,4 @@
-export * from "https://deno.land/x/lavadeno@3.3.0/mod.ts";
+export * from "https://raw.githubusercontent.com/lavaclient/lavadeno/22c88554cfc6f06dee7838eca0b00960cf47477a/mod.ts";
 
 // Non exported types
 

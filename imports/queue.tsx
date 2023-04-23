@@ -479,6 +479,7 @@ export const initLava = (bot: CommandClient) => {
 	});
 
 	cluster.on("nodeError", (node, error) => {
+		if (reconnectingIDs.includes(node.id)) return;
 		console.log(`[Lavalink] Error on node ${node.id}:`, error);
 	});
 

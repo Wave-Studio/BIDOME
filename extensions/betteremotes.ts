@@ -6,6 +6,9 @@ import {
 	ChannelTypes,
 	Emoji,
 	Embed,
+	ApplicationCommandPartial,
+	ApplicationCommandInteraction,
+	isApplicationCommandInteraction,
 } from "harmony";
 import { getUserProfilePicture } from "cache";
 import { encode } from "https://deno.land/std@0.175.0/encoding/base64.ts";
@@ -18,10 +21,38 @@ interface ServerEmoteList {
 	animated: boolean;
 }
 
+interface ApplicationCommand extends ApplicationCommandPartial {
+	handler: (i: ApplicationCommandInteraction) => Promise<void> | void;
+}
+
 export default class BetterEmotes extends Extension {
 	name = "BetterEmotes";
 
+	interactionCommands: ApplicationCommand[] = [
+		{
+			name: "Delete Message",
+			type: "MESSAGE",
+			handler: (i) => {
+				if (!isApplicationCommandInteraction(i)) return;
+				const message = i.targetMessage!;
+				console.log(message.author.avatarURL());
+			},
+		},
+	];
+
 	private serverEmoteCache: Map<string, ServerEmoteList[]> = new Map();
+
+	@event("ready")
+	async ready({ client: bot }: Extension) {
+		// For dev instance
+		return;
+		const commands = (await bot.interactions.commands.all()).map((c) => c.name);
+		for (const command of this.interactionCommands) {
+			bot.interactions.handle(command.name, command.handler, "MESSAGE");
+			if (commands.includes(command.name)) continue;
+			await bot.interactions.commands.create(command);
+		}
+	}
 
 	@event("messageCreate")
 	async messageCreate(_: Extension, msg: Message) {
@@ -43,7 +74,11 @@ export default class BetterEmotes extends Extension {
 
 		if (webhooks.length >= 8) return;
 
-		let webhook = webhooks.find((w) => w.name?.toLowerCase() == "bidome bot" && w.user?.id == msg.client.user?.id);
+		let webhook = webhooks.find(
+			(w) =>
+				w.name?.toLowerCase() == "bidome bot" &&
+				w.user?.id == msg.client.user?.id
+		);
 		// TODO: Make this work
 		const serverEmojisArray = this.serverEmoteCache.has(msg.guild!.id)
 			? this.serverEmoteCache.get(msg.guild!.id)
@@ -87,44 +122,52 @@ export default class BetterEmotes extends Extension {
 				msg.messageReference.message_id!
 			);
 			if (refMsg != undefined) {
-				messageEmbeds.push(new Embed({
-					author: {
-						name: `Replying to: ${refMsg.author.tag}`,
-						icon_url: refMsg.author.avatarURL(),
-					},
-					description: `${truncateString(refMsg.content, 100)} \n\n[Click to jump to message](${refMsg.url})`,
-				}).setColor("random"));
-			} 
+				messageEmbeds.push(
+					new Embed({
+						author: {
+							name: `Replying to: ${refMsg.author.tag}`,
+							icon_url: refMsg.author.avatarURL(),
+						},
+						description: `${truncateString(
+							refMsg.content,
+							100
+						)} \n\n[Click to jump to message](${refMsg.url})`,
+					}).setColor("random")
+				);
+			}
 		}
 
 		await webhook.send(message, {
 			avatar: msg.author.avatarURL(),
 			name: msg.author.username,
-			embeds: [...messageEmbeds, ...msg.attachments.map((a) =>
-				new Embed({
-					author: {
-						name: "Bidome bot",
-						icon_url: msg.client.user!.avatarURL(),
-					},
-					title: `${getEmojiByName(
-						/.\.(png|webm|gif|jpg|jpeg)/i.test(a.filename)
-							? "frame_with_picture"
-							: "open_file_folder"
-					)} ${a.filename}`,
-					url: a.url,
-					image: {
-						url: /.\.(png|webm|gif|jpg|jpeg)/i.test(a.filename)
-							? a.url
-							: undefined,
-					},
-				}).setColor("random")
-			)],
+			embeds: [
+				...messageEmbeds,
+				...msg.attachments.map((a) =>
+					new Embed({
+						author: {
+							name: "Bidome bot",
+							icon_url: msg.client.user!.avatarURL(),
+						},
+						title: `${getEmojiByName(
+							/.\.(png|webm|gif|jpg|jpeg)/i.test(a.filename)
+								? "frame_with_picture"
+								: "open_file_folder"
+						)} ${a.filename}`,
+						url: a.url,
+						image: {
+							url: /.\.(png|webm|gif|jpg|jpeg)/i.test(a.filename)
+								? a.url
+								: undefined,
+						},
+					}).setColor("random")
+				),
+			],
 			allowedMentions: {
 				parse: [],
 				replied_user: false,
 				roles: [],
 				users: [],
-			}
+			},
 		});
 		await msg.delete();
 	}

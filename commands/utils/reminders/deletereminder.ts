@@ -5,13 +5,18 @@ import { createEmbedFromLangData, getString, getUserLanguage } from "i18n";
 export default class DeleteReminder extends Command {
 	name = "deletereminder";
 	aliases = [
-		"rmreminder",
-		"removereminder",
+		"deletereminders",
+
 		"delreminder",
 		"delreminders",
-		"deletereminders",
+
+		"rmreminder",
 		"rmreminders",
+		"removereminder",
 		"removereminders",
+
+		"cancelreminder",
+		"cancelreminders"
 	];
 	category = "utils";
 	description = "Delete a reminder";

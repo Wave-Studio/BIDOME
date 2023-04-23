@@ -66,18 +66,27 @@ bot.on("debug", (message) => {
 	console.log("Debug:", message);
 });
 
+console.log("Loading all extensions!");
+
+for (const ext of await loopFilesAndReturn("./extensions/")) {
+	bot.extensions.load((await import(ext)).default);
+}
+
+console.log(
+	`Loaded ${await bot.extensions.list.size} extension${
+		bot.extensions.list.size == 1 ? "" : "s"
+	}!`
+);
+
 bot.on("ready", async () => {
 	console.log(`Logged in as ${bot.user!.tag}`);
+	console.log("Loaded bot!");
 	console.log("Loading all commands!");
 
 	await initLava(bot);
 
 	for (const cmd of await loopFilesAndReturn("./commands/")) {
 		bot.commands.add((await import(cmd)).default);
-	}
-
-	for (const ext of await loopFilesAndReturn("./extensions/")) {
-		bot.extensions.load((await import(ext)).default);
 	}
 
 	for (const int of await loopFilesAndReturn("./interactions/")) {
@@ -87,11 +96,8 @@ bot.on("ready", async () => {
 	console.log(
 		`Loaded ${await bot.commands.list.size} command${
 			bot.commands.list.size == 1 ? "" : "s"
-		} and ${await bot.extensions.list.size} extension${
-			bot.extensions.list.size == 1 ? "" : "s"
-		}!`,
+		}`
 	);
-	console.log("Loaded bot!");
 
 	setInterval(() => {
 		nextStatus();
@@ -100,7 +106,7 @@ bot.on("ready", async () => {
 
 bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 	console.log(
-		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`,
+		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`
 	);
 	console.log(err);
 	try {
@@ -112,10 +118,7 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: getString("en", "errors.genericCommand.title"),
-					description: getString(
-						"en",
-						"errors.genericCommand.description",
-					),
+					description: getString("en", "errors.genericCommand.description"),
 				}).setColor("red"),
 			],
 		});
@@ -164,12 +167,12 @@ bot.on(
 					description: getString(
 						userLanguage,
 						"errors.missingPerms.description",
-						missing.join(", "),
+						missing.join(", ")
 					),
 				}).setColor("red"),
 			],
 		});
-	},
+	}
 );
 
 const lifetimeCommandDataCache: {
@@ -180,13 +183,16 @@ bot.on("commandUsed", async (ctx: CommandContext) => {
 	if (Deno.env.get("IS_DEV") == "true") return;
 
 	if (lifetimeCommandDataCache[ctx.command.name] == undefined) {
-		const { data } = await supabase.from("cmd_analytics").select("times")
-			.eq("command", ctx.command.name).eq("ran_on", Date.now());
+		const { data } = await supabase
+			.from("cmd_analytics")
+			.select("times")
+			.eq("command", ctx.command.name)
+			.eq("ran_on", Date.now());
 		if (data == undefined || data.length == 0) {
 			lifetimeCommandDataCache[ctx.command.name] = 0;
 			await supabase.from("cmd_analytics").insert({
 				times: lifetimeCommandDataCache[ctx.command.name],
-				"command": ctx.command.name,
+				command: ctx.command.name,
 			});
 		} else {
 			lifetimeCommandDataCache[ctx.command.name] = data[0].times;
@@ -195,9 +201,12 @@ bot.on("commandUsed", async (ctx: CommandContext) => {
 
 	lifetimeCommandDataCache[ctx.command.name] =
 		lifetimeCommandDataCache[ctx.command.name] + 1;
-	await supabase.from("cmd_analytics").update({
-		times: lifetimeCommandDataCache[ctx.command.name],
-	}).eq("command", ctx.command.name);
+	await supabase
+		.from("cmd_analytics")
+		.update({
+			times: lifetimeCommandDataCache[ctx.command.name],
+		})
+		.eq("command", ctx.command.name);
 });
 
 const nextStatus = async () => {
@@ -225,9 +234,9 @@ setInterval(async () => {
 			if (remind_at.valueOf() <= now) {
 				const userLanguage = await getUserLanguage(reminder.user_id);
 				const user = await bot.users.get(reminder.user_id);
-				const createdAt = (new Date(reminder.created_at)
-					.getTime() / 1000)
-					.toFixed(0);
+				const createdAt = (
+					new Date(reminder.created_at).getTime() / 1000
+				).toFixed(0);
 
 				const reminderMessage = new Embed({
 					author: {
@@ -237,13 +246,13 @@ setInterval(async () => {
 					title: getString(
 						userLanguage,
 						"interactions.reminder.title",
-						`#${reminder.id}`,
+						`#${reminder.id}`
 					),
 					description: getString(
 						userLanguage,
 						"interactions.reminder.description",
 						`<t:${createdAt}:R>`,
-						reminder.reminder,
+						reminder.reminder
 					),
 					url: `https://discord.com/channels/${reminder.server_id}/${reminder.channel_id}/${reminder.message_id}`,
 				}).setColor("random");
@@ -254,9 +263,9 @@ setInterval(async () => {
 					});
 				} catch {
 					try {
-						const channel = await bot.channels.get(
-							reminder.channel_id,
-						) as TextChannel;
+						const channel = (await bot.channels.get(
+							reminder.channel_id
+						)) as TextChannel;
 						await channel.send({
 							content: `<@${reminder.user_id}>`,
 							embeds: [reminderMessage],
@@ -266,7 +275,7 @@ setInterval(async () => {
 					}
 				}
 
-				removeReminder(reminder.id)
+				removeReminder(reminder.id);
 			}
 		}
 	}
