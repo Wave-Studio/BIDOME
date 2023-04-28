@@ -1,10 +1,12 @@
-import { MessageComponentInteraction, Embed, InteractionResponseType } from "harmony";
+import {
+	MessageComponentInteraction,
+	Embed,
+} from "harmony";
 import { getReminders } from "supabase";
-import { createEmbedFromLangData, getUserLanguage } from "i18n";
+import { createEmbedFromLangData, getUserLanguage, getString } from "i18n";
 import { removeReminder } from "supabase";
 
 export default async function reminder(i: MessageComponentInteraction) {
-	console.log(i.customID)
 	if (i.customID.startsWith("delrem_")) {
 		const lang = await getUserLanguage(i.user.id);
 		const reminderID = i.customID.substring("delrem_".length);
@@ -28,25 +30,36 @@ export default async function reminder(i: MessageComponentInteraction) {
 					],
 				});
 			} else {
-				await i.respond({
-					type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
-				});
 				await removeReminder(parseInt(reminderID));
-				await i.editResponse({
+				await i.message.edit({
+					...i.message,
+					components: [
+						{
+							type: 1,
+							components: [
+								{
+									type: 2,
+									style: "RED",
+									label: getString(lang, "interactions.reminder.button.delete"),
+									customID: `disabled`,
+									disabled: true,
+								},
+							],
+						},
+					],
+				});
+				await i.respond({
 					ephemeral: true,
 					embeds: [
 						new Embed({
-							...createEmbedFromLangData(
-								lang,
-								"interactions.reminder.deleted"
-							),
+							...createEmbedFromLangData(lang, "interactions.reminder.deleted"),
 							author: {
 								name: "Bidome bot",
 								icon_url: i.client.user!.avatarURL(),
 							},
 						}).setColor("green"),
 					],
-				})
+				});
 			}
 		} else {
 			await i.respond({
