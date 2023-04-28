@@ -139,6 +139,11 @@ export function createEmbedFromLangData(
 		embed: RecursiveRecord,
 		data: unknown[],
 	): RecursiveRecord => {
+		const isJson = (str: string) => {
+			const res = JSON.parse(JSON.stringify(str));
+			return typeof res == "object";
+		}
+
 		for (const [key] of Object.entries(embed)) {
 			if (
 				typeof embed[key] == "object" && !(embed[key] instanceof Array)
@@ -149,8 +154,23 @@ export function createEmbedFromLangData(
 				);
 			} else {
 				if (embed[key] instanceof Array) {
-					embed[key] = (embed[key] as string[]).join("\n");
+					if (isJson((embed[key] as string[])[0])) {
+						for (const field of embed[key] as unknown as Record<string, string>[]) {
+							for (const [fieldKey] of Object.entries(field)) {
+								for (let i = 0; i < data.length; i++) {
+									if (typeof field[fieldKey] != "string") continue;
+									field[fieldKey] = (field[fieldKey] as string).replace(
+										`{${i}}`,
+										`${data[i]}`,
+									);
+								}
+							}
+						}
+					} else {
+						embed[key] = (embed[key] as string[]).join("\n");
+					}
 				}
+				if (typeof embed[key] != "string") continue;
 				for (let i = 0; i < data.length; i++) {
 					embed[key] = (embed[key] as string).replace(
 						`{${i}}`,

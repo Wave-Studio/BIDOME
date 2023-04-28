@@ -67,8 +67,29 @@
 				"description": "You can cancel reminders with `delreminder <id>`",
 				"field": {
 					"name": "Reminder {0}",
-					"value": "{0} [[Jump]]({1}): \n{2}"
+					"value": "{0} {3}[[Jump]]({1}): \n{2}"
 				}
+			},
+			"info": {
+				"title": "Reminder {0}",
+				"description": "You can cancel this reminder with `delreminder {0}`",
+				"fields": [
+					{
+						"name": "Remind at",
+						"value": "{1}",
+						"inline": true
+					},
+					{
+						"name": "Created at",
+						"value": "{2}",
+						"inline": true
+					},
+					{
+						"name": "Message",
+						"value": "{3}",
+						"inline": true
+					}
+				]
 			}
 		},
 		"deletereminder": {

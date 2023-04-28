@@ -39,7 +39,7 @@ export default class DeleteReminder extends Command {
 			});
 		} else {
 			const reminders = await getReminders();
-			const reminderIds = ctx.argString.split(" ");
+			const reminderIds = ctx.argString.split(/[ ,]/g).map((s) => s.startsWith("#") ? s.slice(1) : s);
 			if (reminderIds.length > 1) {
 				const canceledReminders: string[] = [];
 
