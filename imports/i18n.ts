@@ -93,8 +93,6 @@ export function getString(
 		}
 	}
 
-	console.log(key, fetchedString);
-
 	return fetchedString;
 }
 

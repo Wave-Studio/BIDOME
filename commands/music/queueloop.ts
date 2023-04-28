@@ -44,7 +44,7 @@ export default class QueueLoop extends Command {
 			if (await doPermCheck(ctx.member!, botState.channel)) {
 				const loopType = queue.loopType;
 				const loopTypeEnum = queue.loop;
-				const isLoopDisabled = queue.loop == LoopType.OFF;
+				const isLoopDisabled = queue.loop != LoopType.QUEUE;
 
 				if (isLoopDisabled) {
 					queue.loop = LoopType.QUEUE;
@@ -59,11 +59,11 @@ export default class QueueLoop extends Command {
 								name: "Bidome bot",
 								icon_url: ctx.client.user!.avatarURL(),
 							},
-							title: "Toggled queue loop",
+							title: "Toggled loop",
 							description: `Queue looping is now ${
-								isLoopDisabled ? "Enabled" : "Disabled"
+								loopTypeEnum == LoopType.QUEUE ? "Enabled" : "Disabled"
 							} ${
-								loopTypeEnum != LoopType.OFF && isLoopDisabled ? `and ${loopType}ing is now disabled` : ""
+								loopTypeEnum != LoopType.OFF && loopTypeEnum != LoopType.QUEUE ? `and ${loopType}ing is now disabled` : ""
 							}`,
 						}).setColor("green"),
 					],

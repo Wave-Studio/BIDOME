@@ -5,12 +5,13 @@ import {
 	GatewayIntents,
 	InteractionResponseType,
 	isMessageComponentInteraction,
+	MessageComponentData,
 	TextChannel,
 } from "harmony";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
 import { getPrefixes, getReminders, removeReminder, supabase } from "supabase";
-import { loopFilesAndReturn } from "tools";
+import { loopFilesAndReturn, toMs } from "tools";
 import { interactionHandlers } from "shared";
 import { getString, getUserLanguage } from "i18n";
 
@@ -98,6 +99,10 @@ bot.on("ready", async () => {
 			bot.commands.list.size == 1 ? "" : "s"
 		}`
 	);
+
+	for (const guild of await bot.guilds.array()) {
+		guild.chunk({});
+	}
 
 	setInterval(() => {
 		nextStatus();
@@ -245,21 +250,44 @@ setInterval(async () => {
 					},
 					title: getString(
 						userLanguage,
-						"interactions.reminder.title",
+						"interactions.reminder.notify.title",
 						`#${reminder.id}`
 					),
 					description: getString(
 						userLanguage,
-						"interactions.reminder.description",
+						"interactions.reminder.notify.description",
 						`<t:${createdAt}:R>`,
 						reminder.reminder
 					),
 					url: `https://discord.com/channels/${reminder.server_id}/${reminder.channel_id}/${reminder.message_id}`,
 				}).setColor("random");
+				const components: MessageComponentData[] = [];
+
+				if (reminder.future_sends != undefined) {
+					const newDate = new Date(reminder.created_at).getTime() + toMs(reminder.future_sends[0]);
+					await supabase.from("reminders").update({
+						remind_at: newDate,
+						future_sends: reminder.future_sends.slice(1),
+					}).eq("id", reminder.id);
+					components.push({
+						type: 1,
+						components: [
+							{
+								type: 2,
+								style: "RED",
+								label: getString(userLanguage, "interactions.reminder.button.delete"),
+								customID: `delrem_${reminder.id}`,
+							}
+						]
+					})
+				} else {
+					removeReminder(reminder.id);
+				}
 
 				try {
 					await user?.send({
 						embeds: [reminderMessage],
+						components
 					});
 				} catch {
 					try {
@@ -269,13 +297,12 @@ setInterval(async () => {
 						await channel.send({
 							content: `<@${reminder.user_id}>`,
 							embeds: [reminderMessage],
+							components
 						});
 					} catch {
 						// ignore
 					}
 				}
-
-				removeReminder(reminder.id);
 			}
 		}
 	}

@@ -100,8 +100,25 @@
 
 	"interactions": {
 		"reminder": {
-			"title": "Reminder {0}",
-			"description": "{0} you asked to be reminded about: \n{1}"
+			"notify": {
+				"title": "Reminder {0}",
+				"description": "{0} you asked to be reminded about: \n{1}"
+			},
+			"button": {
+				"delete": "Delete Reminder"
+			},
+			"invalidid": {
+				"title": "Invalid ID!",
+				"description": "This reminder no longer exists!"
+			},
+			"notyours": {
+				"title": "Unable to delete reminder",
+				"description": "This reminder is not yours!"
+			},
+			"deleted": {
+				"title": "Reminder Deleted",
+				"description": "This reminder has been deleted!"
+			}
 		}
 	},
 

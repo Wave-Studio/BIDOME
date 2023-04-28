@@ -24,7 +24,7 @@ export const nodes: ClusterNodeOptions[] = [
 		host: Deno.env.get("LAVALINK_HOST")!,
 		port: parseInt(Deno.env.get("LAVALINK_PORT")!),
 		password: Deno.env.get("LAVALINK_PASSWORD")!,
-		id: "1",
+		id: "main-1",
 		reconnect: {
 			type: "exponential",
 			maxDelay: 15000,
@@ -39,7 +39,7 @@ export const nodes: ClusterNodeOptions[] = [
 		host: "lavalink.cyber-host.eu",
 		port: 2333,
 		password: "discord.gg/cyberhost",
-		id: "2",
+		id: "backup-1",
 		reconnect: {
 			type: "exponential",
 			maxDelay: 15000,
@@ -54,7 +54,7 @@ export const nodes: ClusterNodeOptions[] = [
 		host: "narco.buses.rocks",
 		port: 2269,
 		password: "glasshost1984",
-		id: "3",
+		id: "backup-2",
 		reconnect: {
 			type: "exponential",
 			maxDelay: 15000,

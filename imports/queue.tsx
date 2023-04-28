@@ -465,7 +465,7 @@ export const initLava = (bot: CommandClient) => {
 		reconnectingIDs = reconnectingIDs.filter((id) => id !== node.id);
 		console.log(
 			`[Lavalink] Connected to node ${node.id} in ${formatMs(
-				took,
+				took < 1000 ? 1000 : took,
 				true
 			).toLowerCase()} Reconnected: ${reconnect ? "Yes" : "No"}`
 		);

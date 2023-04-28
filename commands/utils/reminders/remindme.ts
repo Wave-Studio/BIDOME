@@ -18,7 +18,7 @@ export default class RemindMe extends Command {
 					new Embed({
 						...createEmbedFromLangData(
 							lang,
-							"commands.createreminder.error.toomany",
+							"commands.createreminder.error.toomany"
 						),
 						author: {
 							name: "Bidome bot",
@@ -34,7 +34,7 @@ export default class RemindMe extends Command {
 						new Embed({
 							...createEmbedFromLangData(
 								lang,
-								"commands.createreminder.error.noargs",
+								"commands.createreminder.error.noargs"
 							),
 							author: {
 								name: "Bidome bot",
@@ -52,7 +52,7 @@ export default class RemindMe extends Command {
 							new Embed({
 								...createEmbedFromLangData(
 									lang,
-									"commands.createreminder.error.nomessage",
+									"commands.createreminder.error.nomessage"
 								),
 								author: {
 									name: "Bidome bot",
@@ -62,56 +62,58 @@ export default class RemindMe extends Command {
 						],
 					});
 				} else {
-					const ms = toMs(timestamp);
-					if (ms < 0 || isNaN(ms)) {
-						await ctx.message.reply(undefined, {
-							embeds: [
-								new Embed({
-									...createEmbedFromLangData(
-										lang,
-										"commands.createreminder.error.invalidtime",
-									),
-									author: {
-										name: "Bidome bot",
-										icon_url: ctx.client.user!.avatarURL(),
-									},
-								}),
-							],
-						});
-					} else {
-						const id = await createReminder({
-							remind_at: new Date(Date.now() + ms)
-								.toUTCString(),
-							user_id: ctx.author.id,
-							message_id: ctx.message.id,
-							channel_id: ctx.channel.id,
-							server_id: ctx.guild!.id,
-							reminder: truncateString(message, 100),
-						});
+					const [base, ...parsedTimestamps] = timestamp.split(",").sort((a, b) => toMs(a) - toMs(b));
+					const baseParsed = toMs(base);
 
-						const time = (new Date().getTime() / 1000 + ms / 1000)
-							.toFixed(
-								0,
-							);
-
-						await ctx.message.reply(undefined, {
-							embeds: [
-								new Embed({
-									...createEmbedFromLangData(
-										lang,
-										"commands.createreminder.success",
-										`#${id}`,
-										`<t:${time}:R>`,
-										truncateString(message, 100),
-									),
-									author: {
-										name: "Bidome bot",
-										icon_url: ctx.client.user!.avatarURL(),
-									},
-								}),
-							],
-						});
+					for (const ms of [base, ...parsedTimestamps]) {
+						const msParsed = toMs(ms);
+						if (msParsed < 0 || isNaN(msParsed)) {
+							return await ctx.message.reply(undefined, {
+								embeds: [
+									new Embed({
+										...createEmbedFromLangData(
+											lang,
+											"commands.createreminder.error.invalidtime"
+										),
+										author: {
+											name: "Bidome bot",
+											icon_url: ctx.client.user!.avatarURL(),
+										},
+									}),
+								],
+							});
+						}
 					}
+
+					const id = await createReminder({
+						remind_at: new Date(Date.now() + baseParsed).toUTCString(),
+						user_id: ctx.author.id,
+						message_id: ctx.message.id,
+						channel_id: ctx.channel.id,
+						server_id: ctx.guild!.id,
+						reminder: truncateString(message, 100),
+						future_sends: parsedTimestamps
+					});
+
+					const time = (new Date().getTime() / 1000 + baseParsed / 1000).toFixed(0);
+
+					await ctx.message.reply(undefined, {
+						embeds: [
+							new Embed({
+								...createEmbedFromLangData(
+									lang,
+									"commands.createreminder.success",
+									`#${id}`,
+									`<t:${time}:R>`,
+									truncateString(message, 100)
+								),
+								author: {
+									name: "Bidome bot",
+									icon_url: ctx.client.user!.avatarURL(),
+								},
+							}),
+						],
+					});
 				}
 			}
 		}

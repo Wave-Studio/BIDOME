@@ -32,10 +32,21 @@ export default class BetterEmotes extends Extension {
 		{
 			name: "Delete Message",
 			type: "MESSAGE",
-			handler: (i) => {
+			handler: async (i) => {
 				if (!isApplicationCommandInteraction(i)) return;
-				const message = i.targetMessage!;
-				console.log(message.author.avatarURL());
+				await i.respond({
+					embeds: [
+						new Embed({
+							title: "Work in progress",
+							description:
+								"This feature is still a work in progress, please wait for it to be finished.",
+							author: {
+								name: "Bidome bot",
+								icon_url: i.client.user!.avatarURL(),
+							},
+						}),
+					],
+				});
 			},
 		},
 	];
@@ -44,8 +55,6 @@ export default class BetterEmotes extends Extension {
 
 	@event("ready")
 	async ready({ client: bot }: Extension) {
-		// For dev instance
-		return;
 		const commands = (await bot.interactions.commands.all()).map((c) => c.name);
 		for (const command of this.interactionCommands) {
 			bot.interactions.handle(command.name, command.handler, "MESSAGE");
@@ -132,6 +141,7 @@ export default class BetterEmotes extends Extension {
 							refMsg.content,
 							100
 						)} \n\n[Click to jump to message](${refMsg.url})`,
+						image: msg.attachments.length > 0 ? msg.attachments[0] : undefined,
 					}).setColor("random")
 				);
 			}

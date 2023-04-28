@@ -44,7 +44,7 @@ export default class Loop extends Command {
 			if (await doPermCheck(ctx.member!, botState.channel)) {
 				const loopType = queue.loopType;
 				const loopTypeEnum = queue.loop;
-				const isLoopDisabled = queue.loop == LoopType.OFF;
+				const isLoopDisabled = queue.loop != LoopType.SONG;
 
 				if (isLoopDisabled) {
 					queue.loop = LoopType.SONG;
@@ -59,11 +59,11 @@ export default class Loop extends Command {
 								name: "Bidome bot",
 								icon_url: ctx.client.user!.avatarURL(),
 							},
-							title: "Toggled loop",
+							title: "Toggled song loop",
 							description: `Song looping is now ${
-								isLoopDisabled ? "Enabled" : "Disabled"
+								loopTypeEnum == LoopType.SONG ? "Enabled" : "Disabled"
 							} ${
-								loopTypeEnum != LoopType.OFF && isLoopDisabled ? `and ${loopType}ing is now disabled` : ""
+								loopTypeEnum != LoopType.OFF && loopTypeEnum != LoopType.SONG ? `and ${loopType}ing is now disabled` : ""
 							}`,
 						}).setColor("green"),
 					],

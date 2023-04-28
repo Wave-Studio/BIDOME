@@ -7,6 +7,7 @@ export default class ListReminders extends Command {
 	aliases = ["reminders"];
 	category = "utils";
 	description = "List your reminders";
+
 	async execute(ctx: CommandContext) {
 		const lang = await getUserLanguage(ctx.author);
 		const reminders = await getReminders(ctx.author.id);
