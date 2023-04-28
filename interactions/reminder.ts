@@ -4,6 +4,7 @@ import { createEmbedFromLangData, getUserLanguage } from "i18n";
 import { removeReminder } from "supabase";
 
 export default async function reminder(i: MessageComponentInteraction) {
+	console.log(i.customID)
 	if (i.customID.startsWith("delrem_")) {
 		const lang = await getUserLanguage(i.user.id);
 		const reminderID = i.customID.substring("delrem_".length);

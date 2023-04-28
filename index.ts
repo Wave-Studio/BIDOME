@@ -139,7 +139,6 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 bot.on("interactionCreate", async (i) => {
 	if (!isMessageComponentInteraction(i)) return;
 	if (i.message.author.id != bot.user!.id) return;
-	if (i.guild == undefined) return;
 
 	if (i.customID.startsWith("disabled")) {
 		await i.respond({
@@ -263,23 +262,41 @@ setInterval(async () => {
 				}).setColor("random");
 				const components: MessageComponentData[] = [];
 
-				if (reminder.future_sends != undefined) {
-					const newDate = new Date(reminder.created_at).getTime() + toMs(reminder.future_sends[0]);
-					await supabase.from("reminders").update({
-						remind_at: newDate,
-						future_sends: reminder.future_sends.slice(1),
-					}).eq("id", reminder.id);
-					components.push({
-						type: 1,
-						components: [
-							{
-								type: 2,
-								style: "RED",
-								label: getString(userLanguage, "interactions.reminder.button.delete"),
-								customID: `delrem_${reminder.id}`,
-							}
-						]
-					})
+				if (
+					reminder.future_sends != undefined &&
+					reminder.future_sends.length > 0
+				) {
+					const newDate =
+						new Date(reminder.created_at).getTime() +
+						toMs(reminder.future_sends[0]);
+					const futureReminders = reminder.future_sends.slice(1);
+
+					await supabase
+						.from("reminders")
+						.update({
+							remind_at: new Date(newDate).toISOString(),
+							future_sends: futureReminders,
+						})
+						.eq("id", reminder.id);
+
+					if (futureReminders.length > 0) {
+						components.push({
+							type: 1,
+							components: [
+								{
+									type: 2,
+									style: "RED",
+									label: getString(
+										userLanguage,
+										"interactions.reminder.button.delete"
+									),
+									customID: `delrem_${reminder.id}`,
+								},
+							],
+						});
+					} else {
+						removeReminder(reminder.id);
+					}
 				} else {
 					removeReminder(reminder.id);
 				}
@@ -287,7 +304,7 @@ setInterval(async () => {
 				try {
 					await user?.send({
 						embeds: [reminderMessage],
-						components
+						components,
 					});
 				} catch {
 					try {
@@ -297,7 +314,7 @@ setInterval(async () => {
 						await channel.send({
 							content: `<@${reminder.user_id}>`,
 							embeds: [reminderMessage],
-							components
+							components,
 						});
 					} catch {
 						// ignore
