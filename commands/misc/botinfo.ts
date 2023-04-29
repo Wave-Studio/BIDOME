@@ -34,10 +34,10 @@ export default class Botinfo extends Command {
 			data.roles += await guild.roles.size();
 			data.channels += await guild.channels.size();
 			data.humans += await (
-				await guild.members.fetchList()
+				await guild.members.array()
 			).filter((m) => !m.user.bot).length;
 			data.bots += await (
-				await guild.members.fetchList()
+				await guild.members.array()
 			).filter((m) => m.user.bot).length;
 		}
 

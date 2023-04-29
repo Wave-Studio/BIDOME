@@ -100,8 +100,8 @@ bot.on("ready", async () => {
 		}`
 	);
 
-	for (const guild of await bot.guilds.array()) {
-		guild.chunk({});
+	for await (const guild of bot.guilds) {
+		await guild.chunk({});
 	}
 
 	setInterval(() => {

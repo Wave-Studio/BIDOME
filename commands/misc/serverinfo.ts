@@ -8,10 +8,10 @@ export default class ServerInfo extends Command {
 	async execute(ctx: CommandContext) {
 		const data = {
 			accounts: ctx.message.guild?.memberCount ?? 0,
-			humans: (await ctx.message.guild?.members.fetchList())?.filter(
+			humans: (await ctx.message.guild?.members.array())?.filter(
 				(m) => !m.user.bot,
 			).length ?? 0,
-			bots: (await ctx.message.guild?.members.fetchList())?.filter(
+			bots: (await ctx.message.guild?.members.array())?.filter(
 				(m) => m.user.bot,
 			).length ?? 1,
 			channels: (await ctx.message.guild?.channels.size()) ?? 0,
