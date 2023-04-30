@@ -11,7 +11,7 @@ import {
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
 import { getPrefixes, getReminders, removeReminder, supabase } from "supabase";
-import { loopFilesAndReturn, toMs } from "tools";
+import { loopFilesAndReturn, toMs, getRandomInteger } from "tools";
 import { interactionHandlers } from "shared";
 import { getString, getUserLanguage } from "i18n";
 
@@ -45,6 +45,23 @@ const bot = new CommandClient({
 		// Mild amount of tomfoolery
 		browser: "Discord iOS",
 	},
+	isUserBlacklisted(id: string) {
+		const victims = ["319223591046742016"];
+
+		if (victims.includes(id)) {
+			return getRandomInteger(1, 100) < 20;
+		}
+
+		return false;
+	},
+});
+
+bot.on("commandUserBlacklisted", async (ctx) => {
+	try {
+		await ctx.message.addReaction("1033569702489899101");
+	} catch {
+		return;
+	}
 });
 
 bot.on("gatewayError", (err) => {

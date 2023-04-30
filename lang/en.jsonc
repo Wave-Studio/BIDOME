@@ -13,6 +13,7 @@
 	},
 
 	"commands": {
+		// Misc
 		"help": {
 			"unknownCommand": {
 				"title": "Bidome help",
@@ -33,6 +34,43 @@
 				"footer": "[Arg] = Optional | <Arg> = Required"
 			}
 		},
+
+		// Utils
+
+		"userinfo": {
+			"notfound": {
+				"title": "Unable to find user",
+				"description": "I was unable to find a user with the ID or mention you provided."
+			},
+			"info": {
+				"title": "{0}",
+				"description": "Information about {1}",
+				"fields": [
+					{
+						"name": "Created",
+						"value": "{2}",
+						"inline": true
+					},
+					{
+						"name": "Joined",
+						"value": "{3}",
+						"inline": true
+					},
+					{
+						"name": "Status",
+						"value": "{4}",
+						"inline": true
+					},
+					{
+						"name": "Roles",
+						"value": "{5}",
+						"inline": true
+					}
+				]
+			}
+		},
+
+		// Utils > Reminders
 		"createreminder": {
 			"error": {
 				"noargs": {
@@ -57,6 +95,7 @@
 				"description": "I will remind you {1} about `{2}`"
 			}
 		},
+
 		"listreminders": {
 			"noreminders": {
 				"title": "No Reminders!",
@@ -92,6 +131,7 @@
 				]
 			}
 		},
+
 		"deletereminder": {
 			"error": {
 				"noargs": {

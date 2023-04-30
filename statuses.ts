@@ -15,7 +15,7 @@ export const getRandomStatus = async (bot: CommandClient) => {
 		},
 		{
 			name: `American presindetio joe bi-`,
-			type: "PLAYING",
+			type: "WATCHING",
 		},
 		{
 			name: `!status`,

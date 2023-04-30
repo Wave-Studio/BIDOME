@@ -10,7 +10,7 @@ import {
 	ApplicationCommandInteraction,
 	isApplicationCommandInteraction,
 } from "harmony";
-import { getUserProfilePicture } from "cache";
+import { getDiscordImage } from "cache";
 import { encode } from "https://deno.land/std@0.175.0/encoding/base64.ts";
 import { getEmojiByName } from "emoji";
 import { truncateString } from "tools";
@@ -19,6 +19,7 @@ interface ServerEmoteList {
 	name: string;
 	id: string;
 	animated: boolean;
+	available: boolean;
 }
 
 interface ApplicationCommand extends ApplicationCommandPartial {
@@ -44,8 +45,9 @@ export default class BetterEmotes extends Extension {
 								name: "Bidome bot",
 								icon_url: i.client.user!.avatarURL(),
 							},
-						}),
+						}).setColor("random"),
 					],
+					ephemeral: true,
 				});
 			},
 		},
@@ -81,41 +83,32 @@ export default class BetterEmotes extends Extension {
 
 		const webhooks = await msg.channel.fetchWebhooks();
 
-		if (webhooks.length >= 8) return;
-
 		let webhook = webhooks.find(
 			(w) =>
-				w.name?.toLowerCase() == "bidome bot" &&
-				w.user?.id == msg.client.user?.id
+				w.name?.toLowerCase() == "bidome bot"
 		);
+
 		// TODO: Make this work
 		const serverEmojisArray = this.serverEmoteCache.has(msg.guild!.id)
 			? this.serverEmoteCache.get(msg.guild!.id)
-			: (await msg.guild.emojis.fetchAll()).map(({ name, id, animated }) => ({
-					name: name!,
-					id: id!,
-					animated: animated!,
-			  }));
+			: (await msg.guild.emojis.fetchAll()).map(
+					({ name, id, animated, available }) => ({
+						name: name!,
+						id: id!,
+						animated: animated!,
+						available: available!,
+					})
+			  );
 
 		this.serverEmoteCache.set(
 			msg.guild!.id,
 			serverEmojisArray as ServerEmoteList[]
 		);
-		msg.guild.emojis.fetchAll();
-
-		if (webhook == undefined) {
-			const avatar = await getUserProfilePicture(msg.client.user!.avatarURL());
-			const avatarB64 = encode(avatar.buffer);
-
-			webhook = await Webhook.create(msg.channel, msg.client, {
-				name: "Bidome Bot",
-				avatar: `data:image/png;base64,${avatarB64}`,
-			});
-		}
 
 		let message = msg.content;
 
 		for (const emote of serverEmojisArray ?? []) {
+			if (!emote.available) continue;
 			message = message.replace(
 				new RegExp(`(?!<a?):${emote.name}:(?![0-9]+>)`, "g"),
 				`<${emote.animated ? "a" : ""}:${emote.name}:${emote.id}>`
@@ -123,6 +116,16 @@ export default class BetterEmotes extends Extension {
 		}
 
 		if (message == msg.content) return;
+
+		if (webhook == undefined) {
+			const avatar = await getDiscordImage(msg.client.user!.avatarURL());
+			const avatarB64 = encode(avatar.buffer);
+
+			webhook = await Webhook.create(msg.channel, msg.client, {
+				name: "Bidome Bot",
+				avatar: `data:image/png;base64,${avatarB64}`,
+			});
+		}
 
 		const messageEmbeds: Embed[] = [];
 
@@ -188,16 +191,20 @@ export default class BetterEmotes extends Extension {
 		if (emoji.guild == undefined) return;
 		const serverEmojisArray = this.serverEmoteCache.has(emoji.guild.id)
 			? this.serverEmoteCache.get(emoji.guild.id)
-			: (await emoji.guild.emojis.fetchAll()).map(({ name, id, animated }) => ({
-					name: name!,
-					id: id!,
-					animated: animated!,
-			  }));
+			: (await emoji.guild.emojis.fetchAll()).map(
+					({ name, id, animated, available }) => ({
+						name: name!,
+						id: id!,
+						animated: animated!,
+						available: available!,
+					})
+			  );
 
 		serverEmojisArray!.push({
 			name: emoji.name!,
 			id: emoji.id!,
 			animated: emoji.animated!,
+			available: emoji.available!,
 		});
 
 		this.serverEmoteCache.set(emoji.guild.id, serverEmojisArray!);
@@ -209,11 +216,14 @@ export default class BetterEmotes extends Extension {
 		if (emoji.guild == undefined) return;
 		const serverEmojisArray = this.serverEmoteCache.has(emoji.guild.id)
 			? this.serverEmoteCache.get(emoji.guild.id)
-			: (await emoji.guild.emojis.fetchAll()).map(({ name, id, animated }) => ({
-					name: name!,
-					id: id!,
-					animated: animated!,
-			  }));
+			: (await emoji.guild.emojis.fetchAll()).map(
+					({ name, id, animated, available }) => ({
+						name: name!,
+						id: id!,
+						animated: animated!,
+						available: available!,
+					})
+			  );
 
 		this.serverEmoteCache.set(
 			emoji.guild.id,
@@ -228,10 +238,11 @@ export default class BetterEmotes extends Extension {
 		let serverEmojisArray = this.serverEmoteCache.has(before.guild.id)
 			? this.serverEmoteCache.get(before.guild.id)
 			: (await before.guild.emojis.fetchAll()).map(
-					({ name, id, animated }) => ({
+					({ name, id, animated, available }) => ({
 						name: name!,
 						id: id!,
 						animated: animated!,
+						available: available!,
 					})
 			  );
 
@@ -240,6 +251,7 @@ export default class BetterEmotes extends Extension {
 			name: after.name!,
 			id: after.id!,
 			animated: after.animated!,
+			available: after.available!,
 		});
 
 		this.serverEmoteCache.set(before.guild.id, serverEmojisArray);

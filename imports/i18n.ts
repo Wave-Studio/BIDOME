@@ -31,9 +31,10 @@ interface Language {
 
 const languages: Record<string, Language> = {};
 
-for (const langFile of await loopFilesAndReturn("./lang/", [".json"])) {
+for (const langFile of await loopFilesAndReturn("./lang/", [".json", ".jsonc"])) {
 	if (/[a-z]{2}\.json/.test(langFile)) {
-		const fileContents = await Deno.readTextFile(langFile);
+		const fileContents = (await Deno.readTextFile(langFile)).replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m);
+		
 		let fileData: Language;
 		try {
 			fileData = JSON.parse(fileContents);
