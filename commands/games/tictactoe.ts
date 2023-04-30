@@ -2,8 +2,8 @@ import { Command, CommandContext, Embed, User } from "harmony";
 import { TicTacToeGame, currentGames } from "tictactoe"
 
 export default class TicTacToe extends Command {
-	name = "tic-tac-toe";
-	aliases = ["ttt"];
+	name = "tictactoe";
+	aliases = ["ttt", "tic-tac-toe"];
 	description = "Play tic-tac-toe with a friend or a computer!";
 	usage = "[user's mention or id]";
 	category = "games";
