@@ -23,7 +23,7 @@ export default class UserInfo extends Command {
 		if (user == undefined) {
 			await ctx.message.reply(
 				new Embed({
-					...createEmbedFromLangData(lang, "commands.userinfo.notfound"),
+					...createEmbedFromLangData(lang, "commands.userinfo.notyours"),
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.client.user!.avatarURL(),

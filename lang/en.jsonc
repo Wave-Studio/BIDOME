@@ -160,6 +160,7 @@
 	},
 
 	"interactions": {
+		// Utils > Reminders
 		"reminder": {
 			"notify": {
 				"title": "Reminder {0}",
@@ -179,6 +180,22 @@
 			"deleted": {
 				"title": "Reminder Deleted",
 				"description": "This reminder has been deleted!"
+			}
+		},
+
+		// Games
+		"tictactoe" : {
+			"unknowngame": {
+				"title": "Unknown Game",
+				"description": "This game no longer exists!"
+			},
+			"notyours": {
+				"title": "Not your turn!",
+				"description": "It is not your turn in this game!"
+			},
+			"cantplay": {
+				"title": "Unable to play",
+				"description": "You are unable to place in this square!"
 			}
 		}
 	},

@@ -10,6 +10,7 @@
 		"supabase": "./imports/supabase.ts",
 		"shared": "./imports/shared.ts",
 		"cache": "./imports/cache.ts",
-		"i18n": "./imports/i18n.ts"
+		"i18n": "./imports/i18n.ts",
+		"tictactoe": "./imports/games/tictactoe.tsx"
 	}
 }
