@@ -5,13 +5,11 @@ import {
 	GatewayIntents,
 	InteractionResponseType,
 	isMessageComponentInteraction,
-	MessageComponentData,
-	TextChannel,
 } from "harmony";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
-import { getPrefixes, getReminders, removeReminder, supabase } from "supabase";
-import { loopFilesAndReturn, toMs, getRandomInteger } from "tools";
+import { getPrefixes, supabase } from "supabase";
+import { loopFilesAndReturn, getRandomInteger } from "tools";
 import { interactionHandlers } from "shared";
 import { getString, getUserLanguage } from "i18n";
 
@@ -88,6 +86,10 @@ console.log("Loading all extensions!");
 
 for (const ext of await loopFilesAndReturn("./extensions/")) {
 	bot.extensions.load((await import(ext)).default);
+}
+
+for (const clock of await loopFilesAndReturn("./clocks/")) {
+	(await import(clock)).default(bot);
 }
 
 console.log(
@@ -245,102 +247,6 @@ const nextStatus = async () => {
 		}
 	}
 };
-
-setInterval(async () => {
-	if (Deno.env.get("IS_DEV") == "true") return;
-	if (bot.gateway.connected) {
-		for (const reminder of getReminders()) {
-			const remind_at = new Date(reminder.remind_at);
-			const now = Date.now();
-			if (remind_at.valueOf() <= now) {
-				const userLanguage = await getUserLanguage(reminder.user_id);
-				const user = await bot.users.get(reminder.user_id);
-				const createdAt = (
-					new Date(reminder.created_at).getTime() / 1000
-				).toFixed(0);
-
-				const reminderMessage = new Embed({
-					author: {
-						name: "Bidome bot",
-						icon_url: bot.user!.avatarURL(),
-					},
-					title: getString(
-						userLanguage,
-						"interactions.reminder.notify.title",
-						`#${reminder.id}`
-					),
-					description: getString(
-						userLanguage,
-						"interactions.reminder.notify.description",
-						`<t:${createdAt}:R>`,
-						reminder.reminder
-					),
-					url: `https://discord.com/channels/${reminder.server_id}/${reminder.channel_id}/${reminder.message_id}`,
-				}).setColor("random");
-				const components: MessageComponentData[] = [];
-
-				if (
-					reminder.future_sends != undefined &&
-					reminder.future_sends.length > 0
-				) {
-					const newDate =
-						new Date(reminder.created_at).getTime() +
-						toMs(reminder.future_sends[0]);
-					const futureReminders = reminder.future_sends.slice(1);
-
-					await supabase
-						.from("reminders")
-						.update({
-							remind_at: new Date(newDate).toISOString(),
-							future_sends: futureReminders,
-						})
-						.eq("id", reminder.id);
-
-					if (futureReminders.length > 0) {
-						components.push({
-							type: 1,
-							components: [
-								{
-									type: 2,
-									style: "RED",
-									label: getString(
-										userLanguage,
-										"interactions.reminder.button.delete"
-									),
-									customID: `delrem_${reminder.id}`,
-								},
-							],
-						});
-					} else {
-						removeReminder(reminder.id);
-					}
-				} else {
-					removeReminder(reminder.id);
-				}
-
-				try {
-					await user?.send({
-						embeds: [reminderMessage],
-						components,
-					});
-				} catch {
-					try {
-						const channel = (await bot.channels.get(
-							reminder.channel_id
-						)) as TextChannel;
-						await channel.send({
-							content: `<@${reminder.user_id}>`,
-							embeds: [reminderMessage],
-							components,
-						});
-					} catch {
-						// ignore
-					}
-				}
-			}
-		}
-	}
-}, 5000);
 
 bot.connect(Deno.env.get("token"), [
 	GatewayIntents.GUILDS,
