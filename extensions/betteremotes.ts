@@ -83,10 +83,7 @@ export default class BetterEmotes extends Extension {
 
 		const webhooks = await msg.channel.fetchWebhooks();
 
-		let webhook = webhooks.find(
-			(w) =>
-				w.name?.toLowerCase() == "bidome bot"
-		);
+		let webhook = webhooks.find((w) => w.name?.toLowerCase() == "bidome bot");
 
 		// TODO: Make this work
 		const serverEmojisArray = this.serverEmoteCache.has(msg.guild!.id)
