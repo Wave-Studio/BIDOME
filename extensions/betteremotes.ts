@@ -9,6 +9,7 @@ import {
 	ApplicationCommandPartial,
 	ApplicationCommandInteraction,
 	isApplicationCommandInteraction,
+	Guild,
 } from "harmony";
 import { getDiscordImage } from "cache";
 import { encode } from "https://deno.land/std@0.175.0/encoding/base64.ts";
@@ -55,6 +56,19 @@ export default class BetterEmotes extends Extension {
 
 	private serverEmoteCache: Map<string, ServerEmoteList[]> = new Map();
 
+	async cacheServerEmotes(guild: Guild) {
+		if (this.serverEmoteCache.has(guild.id)) return;
+		const emotes = (await guild.emojis.fetchAll()).map(
+			({ name, id, animated, available }) => ({
+				name: name!,
+				id: id!,
+				animated: animated!,
+				available: available!,
+			})
+		);
+		this.serverEmoteCache.set(guild.id, emotes);
+	}
+
 	@event("ready")
 	async ready({ client: bot }: Extension) {
 		const commands = (await bot.interactions.commands.all()).map((c) => c.name);
@@ -83,28 +97,39 @@ export default class BetterEmotes extends Extension {
 
 		const webhooks = await msg.channel.fetchWebhooks();
 
-		let webhook = webhooks.find((w) => w.name?.toLowerCase() == "bidome bot");
+		let webhook = webhooks.find((w) => w.name?.toLowerCase() == "bidome bot" && w.token != undefined);
 
-		// TODO: Make this work
-		const serverEmojisArray = this.serverEmoteCache.has(msg.guild!.id)
-			? this.serverEmoteCache.get(msg.guild!.id)
-			: (await msg.guild.emojis.fetchAll()).map(
-					({ name, id, animated, available }) => ({
-						name: name!,
-						id: id!,
-						animated: animated!,
-						available: available!,
-					})
-			  );
+		const mutualGuilds = [];
 
-		this.serverEmoteCache.set(
-			msg.guild!.id,
-			serverEmojisArray as ServerEmoteList[]
-		);
+		for await (const guild of msg.client.guilds) {
+			const user = await guild.members.resolve(msg.author.id);
+			if (user != undefined) {
+				await this.cacheServerEmotes(guild);
+				mutualGuilds.push(guild.id);
+			}
+		}
+
+		const validEmojisArray: ServerEmoteList[] = [];
+
+		for (const guild of mutualGuilds) {
+			for (const emoji of this.serverEmoteCache.get(guild) ?? []) {
+				const sameNamedEmotes = validEmojisArray.filter(
+					(e) => e.name == emoji.name
+				);
+				if (sameNamedEmotes.length > 0) {
+					validEmojisArray.push({
+						...emoji,
+						name: `${emoji.name}~${sameNamedEmotes.length - 1}`,
+					});
+				} else {
+					validEmojisArray.push(emoji);
+				}
+			}
+		}
 
 		let message = msg.content;
 
-		for (const emote of serverEmojisArray ?? []) {
+		for (const emote of validEmojisArray ?? []) {
 			if (!emote.available) continue;
 			message = message.replace(
 				new RegExp(`(?!<a?):${emote.name}:(?![0-9]+>)`, "g"),

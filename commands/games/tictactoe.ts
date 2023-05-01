@@ -16,8 +16,7 @@ export default class TicTacToe extends Command {
 					: ctx.argString
 				: ctx.member!.id;
 		const user =
-			(await ctx.guild!.members.get(userId)) ??
-			(await ctx.guild!.members.fetch(userId));
+			(await ctx.guild!.members.resolve(userId))!;
 		
 		targetPlayer = user.id == ctx.member!.id ? "ai" : user.user;
 		

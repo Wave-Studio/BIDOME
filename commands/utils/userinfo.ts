@@ -16,8 +16,7 @@ export default class UserInfo extends Command {
 					: ctx.argString
 				: ctx.member!.id;
 		const user =
-			(await ctx.guild!.members.get(userId)) ??
-			(await ctx.guild!.members.fetch(userId));
+			(await ctx.guild!.members.resolve(userId))!
 		const lang = await getUserLanguage(ctx.author.id);
 
 		if (user == undefined) {
