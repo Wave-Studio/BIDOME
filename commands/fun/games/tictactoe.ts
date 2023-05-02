@@ -6,7 +6,7 @@ export default class TicTacToe extends Command {
 	aliases = ["ttt", "tic-tac-toe"];
 	description = "Play tic-tac-toe with a friend or a computer!";
 	usage = "[user's mention or id]";
-	category = "games";
+	category = "fun";
 	async execute(ctx: CommandContext) {
 		let targetPlayer: "ai" | User = "ai";
 		const userId =

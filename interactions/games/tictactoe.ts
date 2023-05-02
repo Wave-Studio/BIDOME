@@ -78,7 +78,7 @@ export default async function tictactoe(i: MessageComponentInteraction) {
 						type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
 					});
 
-					if (game.checkForWin() == false) {
+					if (game.checkForWin() != false) {
 						currentGames.delete(i.message.id);
 					}
 				}

@@ -10,11 +10,14 @@ import {
 	ApplicationCommandInteraction,
 	isApplicationCommandInteraction,
 	Guild,
+	MessageAttachment,
 } from "harmony";
 import { getDiscordImage } from "cache";
 import { encode } from "https://deno.land/std@0.175.0/encoding/base64.ts";
 import { getEmojiByName } from "emoji";
 import { truncateString } from "tools";
+// Yes, I really only use this for one purpose
+import { Image } from "https://deno.land/x/imagescript@1.2.15/mod.ts";
 
 interface ServerEmoteList {
 	name: string;
@@ -27,6 +30,19 @@ interface ApplicationCommand extends ApplicationCommandPartial {
 	handler: (i: ApplicationCommandInteraction) => Promise<void> | void;
 }
 
+const idNumberToHex = [
+	"#D49C8F",
+	"#ABE3D3",
+	"#F9A76D",
+	"#7E8FCC",
+	"#C4E4B4",
+	"#F4D03F",
+	"#A48B6F",
+	"#E98FE9",
+	"#5C6D70",
+	"#B6B8D6",
+].map((c) => parseInt(c.replace("#", "") + "FF", 16));
+
 export default class BetterEmotes extends Extension {
 	name = "BetterEmotes";
 
@@ -36,6 +52,58 @@ export default class BetterEmotes extends Extension {
 			type: "MESSAGE",
 			handler: async (i) => {
 				if (!isApplicationCommandInteraction(i)) return;
+				const message = i.targetMessage;
+				const authorIsBot = message?.webhookID != undefined;
+
+				if (!authorIsBot) {
+					await i.respond({
+						embeds: [
+							new Embed({
+								title: "Unable to delete",
+								description:
+									"I can only delete emotified messages sent by myself.",
+								author: {
+									name: "Bidome bot",
+									icon_url: i.client.user!.avatarURL(),
+								},
+							}).setColor("red"),
+						],
+						ephemeral: true,
+					});
+				} else {
+					// TODO: Update with image check
+					if (false || i.member?.permissions.has("MANAGE_MESSAGES")) {
+						await message.delete();
+						await i.respond({
+							ephemeral: true,
+							embeds: [
+								new Embed({
+									title: "Message deleted",
+									description: "This message has been deleted!",
+									author: {
+										name: "Bidome bot",
+										icon_url: i.client.user!.avatarURL(),
+									},
+								}).setColor("green"),
+							],
+						});
+					} else {
+						await i.respond({
+							embeds: [
+								new Embed({
+									title: "Unable to delete",
+									description: "You did not send this message!",
+									author: {
+										name: "Bidome bot",
+										icon_url: i.client.user!.avatarURL(),
+									},
+								}).setColor("red"),
+							],
+							ephemeral: true,
+						});
+					}
+				}
+
 				await i.respond({
 					embeds: [
 						new Embed({
@@ -97,7 +165,9 @@ export default class BetterEmotes extends Extension {
 
 		const webhooks = await msg.channel.fetchWebhooks();
 
-		let webhook = webhooks.find((w) => w.name?.toLowerCase() == "bidome bot" && w.token != undefined);
+		let webhook = webhooks.find(
+			(w) => w.name?.toLowerCase() == "bidome bot" && w.token != undefined
+		);
 
 		const mutualGuilds = [];
 
@@ -141,7 +211,8 @@ export default class BetterEmotes extends Extension {
 
 		if (webhook == undefined) {
 			const avatar = await getDiscordImage(msg.client.user!.avatarURL());
-			const avatarB64 = encode(avatar.buffer);
+
+			const avatarB64 = encode(avatar);
 
 			webhook = await Webhook.create(msg.channel, msg.client, {
 				name: "Bidome Bot",
@@ -172,9 +243,19 @@ export default class BetterEmotes extends Extension {
 			}
 		}
 
+		//const userIdDigits = msg.author.id.split("");
+		const idImage = new Image(1, 1);
+
+		// for (let x = 0; x < userIdDigits.length; x++) {
+		// 	const number = userIdDigits[x];
+		// 	const tile = new Image(1, 1);
+		// 	tile.fill(idNumberToHex[parseInt(number)]);
+		// 	idImage.composite(tile, x, 0);
+		// }
+
 		await webhook.send(message, {
 			avatar: msg.author.avatarURL(),
-			name: msg.author.username,
+			name: msg.member?.nick ?? msg.author.username + " a",
 			embeds: [
 				...messageEmbeds,
 				...msg.attachments.map((a) =>
@@ -203,8 +284,15 @@ export default class BetterEmotes extends Extension {
 				roles: [],
 				users: [],
 			},
+			files: [
+				new MessageAttachment(
+					`B-Data-${msg.author.id}.png`,
+					await idImage.encode()
+				),
+			],
 		});
-		await msg.delete();
+
+		//await msg.delete();
 	}
 
 	@event("guildEmojiAdd")
