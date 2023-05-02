@@ -234,7 +234,7 @@ export default class BetterEmotes extends Extension {
 
 		await webhook.send(message, {
 			avatar: msg.author.avatarURL(),
-			name: msg.member?.nick ?? msg.author.username + " a",
+			name: msg.member?.nick ?? msg.author.username,
 			embeds: [
 				...messageEmbeds,
 				...msg.attachments.map((a) =>
