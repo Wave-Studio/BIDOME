@@ -30,18 +30,6 @@ interface ApplicationCommand extends ApplicationCommandPartial {
 	handler: (i: ApplicationCommandInteraction) => Promise<void> | void;
 }
 
-const idNumberToHex = [
-	"#D49C8F",
-	"#ABE3D3",
-	"#F9A76D",
-	"#7E8FCC",
-	"#C4E4B4",
-	"#F4D03F",
-	"#A48B6F",
-	"#E98FE9",
-	"#5C6D70",
-	"#B6B8D6",
-].map((c) => parseInt(c.replace("#", "") + "FF", 16));
 
 export default class BetterEmotes extends Extension {
 	name = "BetterEmotes";
@@ -71,8 +59,7 @@ export default class BetterEmotes extends Extension {
 						ephemeral: true,
 					});
 				} else {
-					// TODO: Update with image check
-					if (false || i.member?.permissions.has("MANAGE_MESSAGES")) {
+					if (message.attachments.filter((a) => a.filename.toLowerCase() == `b-data-${i.user.id}.png`) || i.member?.permissions.has("MANAGE_MESSAGES")) {
 						await message.delete();
 						await i.respond({
 							ephemeral: true,
@@ -243,15 +230,7 @@ export default class BetterEmotes extends Extension {
 			}
 		}
 
-		//const userIdDigits = msg.author.id.split("");
 		const idImage = new Image(1, 1);
-
-		// for (let x = 0; x < userIdDigits.length; x++) {
-		// 	const number = userIdDigits[x];
-		// 	const tile = new Image(1, 1);
-		// 	tile.fill(idNumberToHex[parseInt(number)]);
-		// 	idImage.composite(tile, x, 0);
-		// }
 
 		await webhook.send(message, {
 			avatar: msg.author.avatarURL(),
@@ -292,7 +271,7 @@ export default class BetterEmotes extends Extension {
 			],
 		});
 
-		//await msg.delete();
+		await msg.delete();
 	}
 
 	@event("guildEmojiAdd")
