@@ -28,7 +28,7 @@ export default class Botinfo extends Command {
 			accounts: 0,
 		};
 
-		for (const guild of await ctx.message.client.guilds.array()) {
+		for await (const guild of ctx.client.guilds) {
 			data.accounts += guild.memberCount ?? 1;
 			data.servers++;
 			data.roles += await guild.roles.size();
@@ -82,7 +82,7 @@ export default class Botinfo extends Command {
 					},
 					{
 						name: "Developers",
-						value: "```yml\n- Blocks_n_more\n- Lukas```",
+						value: "```yml\n- Bloxs\n- Lukas```",
 						inline: true,
 					},
 					{
