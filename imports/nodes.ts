@@ -13,28 +13,25 @@ for (const line of envfile) {
 	Deno.env.set(key, newValue);
 }
 
-// for (const line of envfile) {
-// 	const [key, ...value] = line.split("=").filter((l) => l.trim() != "" && !l.startsWith("#"));
-// 	const newValue = value.join("=").startsWith("\"") && value.join("=").endsWith("\"") ? value.join("=").slice(1, -1) : value.join("=");
-// 	Deno.env.set(key, newValue);
-// }
 // https://lavalink.darrennathanael.com/NoSSL/lavalink-without-ssl/ my beloved
 export const nodes: ClusterNodeOptions[] = [
-		{
-		host: Deno.env.get("LAVALINK_HOST")!,
-		port: parseInt(Deno.env.get("LAVALINK_PORT")!),
-		password: Deno.env.get("LAVALINK_PASSWORD")!,
-		id: "main-1",
-		reconnect: {
-			type: "exponential",
-			maxDelay: 15000,
-			initialDelay: 1000,
-			tries: -1 // unlimited
-		},
-		resuming: {
-			key: `Bidome-${Date.now()}`
-		}
-	},
+	// This node has been offline for long enough to not try and connect to it
+	// @cloudy pl0x fix
+	// {
+	// 	host: Deno.env.get("LAVALINK_HOST")!,
+	// 	port: parseInt(Deno.env.get("LAVALINK_PORT")!),
+	// 	password: Deno.env.get("LAVALINK_PASSWORD")!,
+	// 	id: "main-1",
+	// 	reconnect: {
+	// 		type: "exponential",
+	// 		maxDelay: 15000,
+	// 		initialDelay: 1000,
+	// 		tries: -1, // unlimited
+	// 	},
+	// 	resuming: {
+	// 		key: `Bidome-${Date.now()}`,
+	// 	},
+	// },
 	{
 		host: "lavalink.cyber-host.eu",
 		port: 2333,
