@@ -54,7 +54,7 @@ const bot = new CommandClient({
 	},
 });
 
-bot.on("commandUserBlacklisted", async (ctx) => {
+bot.on("commandBlockedUser", async (ctx) => {
 	try {
 		await ctx.message.addReaction("1033569702489899101");
 	} catch {
