@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { getReminders } from "supabase";
+import { getReminders } from "settings";
 import { createEmbedFromLangData, getString, getUserLanguage } from "i18n";
 import { toMs } from "tools";
 
@@ -29,7 +29,7 @@ export default class ListReminders extends Command {
 			});
 		} else {
 			if (ctx.argString != "") {
-				const reminder = reminders.find((r) => r.id == ctx.argString);
+				const reminder = reminders.find((r) => r.id?.toString() == ctx.argString);
 				if (reminder == undefined) {
 					// Peak laziness
 					await ctx.message.reply(undefined, {
@@ -67,7 +67,7 @@ export default class ListReminders extends Command {
 						const remindersMap = [
 							reminder.remind_at,
 							...(reminder.future_sends ?? []).map(
-								(t: string) => new Date(reminder.created_at).getTime() + toMs(t)
+								(t: string) => new Date(reminder.created_at!).getTime() + toMs(t)
 							),
 						]
 							.slice(0, 5)
@@ -87,7 +87,7 @@ export default class ListReminders extends Command {
 										`#${reminder.id}`,
 										remindersMap.join("\n"),
 										`<t:${(
-											new Date(reminder.created_at).getTime() / 1000
+											new Date(reminder.created_at!).getTime() / 1000
 										).toFixed(0)}:R>`,
 										reminder.reminder,
 									),

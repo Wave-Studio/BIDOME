@@ -6,7 +6,8 @@ import {
 } from "harmony";
 import { getUserLanguage, getString } from "i18n";
 import { toMs } from "tools";
-import { supabase, getReminders, removeReminder } from "supabase";
+import { supabase } from "supabase";
+import { getReminders, removeReminder } from "settings";
 
 export default function reminderClock(bot: CommandClient) {
 	setInterval(async () => {
@@ -50,8 +51,7 @@ export default function reminderClock(bot: CommandClient) {
 
 						for (const futureSend of reminder.future_sends) {
 							const futureDate =
-								new Date(reminder.created_at).getTime() +
-								toMs(futureSend);
+								new Date(reminder.created_at).getTime() + toMs(futureSend);
 							if (futureDate > now) {
 								possibleFutureSends.push(futureSend);
 							}
@@ -61,8 +61,10 @@ export default function reminderClock(bot: CommandClient) {
 							await supabase
 								.from("reminders")
 								.update({
-									remind_at: new Date(new Date(reminder.created_at).getTime() +
-									toMs(possibleFutureSends[0])).toISOString(),
+									remind_at: new Date(
+										new Date(reminder.created_at).getTime() +
+											toMs(possibleFutureSends[0])
+									).toISOString(),
 									future_sends: possibleFutureSends,
 								})
 								.eq("id", reminder.id);

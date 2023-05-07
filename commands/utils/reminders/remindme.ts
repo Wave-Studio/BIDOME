@@ -1,7 +1,7 @@
 import { Command, CommandContext, Embed } from "harmony";
 import { toMs, truncateString } from "tools";
 import { createEmbedFromLangData, getUserLanguage } from "i18n";
-import { createReminder, getReminders } from "supabase";
+import { createReminder, getReminders } from "settings";
 
 export default class RemindMe extends Command {
 	name = "remindme";

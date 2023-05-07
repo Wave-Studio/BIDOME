@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { getReminders, removeReminder } from "supabase";
+import { getReminders, removeReminder } from "settings";
 import { createEmbedFromLangData, getString, getUserLanguage } from "i18n";
 
 export default class DeleteReminder extends Command {
@@ -44,10 +44,10 @@ export default class DeleteReminder extends Command {
 				const canceledReminders: string[] = [];
 
 				for (const id of reminderIds) {
-					const reminder = reminders.find((r) => r.id == id);
+					const reminder = reminders.find((r) => r.id!.toString() == id);
 					if (reminder == undefined) continue;
 					if (reminder.user_id != ctx.author.id) continue;
-					await removeReminder(reminder.id);
+					await removeReminder(reminder.id.toString());
 					canceledReminders.push(id);
 				}
 
@@ -78,7 +78,7 @@ export default class DeleteReminder extends Command {
 					],
 				});
 			} else {
-				const reminder = reminders.find((r) => r.id == ctx.argString);
+				const reminder = reminders.find((r) => r.id.toString() == ctx.argString);
 				if (reminder == undefined) {
 					await ctx.message.reply(undefined, {
 						embeds: [

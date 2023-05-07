@@ -91,7 +91,7 @@ export const getReminders = (user?: string) => {
 	return reminders.filter((r) => r.user_id == user);
 }
 
-export const createReminder = async (payload: ReminderTable): Promise<number> => {
+export const createReminder = async (payload: DatabaseTable["reminders"]["Insert"]): Promise<number> => {
 	const { data } = await supabase.from("reminders")
 	.insert(payload).select("id");
 
@@ -104,9 +104,10 @@ export const createReminder = async (payload: ReminderTable): Promise<number> =>
 	return parseInt(currentReminderId.toString());
 }
 
-export const removeReminder = async (id: number) => {
+export const removeReminder = async (id: string | number) => {
+	id = id.toString();
 	await supabase.from("reminders").delete().eq("id", id);
-	reminders = reminders.filter((r) => r.id != id);
+	reminders = reminders.filter((r) => r.id.toString() != id);
 }
 
 supabase.channel("public:reminders").on<ReminderTable>("postgres_changes", {
