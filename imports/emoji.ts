@@ -1,3 +1,6 @@
+export * from "https://deno.land/x/emoji@0.3.0/mod.ts";
+// TODO: Migrate to emoji
+
 import { emojiData } from "https://deno.land/x/getmoji@1.2.4/emojiData.ts"
 // Modified from getmoji/mod.ts
 

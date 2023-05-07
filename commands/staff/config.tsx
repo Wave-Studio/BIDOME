@@ -4,8 +4,12 @@ import {
 	Embed,
 	InteractionResponseType,
 	isMessageComponentInteraction,
+	BotUI,
+	fragment,
+	Button,
+	ActionRow
 } from "harmony";
-import { getPrefixes, addPrefix, removePrefix } from "supabase";
+import { getPrefixes, addPrefix, removePrefix } from "settings";
 
 export default class Config extends Command {
 	name = "config";
@@ -41,6 +45,12 @@ export default class Config extends Command {
 							customID: "prefix-" + currentTime,
 							style: "BLURPLE",
 						},
+						// {
+						// 	type: 2,
+						// 	label: "Suggestions",
+						// 	customID: "suggest-" + currentTime,
+						// 	style: "BLURPLE",
+						// },
 					],
 				},
 			],
@@ -339,6 +349,48 @@ export default class Config extends Command {
 							}
 						}
 					}
+					break;
+				}
+
+				case "suggest": {
+					await response.respond({
+						type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
+					});
+					await message.edit({
+						embeds: [
+							new Embed({
+								author: {
+									name: "Bidome bot",
+									icon_url: ctx.client.user!.avatarURL(),
+								},
+								description: "Current suggestion settings:",
+								fields: [
+									{
+										"name": "Suggestion channel",
+										"value": "Not set",
+										"inline": true
+									},
+									{
+										"name": "Accepted channel",
+										"value": "Not set",
+										"inline": true
+									},
+									{
+										"name": "Denied channel",
+										"value": "Not set",
+										"inline": true
+									}
+								]
+							}).setColor("random")
+						],
+						components: <>
+							<ActionRow>
+								<Button style="blurple" label="Change Suggestion channel" id={`sc-${currentTime}`}/>
+								<Button style="blurple" label="Change Accepted channel" id={`ac-${currentTime}`}/>
+								<Button style="blurple" label="Change Denied channel" id={`dc-${currentTime}`}/>
+							</ActionRow>
+						</>
+					});
 					break;
 				}
 

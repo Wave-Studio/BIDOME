@@ -2,15 +2,14 @@ import {
 	MessageComponentInteraction,
 	Embed,
 } from "harmony";
-import { getReminders } from "supabase";
+import { getReminders, removeReminder } from "settings";
 import { createEmbedFromLangData, getUserLanguage, getString } from "i18n";
-import { removeReminder } from "supabase";
 
 export default async function reminder(i: MessageComponentInteraction) {
 	if (i.customID.startsWith("delrem_")) {
 		const lang = await getUserLanguage(i.user.id);
 		const reminderID = i.customID.substring("delrem_".length);
-		const reminder = getReminders().filter((r) => r.id == reminderID)[0];
+		const reminder = getReminders().filter((r) => r.id.toString() == reminderID)[0];
 
 		if (reminder != undefined) {
 			if (reminder.user_id != i.user.id) {

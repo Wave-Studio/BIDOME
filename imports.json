@@ -11,6 +11,7 @@
 		"shared": "./imports/shared.ts",
 		"cache": "./imports/cache.ts",
 		"i18n": "./imports/i18n.ts",
-		"tictactoe": "./imports/games/tictactoe.tsx"
+		"tictactoe": "./imports/games/tictactoe.tsx",
+		"settings": "./imports/settings.ts"
 	}
 }

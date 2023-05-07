@@ -16,6 +16,7 @@
 	},
 	"tasks": {
 		"run": "deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run index.ts",
-		"runWithChecks": "deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --check index.ts"
+		"runWithChecks": "deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --check index.ts",
+		"types": "supabase gen types typescript --project-id gukjxyrpjvwptnabpchl > assets/db/database.types.ts"
 	}
 }
