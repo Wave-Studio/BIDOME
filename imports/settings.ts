@@ -1,4 +1,5 @@
 import { supabase, Database } from "supabase";
+import { Guild } from "./harmony.ts";
 
 type DatabaseTable = Database["public"]["Tables"];
 type ServerTable = DatabaseTable["servers"]["Row"];
@@ -12,7 +13,8 @@ export let reminders: ReminderTable[] = (await supabase.from("reminders").select
 
 // Prefix
 
-export const getPrefixes = async (guildId: string) => {
+export const getPrefixes = async (guildId: string | Guild) => {
+	if (guildId instanceof Guild) guildId = guildId.id;
 	if (serverSettings[guildId]?.prefix != undefined)
 		return serverSettings[guildId].prefix!;
 

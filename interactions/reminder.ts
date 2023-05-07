@@ -5,7 +5,7 @@ import {
 import { getReminders, removeReminder } from "settings";
 import { createEmbedFromLangData, getUserLanguage, getString } from "i18n";
 
-export default async function reminder(i: MessageComponentInteraction) {
+export async function button(i: MessageComponentInteraction) {
 	if (i.customID.startsWith("delrem_")) {
 		const lang = await getUserLanguage(i.user.id);
 		const reminderID = i.customID.substring("delrem_".length);

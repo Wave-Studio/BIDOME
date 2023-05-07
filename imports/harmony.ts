@@ -1,5 +1,10 @@
 // While I wait on harmony to push this pr
 export * from "https://raw.githubusercontent.com/Blocksnmore/harmony/a5816ab3477685e76c8ed3ff7af23e7d2cc98b0e/mod.ts";
+import { ApplicationCommandPartial, ApplicationCommandInteraction } from "./harmony.ts";
+
+export interface ApplicationCommand extends ApplicationCommandPartial {
+	handler: (i: ApplicationCommandInteraction) => Promise<void> | void;
+}
 
 // Main harmony import
 // export * from "https://raw.githubusercontent.com/harmonyland/harmony/92de82b3a048cdbb9e73e496f1bc72186edbfde6/mod.ts";

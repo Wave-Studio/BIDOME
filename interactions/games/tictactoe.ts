@@ -7,7 +7,7 @@ import {
 import { currentGames } from "tictactoe";
 import { createEmbedFromLangData, getUserLanguage } from "i18n";
 
-export default async function tictactoe(i: MessageComponentInteraction) {
+export async function button(i: MessageComponentInteraction) {
 	if (i.customID.startsWith("ttt")) {
 		const game = currentGames.get(i.message.id);
 		const lang = await getUserLanguage(i.user.id);

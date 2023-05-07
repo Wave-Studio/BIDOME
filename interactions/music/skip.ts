@@ -1,7 +1,7 @@
 import { MessageComponentInteraction, Embed } from "harmony";
 import { queues, doPermCheck, LoopType } from "queue";
 
-export default async function skip(i: MessageComponentInteraction) {
+export async function button(i: MessageComponentInteraction) {
 	if (i.customID == "skip-song") {
 		const botState = await i.guild!.voiceStates.get(i.client.user!.id);
 		if (

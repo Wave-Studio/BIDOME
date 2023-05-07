@@ -1,4 +1,4 @@
-import { Embed, EmbedPayload } from "./harmony.ts";
+import { Embed, EmbedPayload, Guild } from "./harmony.ts";
 
 interface RecursiveRecord {
 	[key: string]: string | string[] | RecursiveRecord;
@@ -100,6 +100,10 @@ export function getString(
 export async function getUserLanguage(
 	_user: User | Member | string,
 ): Promise<string> {
+	return await "en";
+}
+
+export async function getGuildLanguage(_guild: Guild | string): Promise<string> {
 	return await "en";
 }
 

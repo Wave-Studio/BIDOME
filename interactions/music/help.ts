@@ -1,7 +1,7 @@
 import { MessageComponentInteraction, Embed } from "harmony";
 import { getEmojiByName } from "emoji";
 
-export default async function giveHelpEmbed(i: MessageComponentInteraction) {
+export async function button(i: MessageComponentInteraction) {
 	if (i.customID == "help-song") {
 		await i.respond({
 			ephemeral: true,

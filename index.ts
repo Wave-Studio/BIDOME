@@ -4,21 +4,25 @@ import {
 	Embed,
 	GatewayIntents,
 	InteractionResponseType,
-	isMessageComponentInteraction,
+	ApplicationCommand,
 } from "harmony";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
 import { supabase } from "supabase";
 import { getPrefixes } from "settings";
 import { loopFilesAndReturn, getRandomInteger } from "tools";
-import { interactionHandlers } from "shared";
+import {
+	buttonInteractionHandlers,
+	loadInteractions,
+	modalInteractionHandlers,
+} from "shared";
 import { getString, getUserLanguage } from "i18n";
 
 const bot = new CommandClient({
 	prefix: [],
 	async getGuildPrefix(guildid: string): Promise<string | string[]> {
 		if (Deno.env.get("IS_LOCAL") == "true") {
-			return "!>";
+			return ";";
 		}
 		if (Deno.env.get("IS_DEV") == "true") {
 			return ">>";
@@ -85,10 +89,15 @@ bot.on("debug", (message) => {
 
 console.log("Loading all extensions!");
 
-for (const ext of await loopFilesAndReturn("./extensions/")) {
-	bot.extensions.load((await import(ext)).default);
-}
+const slashCommands: ApplicationCommand[] = [];
 
+for (const ext of await loopFilesAndReturn("./extensions/")) {
+	const extension = await import(ext);
+	bot.extensions.load(extension.default);
+	if (extension.slashCommands != undefined) {
+		slashCommands.push(...(extension.slashCommands as ApplicationCommand[]));
+	}
+}
 for (const clock of await loopFilesAndReturn("./clocks/")) {
 	(await import(clock)).default(bot);
 }
@@ -107,17 +116,49 @@ bot.on("ready", async () => {
 	await initLava(bot);
 
 	for (const cmd of await loopFilesAndReturn("./commands/")) {
-		bot.commands.add((await import(cmd)).default);
+		const command = await import(cmd);
+
+		if (command.slashCommands == undefined && command.default == undefined) {
+			console.log(`Command ${cmd} has no default export! Skipping...`);
+			continue;
+		}
+
+		if (command.slashCommands != undefined) {
+			slashCommands.push(...(command.slashCommands as ApplicationCommand[]));
+		}
+
+		if (command.default != undefined) {
+			bot.commands.add(command.default);
+		}
 	}
 
-	for (const int of await loopFilesAndReturn("./interactions/")) {
-		interactionHandlers.push((await import(int)).default);
-	}
+	await loadInteractions();
 
 	console.log(
 		`Loaded ${await bot.commands.list.size} command${
 			bot.commands.list.size == 1 ? "" : "s"
 		}`
+	);
+	console.log("Registering slash commands...");
+
+	const globalSlashCommands = await bot.interactions.commands.all();
+	let needsToUpdateCommands = false;
+
+	for (const command of slashCommands) {
+		if (globalSlashCommands.filter(({ name }) => command.name == name).size > 0)
+			continue;
+		needsToUpdateCommands = true;
+	}
+
+	if (needsToUpdateCommands) {
+		console.log("Updating slash commands...");
+		await bot.interactions.commands.bulkEdit(slashCommands);
+	}
+
+	console.log(
+		`Registered ${slashCommands.length} slash command${
+			slashCommands.length == 1 ? "" : "s"
+		}!`
 	);
 
 	for await (const guild of bot.guilds) {
@@ -157,15 +198,26 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 });
 
 bot.on("interactionCreate", async (i) => {
-	if (!isMessageComponentInteraction(i)) return;
-	if (i.message.author.id != bot.user!.id) return;
+	if (i.isMessageComponent()) {
+		if (i.message.author.id != bot.user!.id) return;
+		if (i.customID.startsWith("disabled")) {
+			await i.respond({
+				type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
+			});
+		} else {
+			for (const handler of buttonInteractionHandlers) {
+				const res = await handler(i);
+				if (typeof res == "boolean") {
+					if (!res) {
+						return;
+					}
+				}
+			}
+		}
+	}
 
-	if (i.customID.startsWith("disabled")) {
-		await i.respond({
-			type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
-		});
-	} else {
-		for (const handler of interactionHandlers) {
+	if (i.isModalSubmit()) {
+		for (const handler of modalInteractionHandlers) {
 			const res = await handler(i);
 			if (typeof res == "boolean") {
 				if (!res) {

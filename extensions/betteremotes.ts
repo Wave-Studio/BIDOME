@@ -6,11 +6,10 @@ import {
 	ChannelTypes,
 	Emoji,
 	Embed,
-	ApplicationCommandPartial,
-	ApplicationCommandInteraction,
 	isApplicationCommandInteraction,
 	Guild,
 	MessageAttachment,
+	ApplicationCommand
 } from "harmony";
 import { getDiscordImage } from "cache";
 import { encode } from "https://deno.land/std@0.175.0/encoding/base64.ts";
@@ -19,6 +18,9 @@ import { truncateString } from "tools";
 // Yes, I really only use this for one purpose
 import { Image } from "https://deno.land/x/imagescript@1.2.15/mod.ts";
 
+const dataImage = new Image(1, 1);
+const dataImageExported = await dataImage.encode();
+
 interface ServerEmoteList {
 	name: string;
 	id: string;
@@ -26,30 +28,52 @@ interface ServerEmoteList {
 	available: boolean;
 }
 
-interface ApplicationCommand extends ApplicationCommandPartial {
-	handler: (i: ApplicationCommandInteraction) => Promise<void> | void;
-}
+export const slashCommands: ApplicationCommand[] = [
+	{
+		name: "Delete Message",
+		type: "MESSAGE",
+		handler: async (i) => {
+			if (!isApplicationCommandInteraction(i)) return;
+			const message = i.targetMessage;
+			const authorIsBot = message?.webhookID != undefined;
 
-
-export default class BetterEmotes extends Extension {
-	name = "BetterEmotes";
-
-	interactionCommands: ApplicationCommand[] = [
-		{
-			name: "Delete Message",
-			type: "MESSAGE",
-			handler: async (i) => {
-				if (!isApplicationCommandInteraction(i)) return;
-				const message = i.targetMessage;
-				const authorIsBot = message?.webhookID != undefined;
-
-				if (!authorIsBot) {
+			if (!authorIsBot) {
+				await i.respond({
+					embeds: [
+						new Embed({
+							title: "Unable to delete",
+							description:
+								"I can only delete emotified messages sent by myself.",
+							author: {
+								name: "Bidome bot",
+								icon_url: i.client.user!.avatarURL(),
+							},
+						}).setColor("red"),
+					],
+					ephemeral: true,
+				});
+			} else {
+				if (message.attachments.filter((a) => a.filename.toLowerCase() == `b-data-${i.user.id}.png`) || i.member?.permissions.has("MANAGE_MESSAGES")) {
+					await message.delete();
+					await i.respond({
+						ephemeral: true,
+						embeds: [
+							new Embed({
+								title: "Message deleted",
+								description: "This message has been deleted!",
+								author: {
+									name: "Bidome bot",
+									icon_url: i.client.user!.avatarURL(),
+								},
+							}).setColor("green"),
+						],
+					});
+				} else {
 					await i.respond({
 						embeds: [
 							new Embed({
 								title: "Unable to delete",
-								description:
-									"I can only delete emotified messages sent by myself.",
+								description: "You did not send this message!",
 								author: {
 									name: "Bidome bot",
 									icon_url: i.client.user!.avatarURL(),
@@ -58,56 +82,29 @@ export default class BetterEmotes extends Extension {
 						],
 						ephemeral: true,
 					});
-				} else {
-					if (message.attachments.filter((a) => a.filename.toLowerCase() == `b-data-${i.user.id}.png`) || i.member?.permissions.has("MANAGE_MESSAGES")) {
-						await message.delete();
-						await i.respond({
-							ephemeral: true,
-							embeds: [
-								new Embed({
-									title: "Message deleted",
-									description: "This message has been deleted!",
-									author: {
-										name: "Bidome bot",
-										icon_url: i.client.user!.avatarURL(),
-									},
-								}).setColor("green"),
-							],
-						});
-					} else {
-						await i.respond({
-							embeds: [
-								new Embed({
-									title: "Unable to delete",
-									description: "You did not send this message!",
-									author: {
-										name: "Bidome bot",
-										icon_url: i.client.user!.avatarURL(),
-									},
-								}).setColor("red"),
-							],
-							ephemeral: true,
-						});
-					}
 				}
+			}
 
-				await i.respond({
-					embeds: [
-						new Embed({
-							title: "Work in progress",
-							description:
-								"This feature is still a work in progress, please wait for it to be finished.",
-							author: {
-								name: "Bidome bot",
-								icon_url: i.client.user!.avatarURL(),
-							},
-						}).setColor("random"),
-					],
-					ephemeral: true,
-				});
-			},
+			await i.respond({
+				embeds: [
+					new Embed({
+						title: "Work in progress",
+						description:
+							"This feature is still a work in progress, please wait for it to be finished.",
+						author: {
+							name: "Bidome bot",
+							icon_url: i.client.user!.avatarURL(),
+						},
+					}).setColor("random"),
+				],
+				ephemeral: true,
+			});
 		},
-	];
+	},
+];
+
+export default class BetterEmotes extends Extension {
+	name = "BetterEmotes";
 
 	private serverEmoteCache: Map<string, ServerEmoteList[]> = new Map();
 
@@ -122,16 +119,6 @@ export default class BetterEmotes extends Extension {
 			})
 		);
 		this.serverEmoteCache.set(guild.id, emotes);
-	}
-
-	@event("ready")
-	async ready({ client: bot }: Extension) {
-		const commands = (await bot.interactions.commands.all()).map((c) => c.name);
-		for (const command of this.interactionCommands) {
-			bot.interactions.handle(command.name, command.handler, "MESSAGE");
-			if (commands.includes(command.name)) continue;
-			await bot.interactions.commands.create(command);
-		}
 	}
 
 	@event("messageCreate")
@@ -230,8 +217,6 @@ export default class BetterEmotes extends Extension {
 			}
 		}
 
-		const idImage = new Image(1, 1);
-
 		await webhook.send(message, {
 			avatar: msg.author.avatarURL(),
 			name: msg.member?.nick ?? msg.author.username,
@@ -266,7 +251,7 @@ export default class BetterEmotes extends Extension {
 			files: [
 				new MessageAttachment(
 					`B-Data-${msg.author.id}.png`,
-					await idImage.encode()
+					dataImageExported
 				),
 			],
 		});

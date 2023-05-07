@@ -1,6 +1,6 @@
 import { Command, CommandContext, Embed } from "harmony";
 import { loopFilesAndReturn } from "tools";
-import { interactionHandlers } from "shared";
+import { loadInteractions, clearInteractions } from "shared";
 
 export default class Reload extends Command {
 	name = "reload";
@@ -70,9 +70,8 @@ export default class Reload extends Command {
 					}
 				}
 
-				for (const int of await loopFilesAndReturn("./interactions/")) {
-					interactionHandlers.push((await import(`../.${int}#${Date.now()}`)).default);
-				}
+				clearInteractions();
+				await loadInteractions();
 
 				await message.edit(undefined, {
 					embeds: [

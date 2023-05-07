@@ -36,7 +36,6 @@
 		},
 
 		// Utils
-
 		"userinfo": {
 			"notfound": {
 				"title": "Unable to find user",
@@ -156,6 +155,36 @@
 				"success": "<a:check:1093342814919741440> {0}",
 				"failure": "<a:cross:1093342980519243927> {0}"
 			}
+		},
+
+		// Staff
+		"config": {
+			"default": {
+				"title": "Bidome Configuration",
+				"description": "Please select a category to view"
+			},
+
+			"prefix": {
+				"fields": [
+					{
+						"name": "Current Prefixes",
+						"value": "```@Bidome (required) \n{0}\n```",
+						"inline": true
+					},
+					{
+						"name": "Valid Prefixes",
+						"value": "```- A-Z \n- a-z \n- 0-9 \n- ~!@#$%^&*()_+=-[]{}\\|;:'\",<.>/? \n```",
+						"inline": true
+					}
+				]
+			},
+
+			"buttons": {
+				"prefix": "Prefix",
+				"suggestions": "Suggestions",
+				"addprefix": "Add Prefix",
+				"removeprefix": "Remove Prefix"
+			}
 		}
 	},
 
@@ -184,7 +213,7 @@
 		},
 
 		// Games
-		"tictactoe" : {
+		"tictactoe": {
 			"unknowngame": {
 				"title": "Unknown Game",
 				"description": "This game no longer exists!"
@@ -196,6 +225,54 @@
 			"cantplay": {
 				"title": "Unable to play",
 				"description": "You are unable to place in this square!"
+			}
+		},
+
+		// Staff
+		"config": {
+			"modals": {
+				"addprefix": {
+					"title": "Add prefix",
+					"input": "New prefix (max 5 characters)",
+					"placeholder": "!"
+				},
+				"removeprefix": {
+					"title": "Remove prefix",
+					"input": "Old prefix",
+					"placeholder": "!"
+				}
+			},
+			"notyours": {
+				"title": "Unable to edit",
+				"description": "This is not your settings menu!"
+			},
+			"noperms": {
+				"title": "Unable to edit",
+				"description": "You do not have permission to edit settings!"
+			},
+			"prefix": {
+				"prefixinvalid": {
+					"title": "Unable to add prefix",
+					"description": "This prefix is invalid!"
+				},
+
+				"notprefix": {
+					"title": "Unable to remove prefix",
+					"description": "This is not currently a prefix!"
+				},
+				"prefixexists": {
+					"title": "Unable to add prefix",
+					"description": "This prefix already exists!"
+				},
+
+				"prefixadded": {
+					"title": "Prefix added",
+					"description": "I have added the prefix `{0}`!"
+				},
+				"prefixremoved": {
+					"title": "Prefix removed",
+					"description": "I have removed the prefix `{0}`!"
+				}
 			}
 		}
 	},

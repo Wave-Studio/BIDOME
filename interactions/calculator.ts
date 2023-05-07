@@ -4,7 +4,7 @@ import {
 	Embed,
 } from "harmony";
 
-export default async function calculator(i: MessageComponentInteraction) {
+export async function button(i: MessageComponentInteraction) {
 	if (i.customID.startsWith("calc")) {
 		if (
 			i.message.embeds[0]

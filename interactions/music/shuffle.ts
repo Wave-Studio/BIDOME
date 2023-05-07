@@ -5,7 +5,7 @@ import {
 import { shuffleArray } from "tools";
 import { queues, doPermCheck } from "queue";
 
-export default async function shuffle(i: MessageComponentInteraction) {
+export async function button(i: MessageComponentInteraction) {
 	if (i.customID == "shuffle-songs") {
 		const botState = await i.guild!.voiceStates.get(i.client.user!.id);
 		if (!queues.has(i.guild!.id) || botState == undefined || botState.channel == undefined) {

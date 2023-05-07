@@ -5,7 +5,7 @@ import {
 } from "harmony";
 import { queues } from "queue";
 
-export default async function reloadMusicEmbed(i: MessageComponentInteraction) {
+export async function button(i: MessageComponentInteraction) {
 	if (i.customID == "refresh-songs") {
 		if (!queues.has(i.guild!.id)) {
 			await i.respond({
