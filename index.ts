@@ -8,7 +8,8 @@ import {
 } from "harmony";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
-import { getPrefixes, supabase } from "supabase";
+import { supabase } from "supabase";
+import { getPrefixes } from "settings";
 import { loopFilesAndReturn, getRandomInteger } from "tools";
 import { interactionHandlers } from "shared";
 import { getString, getUserLanguage } from "i18n";

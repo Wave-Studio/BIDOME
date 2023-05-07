@@ -45,12 +45,12 @@ export default class Config extends Command {
 							customID: "prefix-" + currentTime,
 							style: "BLURPLE",
 						},
-						// {
-						// 	type: 2,
-						// 	label: "Suggestions",
-						// 	customID: "suggest-" + currentTime,
-						// 	style: "BLURPLE",
-						// },
+						{
+							type: 2,
+							label: "Suggestions",
+							customID: "suggest-" + currentTime,
+							style: "BLURPLE",
+						},
 					],
 				},
 			],
