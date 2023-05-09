@@ -1,6 +1,9 @@
 // While I wait on harmony to push this pr
 export * from "https://raw.githubusercontent.com/Blocksnmore/harmony/a5816ab3477685e76c8ed3ff7af23e7d2cc98b0e/mod.ts";
-import { ApplicationCommandPartial, ApplicationCommandInteraction } from "./harmony.ts";
+import {
+	ApplicationCommandInteraction,
+	ApplicationCommandPartial,
+} from "./harmony.ts";
 
 export interface ApplicationCommand extends ApplicationCommandPartial {
 	handler: (i: ApplicationCommandInteraction) => Promise<void> | void;

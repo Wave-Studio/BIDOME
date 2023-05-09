@@ -1,15 +1,15 @@
 import {
+	ActionRow,
+	BotUI,
+	Button,
 	Command,
 	CommandContext,
 	Embed,
-	BotUI,
 	fragment,
-	ActionRow,
-	Button,
 } from "harmony";
 import { queues } from "queue";
 import { getEmojiByName } from "emoji";
-import { removeDiscordFormatting, formatMs } from "tools";
+import { formatMs, removeDiscordFormatting } from "tools";
 
 export default class Queue extends Command {
 	name = "queue";
@@ -20,10 +20,13 @@ export default class Queue extends Command {
 	async execute(ctx: CommandContext) {
 		if (ctx.guild == undefined) return;
 		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
-		if (queues.has(ctx.guild!.id) && (botState == undefined || botState.channel == undefined)) {
+		if (
+			queues.has(ctx.guild!.id) &&
+			(botState == undefined || botState.channel == undefined)
+		) {
 			queues.get(ctx.guild!.id)!.deleteQueue();
 		}
-		
+
 		const queue = queues.get(ctx.guild.id);
 		if (queue == undefined) {
 			await ctx.message.reply(undefined, {
@@ -65,16 +68,21 @@ export default class Queue extends Command {
 							.slice(0, 10)
 							.map(
 								({ title, url }, index) =>
-									`${emojiMap[index]} [${removeDiscordFormatting(
-										title
-									)}](${url})`
+									`${emojiMap[index]} [${
+										removeDiscordFormatting(
+											title,
+										)
+									}](${url})`,
 							)
 							.join("\n"),
 						footer: {
 							icon_url: ctx.author.avatarURL(),
-							text: `Songs in queue: ${queueEntries.length} | Length: ${formatMs(
-								queue.queueLength
-							)}`,
+							text:
+								`Songs in queue: ${queueEntries.length} | Length: ${
+									formatMs(
+										queue.queueLength,
+									)
+								}`,
 						},
 					}).setColor("random"),
 				],

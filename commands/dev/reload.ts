@@ -1,6 +1,6 @@
 import { Command, CommandContext, Embed } from "harmony";
 import { loopFilesAndReturn } from "tools";
-import { loadInteractions, clearInteractions } from "shared";
+import { clearInteractions, loadInteractions } from "shared";
 
 export default class Reload extends Command {
 	name = "reload";
@@ -60,7 +60,10 @@ export default class Reload extends Command {
 				for (const file of commandFiles) {
 					const cmdName = file
 						.toLowerCase()
-						.substring(file.lastIndexOf("/") + 1, file.lastIndexOf("."));
+						.substring(
+							file.lastIndexOf("/") + 1,
+							file.lastIndexOf("."),
+						);
 					const importFilePath = `../.${file}#${Date.now()}`;
 					if (cmdName == command.name.toLowerCase()) {
 						didFindCommand = true;
@@ -81,11 +84,14 @@ export default class Reload extends Command {
 								icon_url: ctx.message.client.user!.avatarURL(),
 							},
 							title: "Bidome Reloaded",
-							description: `All interactions have been reloaded and command has ${didFindCommand ? "also " : ""}been ${
-								didFindCommand
-									? "reloaded!"
-									: "unloaded as it could not be found locally!"
-							}`,
+							description:
+								`All interactions have been reloaded and command has ${
+									didFindCommand ? "also " : ""
+								}been ${
+									didFindCommand
+										? "reloaded!"
+										: "unloaded as it could not be found locally!"
+								}`,
 						}).setColor("random"),
 					],
 				});

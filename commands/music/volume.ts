@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck } from "queue";
+import { doPermCheck, queues } from "queue";
 
 export default class Volume extends Command {
 	name = "volume";
@@ -11,7 +11,10 @@ export default class Volume extends Command {
 		if (ctx.guild == undefined) return;
 		const queue = queues.get(ctx.guild.id);
 		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
-		if (queue == undefined || botState == undefined || botState.channel == undefined) {
+		if (
+			queue == undefined || botState == undefined ||
+			botState.channel == undefined
+		) {
 			await ctx.message.reply(undefined, {
 				embeds: [
 					new Embed({
@@ -44,7 +47,8 @@ export default class Volume extends Command {
 									icon_url: ctx.client.user!.avatarURL(),
 								},
 								title: "Invalid argument",
-								description: "Please select a value larger than 0",
+								description:
+									"Please select a value larger than 0",
 							}).setColor("red"),
 						],
 					});
@@ -62,10 +66,9 @@ export default class Volume extends Command {
 								title: "Changed volume",
 								description: `Volume set to ${volume}`,
 								footer: {
-									text:
-										volume > 100
-											? "Audio may be distorted at volumes above 100"
-											: "",
+									text: volume > 100
+										? "Audio may be distorted at volumes above 100"
+										: "",
 								},
 							}).setColor("green"),
 						],

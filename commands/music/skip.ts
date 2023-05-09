@@ -1,6 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck, LoopType } from "queue";
-
+import { doPermCheck, LoopType, queues } from "queue";
 
 export default class Skip extends Command {
 	name = "skip";
@@ -12,7 +11,10 @@ export default class Skip extends Command {
 		if (ctx.guild == undefined) return;
 		const queue = queues.get(ctx.guild.id);
 		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
-		if (queue == undefined || botState == undefined || botState.channel == undefined) {
+		if (
+			queue == undefined || botState == undefined ||
+			botState.channel == undefined
+		) {
 			await ctx.message.reply(undefined, {
 				embeds: [
 					new Embed({
@@ -31,14 +33,18 @@ export default class Skip extends Command {
 			}
 		} else {
 			const queue = queues.get(ctx.guild!.id)!;
-			const doesUserNeedToBeAdded = !queue.voteSkipUsers.includes(ctx.author.id);
+			const doesUserNeedToBeAdded = !queue.voteSkipUsers.includes(
+				ctx.author.id,
+			);
 
 			if (doesUserNeedToBeAdded) {
 				queue.voteSkipUsers.push(ctx.author.id);
 			}
 
 			const canVoteSkip = queue.canSkip(
-				(await botState.channel.voiceStates.array()).filter((s) => !s.user.bot)
+				(await botState.channel.voiceStates.array()).filter((s) =>
+					!s.user.bot
+				),
 			);
 
 			if (canVoteSkip) {
@@ -85,11 +91,17 @@ export default class Skip extends Command {
 									icon_url: ctx.client.user!.avatarURL(),
 								},
 								title: "Voted to skip",
-								description: `You have voted to skip the song! ${
-									skippingUsers.length
-								}/${Math.floor(voiceMembers.length / 2) + 1}`,
+								description:
+									`You have voted to skip the song! ${skippingUsers.length}/${
+										Math.floor(voiceMembers.length / 2) + 1
+									}`,
 								footer: {
-									text: (await doPermCheck(ctx.member!, botState.channel) || queue.queue[0].requestedBy == ctx.author.id)
+									text: (await doPermCheck(
+											ctx.member!,
+											botState.channel,
+										) ||
+											queue.queue[0].requestedBy ==
+												ctx.author.id)
 										? "Use forceskip to skip without a vote"
 										: "",
 								},
@@ -105,11 +117,15 @@ export default class Skip extends Command {
 									icon_url: ctx.client.user!.avatarURL(),
 								},
 								title: "Already voted to skip",
-								description: `You have already voted to skip the song! ${
-									skippingUsers.length
-								}/${Math.floor(voiceMembers.length / 2) + 1}`,
+								description:
+									`You have already voted to skip the song! ${skippingUsers.length}/${
+										Math.floor(voiceMembers.length / 2) + 1
+									}`,
 								footer: {
-									text: (await doPermCheck(ctx.member!, botState.channel))
+									text: (await doPermCheck(
+											ctx.member!,
+											botState.channel,
+										))
 										? "Use forceskip to skip without a vote"
 										: "",
 								},

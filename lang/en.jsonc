@@ -9,7 +9,8 @@
 		"noPerms": "No permissions required",
 		"noDescription": "No description provided",
 		"noUsage": "No usage provided",
-		"noCategory": "Uncategorized"
+		"noCategory": "Uncategorized",
+		"notset": "Not set"
 	},
 
 	"commands": {
@@ -157,6 +158,38 @@
 			}
 		},
 
+		// Utils > Suggestions
+		"suggest": {
+			"threadname": "Suggestion discussion",
+			"notconfigured": {
+				"title": "Suggestions not configured",
+				"description": "This server does not have suggestions channel. Please contact a server administrator to configure suggestions."
+			},
+			"noargs": {
+				"title": "Invalid command use",
+				"description": "Please provide a suggestion to send"
+			},
+			"nochannel": {
+				"title": "Unable to send",
+				"description": "I was unable to find the suggestion channel. Please contact a server administrator to fix this."
+			},
+			"sent": {
+				"title": "Suggestion sent!",
+				"description": "Your suggestion has been sent to the suggestions channel!"
+			},
+			"suggestionmessage": {
+				"title": "New suggestion",
+				"description": "Suggested by {0}",
+				"fields": [
+					{
+						"name": "Suggestion",
+						"value": "{1}",
+						"inline": false
+					}
+				]
+			}
+		},
+
 		// Staff
 		"config": {
 			"default": {
@@ -179,11 +212,35 @@
 				]
 			},
 
+			"suggestions": {
+				"title": "Suggestion settings",
+				"fields": [
+					{
+						"name": "Suggestion Channel",
+						"value": "{0}",
+						"inline": true
+					},
+					{
+						"name": "Accepted Channel",
+						"value": "{1}",
+						"inline": true
+					},
+					{
+						"name": "Denied Channel",
+						"value": "{2}",
+						"inline": true
+					}
+				]
+			},
+
 			"buttons": {
 				"prefix": "Prefix",
 				"suggestions": "Suggestions",
 				"addprefix": "Add Prefix",
-				"removeprefix": "Remove Prefix"
+				"removeprefix": "Remove Prefix",
+				"setsuggestionchannel": "Set Suggestion Channel",
+				"setacceptedchannel": "Set Accepted Channel",
+				"setdeniedchannel": "Set Denied Channel"
 			}
 		}
 	},
@@ -272,6 +329,55 @@
 				"prefixremoved": {
 					"title": "Prefix removed",
 					"description": "I have removed the prefix `{0}`!"
+				}
+			},
+			"suggestions": {
+				"expiresin": "This will expire in 30 seconds",
+				"picksuggestionchannel": {
+					"title": "Set suggestion channel",
+					"description": "Please mention a channel to set as the suggestion channel \nSay `none` to remove the suggestion channel and `cancel` to cancel"
+				},
+				"pickacceptchannel": {
+					"title": "Set accepted channel",
+					"description": "Please mention a channel to set as the accepted channel\nSay `none` to remove the suggestion channel and `cancel` to cancel"
+				},
+				"pickdenychannel": {
+					"title": "Set denied channel",
+					"description": "Please mention a channel to set as the denied channel\nSay `none` to remove the suggestion channel and `cancel` to cancel"
+				},
+
+				"timeout": {
+					"title": "Channel selection timed out",
+					"description": "You took too long to select a channel!"
+				},
+				"invalidchannel": {
+					"title": "Invalid channel",
+					"description": "Please mention a channel I can access!"
+				},
+				"missingperms": {
+					"title": "Missing permissions",
+					"description": "I am missing the following permission(s) in that channel: `{0}`"
+				},
+
+				"setsuggestchannel": {
+					"title": "Channel set",
+					"description": "I have set the suggestion channel to {0}!"
+				},
+				"setacceptchannel": {
+					"title": "Channel set",
+					"description": "I have set the accepted channel to {0}!"
+				},
+				"setdenychannel": {
+					"title": "Channel set",
+					"description": "I have set the denied channel to {0}!"
+				},
+				"removed": {
+					"title": "Channel removed",
+					"description": "I have removed the current channel!"
+				},
+				"canceled": {
+					"title": "Canceled",
+					"description": "I have canceled the channel selection!"
 				}
 			}
 		}

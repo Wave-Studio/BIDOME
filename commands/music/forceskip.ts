@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck, LoopType } from "queue";
+import { doPermCheck, LoopType, queues } from "queue";
 
 export default class ForceSkip extends Command {
 	name = "forceskip";
@@ -16,7 +16,7 @@ export default class ForceSkip extends Command {
 		) {
 			queues.get(ctx.guild!.id)!.deleteQueue();
 		}
-		
+
 		const queue = queues.get(ctx.guild.id);
 		if (
 			queue == undefined ||

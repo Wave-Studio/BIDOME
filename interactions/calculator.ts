@@ -1,7 +1,7 @@
 import {
-	MessageComponentInteraction,
-	InteractionResponseType,
 	Embed,
+	InteractionResponseType,
+	MessageComponentInteraction,
 } from "harmony";
 
 export async function button(i: MessageComponentInteraction) {
@@ -20,7 +20,7 @@ export async function button(i: MessageComponentInteraction) {
 				case "bck": {
 					previousInputs = previousInputs.substring(
 						0,
-						previousInputs.length - 1
+						previousInputs.length - 1,
 					);
 					break;
 				}
@@ -83,7 +83,9 @@ export async function button(i: MessageComponentInteraction) {
 				solution = "Error";
 			}
 
-			previousInputs = previousInputs.trim() == "" ? "Press any button" : previousInputs;
+			previousInputs = previousInputs.trim() == ""
+				? "Press any button"
+				: previousInputs;
 
 			await i.message.edit(undefined, {
 				embeds: [
@@ -103,7 +105,8 @@ export async function button(i: MessageComponentInteraction) {
 							},
 							{
 								name: "Result",
-								value: "`" + (solution == null ? "0" : solution) + "`",
+								value: "`" +
+									(solution == null ? "0" : solution) + "`",
 								inline: true,
 							},
 						],

@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck } from "queue";
+import { doPermCheck, queues } from "queue";
 import { shuffleArray } from "tools";
 
 export default class Shuffle extends Command {
@@ -13,7 +13,10 @@ export default class Shuffle extends Command {
 		if (ctx.guild == undefined) return;
 		const queue = queues.get(ctx.guild.id);
 		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
-		if (queue == undefined || botState == undefined || botState.channel == undefined) {
+		if (
+			queue == undefined || botState == undefined ||
+			botState.channel == undefined
+		) {
 			await ctx.message.reply(undefined, {
 				embeds: [
 					new Embed({

@@ -1,8 +1,8 @@
 import {
-	MessageComponentInteraction,
 	Embed,
-	User,
 	InteractionResponseType,
+	MessageComponentInteraction,
+	User,
 } from "harmony";
 import { currentGames } from "tictactoe";
 import { createEmbedFromLangData, getUserLanguage } from "i18n";
@@ -19,7 +19,7 @@ export async function button(i: MessageComponentInteraction) {
 					new Embed({
 						...createEmbedFromLangData(
 							lang,
-							"interactions.tictactoe.unknowngame"
+							"interactions.tictactoe.unknowngame",
 						),
 						author: {
 							name: "Bidome bot",
@@ -36,7 +36,7 @@ export async function button(i: MessageComponentInteraction) {
 						new Embed({
 							...createEmbedFromLangData(
 								lang,
-								"interactions.tictactoe.notyours"
+								"interactions.tictactoe.notyours",
 							),
 							author: {
 								name: "Bidome bot",
@@ -59,7 +59,7 @@ export async function button(i: MessageComponentInteraction) {
 							new Embed({
 								...createEmbedFromLangData(
 									lang,
-									"interactions.tictactoe.cantplay"
+									"interactions.tictactoe.cantplay",
 								),
 								author: {
 									name: "Bidome bot",
@@ -73,7 +73,7 @@ export async function button(i: MessageComponentInteraction) {
 						embeds: [game.Embed],
 						components: game.boardState,
 					});
-					
+
 					await i.respond({
 						type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
 					});

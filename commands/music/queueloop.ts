@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck, LoopType } from "queue";
+import { doPermCheck, LoopType, queues } from "queue";
 
 export default class QueueLoop extends Command {
 	name = "queueloop";
@@ -16,7 +16,7 @@ export default class QueueLoop extends Command {
 		) {
 			queues.get(ctx.guild!.id)!.deleteQueue();
 		}
-		
+
 		const queue = queues.get(ctx.guild.id);
 		if (
 			queue == undefined ||
@@ -61,9 +61,14 @@ export default class QueueLoop extends Command {
 							},
 							title: "Toggled loop",
 							description: `Queue looping is now ${
-								loopTypeEnum == LoopType.QUEUE ? "Enabled" : "Disabled"
+								loopTypeEnum == LoopType.QUEUE
+									? "Enabled"
+									: "Disabled"
 							} ${
-								loopTypeEnum != LoopType.OFF && loopTypeEnum != LoopType.QUEUE ? `and ${loopType}ing is now disabled` : ""
+								loopTypeEnum != LoopType.OFF &&
+									loopTypeEnum != LoopType.QUEUE
+									? `and ${loopType}ing is now disabled`
+									: ""
 							}`,
 						}).setColor("green"),
 					],

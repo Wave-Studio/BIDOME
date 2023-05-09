@@ -16,7 +16,7 @@ export default class DeleteReminder extends Command {
 		"removereminders",
 
 		"cancelreminder",
-		"cancelreminders"
+		"cancelreminders",
 	];
 	category = "utils";
 	description = "Delete a reminder";
@@ -39,12 +39,16 @@ export default class DeleteReminder extends Command {
 			});
 		} else {
 			const reminders = await getReminders();
-			const reminderIds = ctx.argString.split(/[ ,]/g).map((s) => s.startsWith("#") ? s.slice(1) : s);
+			const reminderIds = ctx.argString.split(/[ ,]/g).map((s) =>
+				s.startsWith("#") ? s.slice(1) : s
+			);
 			if (reminderIds.length > 1) {
 				const canceledReminders: string[] = [];
 
 				for (const id of reminderIds) {
-					const reminder = reminders.find((r) => r.id!.toString() == id);
+					const reminder = reminders.find((r) =>
+						r.id!.toString() == id
+					);
 					if (reminder == undefined) continue;
 					if (reminder.user_id != ctx.author.id) continue;
 					await removeReminder(reminder.id.toString());
@@ -78,7 +82,9 @@ export default class DeleteReminder extends Command {
 					],
 				});
 			} else {
-				const reminder = reminders.find((r) => r.id.toString() == ctx.argString);
+				const reminder = reminders.find((r) =>
+					r.id.toString() == ctx.argString
+				);
 				if (reminder == undefined) {
 					await ctx.message.reply(undefined, {
 						embeds: [

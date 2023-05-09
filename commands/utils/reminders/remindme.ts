@@ -18,7 +18,7 @@ export default class RemindMe extends Command {
 					new Embed({
 						...createEmbedFromLangData(
 							lang,
-							"commands.createreminder.error.toomany"
+							"commands.createreminder.error.toomany",
 						),
 						author: {
 							name: "Bidome bot",
@@ -34,7 +34,7 @@ export default class RemindMe extends Command {
 						new Embed({
 							...createEmbedFromLangData(
 								lang,
-								"commands.createreminder.error.noargs"
+								"commands.createreminder.error.noargs",
 							),
 							author: {
 								name: "Bidome bot",
@@ -52,7 +52,7 @@ export default class RemindMe extends Command {
 							new Embed({
 								...createEmbedFromLangData(
 									lang,
-									"commands.createreminder.error.nomessage"
+									"commands.createreminder.error.nomessage",
 								),
 								author: {
 									name: "Bidome bot",
@@ -62,7 +62,8 @@ export default class RemindMe extends Command {
 						],
 					});
 				} else {
-					const [base, ...parsedTimestamps] = timestamp.split(",").sort((a, b) => toMs(a) - toMs(b));
+					const [base, ...parsedTimestamps] = timestamp.split(",")
+						.sort((a, b) => toMs(a) - toMs(b));
 					const baseParsed = toMs(base);
 
 					for (const ms of [base, ...parsedTimestamps]) {
@@ -73,11 +74,12 @@ export default class RemindMe extends Command {
 									new Embed({
 										...createEmbedFromLangData(
 											lang,
-											"commands.createreminder.error.invalidtime"
+											"commands.createreminder.error.invalidtime",
 										),
 										author: {
 											name: "Bidome bot",
-											icon_url: ctx.client.user!.avatarURL(),
+											icon_url: ctx.client.user!
+												.avatarURL(),
 										},
 									}),
 								],
@@ -86,16 +88,19 @@ export default class RemindMe extends Command {
 					}
 
 					const id = await createReminder({
-						remind_at: new Date(Date.now() + baseParsed).toUTCString(),
+						remind_at: new Date(Date.now() + baseParsed)
+							.toUTCString(),
 						user_id: ctx.author.id,
 						message_id: ctx.message.id,
 						channel_id: ctx.channel.id,
 						server_id: ctx.guild!.id,
 						reminder: truncateString(message, 100),
-						future_sends: parsedTimestamps
+						future_sends: parsedTimestamps,
 					});
 
-					const time = (new Date().getTime() / 1000 + baseParsed / 1000).toFixed(0);
+					const time =
+						(new Date().getTime() / 1000 + baseParsed / 1000)
+							.toFixed(0);
 
 					await ctx.message.reply(undefined, {
 						embeds: [
@@ -105,7 +110,7 @@ export default class RemindMe extends Command {
 									"commands.createreminder.success",
 									`#${id}`,
 									`<t:${time}:R>`,
-									truncateString(message, 100)
+									truncateString(message, 100),
 								),
 								author: {
 									name: "Bidome bot",

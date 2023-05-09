@@ -1,11 +1,11 @@
 import {
-	MessageComponentInteraction,
-	Embed,
-	InteractionResponseType,
-	fragment,
-	BotUI,
 	ActionRow,
+	BotUI,
 	Button,
+	Embed,
+	fragment,
+	InteractionResponseType,
+	MessageComponentInteraction,
 } from "harmony";
 import { getEmojiByName } from "emoji";
 import { queues } from "queue";
@@ -72,16 +72,23 @@ export async function button(i: MessageComponentInteraction) {
 								.slice(startingValue, startingValue + 10)
 								.map(
 									({ title, url }, index) =>
-										`${convertNumberToEmoji(
-											parseInt(`${pageOffset}${index}`)
-										)} [${removeDiscordFormatting(title)}](${url})`
+										`${
+											convertNumberToEmoji(
+												parseInt(
+													`${pageOffset}${index}`,
+												),
+											)
+										} [${
+											removeDiscordFormatting(title)
+										}](${url})`,
 								)
 								.join("\n"),
 							footer: {
 								icon_url: i.user.avatarURL(),
-								text: `Songs in queue: ${
-									queue.queue.length
-								} | Length: ${formatMs(queue.queueLength)}`,
+								text:
+									`Songs in queue: ${queue.queue.length} | Length: ${
+										formatMs(queue.queueLength)
+									}`,
 							},
 						}).setColor("random"),
 					],
@@ -91,9 +98,9 @@ export async function button(i: MessageComponentInteraction) {
 								<Button
 									style={"blurple"}
 									disabled={pageOffset < 1}
-									id={
-										pageOffset < 1 ? "queuepg-0" : `queuepg-${pageOffset - 1}`
-									}
+									id={pageOffset < 1
+										? "queuepg-0"
+										: `queuepg-${pageOffset - 1}`}
 									emoji={{
 										name: getEmojiByName("arrow_left"),
 									}}
@@ -101,7 +108,8 @@ export async function button(i: MessageComponentInteraction) {
 								<Button
 									style={"blurple"}
 									id={`queuepg-${pageOffset + 1}`}
-									disabled={queue.queue.length <= startingValue + 10}
+									disabled={queue.queue.length <=
+										startingValue + 10}
 									emoji={{
 										name: getEmojiByName("arrow_right"),
 									}}

@@ -19,7 +19,7 @@ try {
 			dataVersion: 2,
 			userData: {},
 			guildMemberData: {},
-		})
+		}),
 	);
 }
 
@@ -41,14 +41,16 @@ interface newCache {
 	};
 }
 
-const newCache: newCache = JSON.parse(await Deno.readTextFile("./.cache/data.json"));
+const newCache: newCache = JSON.parse(
+	await Deno.readTextFile("./.cache/data.json"),
+);
 
 export const getDiscordImage = async (url: string) => {
 	const typeMap = {
 		avatars: "avatarHash",
 		banners: "bannerHash",
 		icons: "avatarHash",
-	}
+	};
 	const newRoute = (
 		url.includes("?") ? url.substring(0, url.lastIndexOf("?")) : url
 	).substring("https://cdn.discordapp.com/".length);
@@ -63,19 +65,36 @@ export const getDiscordImage = async (url: string) => {
 		newCache.guildMemberData[guildId] ??= {};
 		newCache.guildMemberData[guildId][userId] ??= {};
 		// @ts-expect-error Wacky json accessing
-		const currentValue = newCache.guildMemberData[guildId][userId][typeMap[imageType]] as string;
+		const currentValue = newCache.guildMemberData[guildId][userId][
+			typeMap[imageType as "avatars" | "banners" | "icons"] as
+				| "avatarHash"
+				| "bannerHash"
+		] as string;
 		if (currentValue != undefined && currentValue == hash) {
-			return await Deno.readFile(`./.cache/${guildId}/${userId}/${imageType}/${hash}`);
+			return await Deno.readFile(
+				`./.cache/${guildId}/${userId}/${imageType}/${hash}`,
+			);
 		} else {
 			if (currentValue != undefined) {
-				await Deno.remove(`./.cache/${guildId}/${userId}/${imageType}/${currentValue}`);
+				await Deno.remove(
+					`./.cache/${guildId}/${userId}/${imageType}/${currentValue}`,
+				);
 			}
 			const image = await (await fetch(url)).arrayBuffer();
-			await Deno.mkdir(`./.cache/${guildId}/${userId}/${imageType}`, { recursive: true });
-			await Deno.writeFile(`./.cache/${guildId}/${userId}/${imageType}/${hash}`, new Uint8Array(image));
+			await Deno.mkdir(`./.cache/${guildId}/${userId}/${imageType}`, {
+				recursive: true,
+			});
+			await Deno.writeFile(
+				`./.cache/${guildId}/${userId}/${imageType}/${hash}`,
+				new Uint8Array(image),
+			);
 			// @ts-expect-error Wacky json accessing
-			newCache.guildMemberData[guildId][userId][typeMap[imageType]] = hash;
-			await Deno.writeTextFile("./.cache/data.json", JSON.stringify(newCache));
+			newCache.guildMemberData[guildId][userId][typeMap[imageType]] =
+				hash;
+			await Deno.writeTextFile(
+				"./.cache/data.json",
+				JSON.stringify(newCache),
+			);
 			return new Uint8Array(image);
 		}
 	} else {
@@ -91,12 +110,17 @@ export const getDiscordImage = async (url: string) => {
 			}
 			const image = await (await fetch(url)).arrayBuffer();
 			await Deno.mkdir(`./.cache/${id}/${type}`, { recursive: true });
-			await Deno.writeFile(`./.cache/${id}/${type}/${hash}`, new Uint8Array(image));
+			await Deno.writeFile(
+				`./.cache/${id}/${type}/${hash}`,
+				new Uint8Array(image),
+			);
 			//@ts-expect-error Wacky json accessing
 			newCache.userData[id]![typeMap[type]] = hash;
-			await Deno.writeTextFile("./.cache/data.json", JSON.stringify(newCache));
+			await Deno.writeTextFile(
+				"./.cache/data.json",
+				JSON.stringify(newCache),
+			);
 			return new Uint8Array(image);
 		}
-
 	}
-}
+};

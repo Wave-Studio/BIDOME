@@ -42,10 +42,15 @@ export default class Load extends Command {
 			for (const file of commandFiles) {
 				const cmdName = file
 					.toLowerCase()
-					.substring(file.lastIndexOf("/") + 1, file.lastIndexOf("."));
-				const importFilePath = `../.${file}#${Math.random()
-					.toString()
-					.substring(2)}`;
+					.substring(
+						file.lastIndexOf("/") + 1,
+						file.lastIndexOf("."),
+					);
+				const importFilePath = `../.${file}#${
+					Math.random()
+						.toString()
+						.substring(2)
+				}`;
 				if (cmdName == ctx.argString.toLowerCase()) {
 					didFindCommand = true;
 					const imported = (await import(importFilePath)).default;

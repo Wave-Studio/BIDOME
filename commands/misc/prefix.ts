@@ -14,9 +14,12 @@ export default class Prefix extends Command {
 						name: "Bidome bot",
 						icon_url: ctx.client.user!.avatarURL(),
 					},
-					description: `My current prefixes for this server are: \n\`\`\`${(
-						await getPrefixes(ctx.guild!.id)
-					).join("\n")} \n\`\`\`\n`,
+					description:
+						`My current prefixes for this server are: \n\`\`\`${
+							(
+								await getPrefixes(ctx.guild!.id)
+							).join("\n")
+						} \n\`\`\`\n`,
 				}).setColor("random"),
 			],
 		});

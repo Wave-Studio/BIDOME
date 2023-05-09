@@ -16,7 +16,7 @@ export default class Queue extends Command {
 		) {
 			queues.get(ctx.guild!.id)!.deleteQueue();
 		}
-		
+
 		const queue = queues.get(ctx.guild.id);
 		if (queue == undefined) {
 			await ctx.message.reply(undefined, {

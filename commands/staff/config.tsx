@@ -1,13 +1,13 @@
 import {
+	ActionRow,
+	BotUI,
+	Button,
 	Command,
 	CommandContext,
 	Embed,
-	BotUI,
 	fragment,
-	ActionRow,
-	Button,
 } from "harmony";
-import { getUserLanguage, createEmbedFromLangData, getString } from "i18n";
+import { createEmbedFromLangData, getString, getUserLanguage } from "i18n";
 
 export default class Config extends Command {
 	name = "config";
@@ -36,8 +36,22 @@ export default class Config extends Command {
 			components: (
 				<>
 					<ActionRow>
-						<Button style="blurple" id={"cfg-prefix"} label={getString(lang, "commands.config.buttons.prefix")} />
-						{/* <Button style="blurple" id={"cfg-suggest"} label={getString(lang, "commands.config.buttons.suggestions")} /> */}
+						<Button
+							style="blurple"
+							id={"cfg-prefix"}
+							label={getString(
+								lang,
+								"commands.config.buttons.prefix",
+							)}
+						/>
+						<Button
+							style="blurple"
+							id={"cfg-suggest"}
+							label={getString(
+								lang,
+								"commands.config.buttons.suggestions",
+							)}
+						/>
 					</ActionRow>
 				</>
 			),

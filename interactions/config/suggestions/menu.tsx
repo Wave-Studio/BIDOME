@@ -7,7 +7,7 @@ import {
 	InteractionResponseType,
 	MessageComponentInteraction,
 } from "harmony";
-import { getPrefixes } from "settings";
+import { getSuggestionChannels } from "settings";
 import { createEmbedFromLangData, getString, getUserLanguage } from "i18n";
 import { emoji } from "emoji";
 
@@ -57,8 +57,8 @@ export async function button(i: MessageComponentInteraction) {
 		}
 	}
 
-	if (i.customID == "cfg-prefix") {
-		const prefixes = await getPrefixes(i.guild!.id);
+	if (i.customID == "cfg-suggest") {
+		const channels = await getSuggestionChannels(i.guild!.id);
 		await i.respond({
 			type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE,
 		});
@@ -67,8 +67,16 @@ export async function button(i: MessageComponentInteraction) {
 				new Embed({
 					...createEmbedFromLangData(
 						lang,
-						"commands.config.prefix",
-						prefixes.join("\n"),
+						"commands.config.suggestions",
+						channels.suggestion_channel != undefined
+							? `<#${channels.suggestion_channel}>`
+							: getString(lang, "generic.notset"),
+						channels.suggestion_accepted_channel != undefined
+							? `<#${channels.suggestion_accepted_channel}>`
+							: getString(lang, "generic.notset"),
+						channels.suggestion_denied_channel != undefined
+							? `<#${channels.suggestion_denied_channel}>`
+							: getString(lang, "generic.notset"),
 					),
 					author: {
 						name: "Bidome bot",
@@ -84,19 +92,27 @@ export async function button(i: MessageComponentInteraction) {
 				<>
 					<ActionRow>
 						<Button
-							style="green"
-							id={"cfg-addprefix"}
+							style="blurple"
+							id="cfg-sug-chnl"
 							label={getString(
 								lang,
-								"commands.config.buttons.addprefix",
+								"commands.config.buttons.setsuggestionchannel",
 							)}
 						/>
 						<Button
-							style="red"
-							id={"cfg-rmprefix"}
+							style="blurple"
+							id="cfg-act-chnl"
 							label={getString(
 								lang,
-								"commands.config.buttons.removeprefix",
+								"commands.config.buttons.setacceptedchannel",
+							)}
+						/>
+						<Button
+							style="blurple"
+							id="cfg-dny-chnl"
+							label={getString(
+								lang,
+								"commands.config.buttons.setdeniedchannel",
 							)}
 						/>
 						<Button
@@ -104,12 +120,11 @@ export async function button(i: MessageComponentInteraction) {
 							emoji={{
 								name: emoji("arrows_counterclockwise"),
 							}}
-							id={"cfg-prefix"}
+							id={"cfg-suggest"}
 						/>
 					</ActionRow>
 				</>
 			),
 		});
-		return false;
 	}
 }

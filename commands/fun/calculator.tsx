@@ -1,12 +1,12 @@
 import { getEmojiByName } from "emoji";
 import {
+	ActionRow,
+	BotUI,
+	Button,
 	Command,
 	CommandContext,
 	Embed,
 	fragment,
-	BotUI,
-	ActionRow,
-	Button,
 } from "harmony";
 
 export default class Calculator extends Command {
@@ -84,7 +84,9 @@ export default class Calculator extends Command {
 						/>
 						<Button
 							style={"green"}
-							emoji={{ name: getEmojiByName("heavy_division_sign") }}
+							emoji={{
+								name: getEmojiByName("heavy_division_sign"),
+							}}
 							id={"calc-div"}
 						/>
 					</ActionRow>
@@ -107,7 +109,9 @@ export default class Calculator extends Command {
 						/>
 						<Button
 							style={"green"}
-							emoji={{ name: getEmojiByName("heavy_multiplication_x") }}
+							emoji={{
+								name: getEmojiByName("heavy_multiplication_x"),
+							}}
 							id={"calc-mul"}
 						/>
 					</ActionRow>
@@ -143,7 +147,9 @@ export default class Calculator extends Command {
 						/>
 						<Button
 							style={"blurple"}
-							emoji={{ name: getEmojiByName("black_circle_for_record") }}
+							emoji={{
+								name: getEmojiByName("black_circle_for_record"),
+							}}
 							id={"calc-dot"}
 						/>
 						<Button style={"blurple"} label={"^"} id={"calc-exp"} />

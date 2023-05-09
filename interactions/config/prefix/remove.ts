@@ -1,25 +1,27 @@
 import {
 	Embed,
-	ModalSubmitInteraction,
 	MessageComponentInteraction,
+	ModalSubmitInteraction,
 } from "harmony";
 import { getPrefixes, removePrefix } from "settings";
-import { getUserLanguage, createEmbedFromLangData, getString } from "i18n";
+import { createEmbedFromLangData, getString, getUserLanguage } from "i18n";
 
 export async function button(i: MessageComponentInteraction) {
 	const lang = await getUserLanguage(i.user.id);
 	if (i.customID.startsWith("cfg-")) {
-		const isSameUser =
-			i.message.embeds[0]
-				.footer!.icon_url!.split("/avatars/")[1]
-				.split("/")[0] === i.user.id;
+		const isSameUser = i.message.embeds[0]
+			.footer!.icon_url!.split("/avatars/")[1]
+			.split("/")[0] === i.user.id;
 
 		if (!isSameUser) {
 			await i.respond({
 				ephemeral: true,
 				embeds: [
 					new Embed({
-						...createEmbedFromLangData(lang, "interactions.config.notyours"),
+						...createEmbedFromLangData(
+							lang,
+							"interactions.config.notyours",
+						),
 						author: {
 							name: "Bidome bot",
 							icon_url: i.client.user!.avatarURL(),
@@ -35,7 +37,10 @@ export async function button(i: MessageComponentInteraction) {
 				ephemeral: true,
 				embeds: [
 					new Embed({
-						...createEmbedFromLangData(lang, "interactions.config.noperms"),
+						...createEmbedFromLangData(
+							lang,
+							"interactions.config.noperms",
+						),
 						author: {
 							name: "Bidome bot",
 							icon_url: i.client.user!.avatarURL(),
@@ -49,7 +54,10 @@ export async function button(i: MessageComponentInteraction) {
 
 	if (i.customID == "cfg-removeprefix") {
 		i.showModal({
-			title: getString(lang, "interactions.config.modals.removeprefix.title"),
+			title: getString(
+				lang,
+				"interactions.config.modals.removeprefix.title",
+			),
 			customID: "cfg-removeprefix",
 			components: [
 				{
@@ -61,11 +69,11 @@ export async function button(i: MessageComponentInteraction) {
 							style: 1,
 							label: getString(
 								lang,
-								"interactions.config.modals.removeprefix.input"
+								"interactions.config.modals.removeprefix.input",
 							),
 							placeholder: getString(
 								lang,
-								"interactions.config.modals.removeprefix.placeholder"
+								"interactions.config.modals.removeprefix.placeholder",
 							),
 							minLength: 1,
 							maxLength: 5,
@@ -92,7 +100,7 @@ export async function modal(i: ModalSubmitInteraction) {
 					new Embed({
 						...createEmbedFromLangData(
 							lang,
-							"interactions.config.prefix.notprefix"
+							"interactions.config.prefix.notprefix",
 						),
 						author: {
 							name: "Bidome bot",
@@ -110,7 +118,7 @@ export async function modal(i: ModalSubmitInteraction) {
 						...createEmbedFromLangData(
 							lang,
 							"interactions.config.prefix.prefixremoved",
-							prefix
+							prefix,
 						),
 						author: {
 							name: "Bidome bot",

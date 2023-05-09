@@ -135,7 +135,10 @@ const Component = ({
 
 	const getRankColor = (rank: number) => {
 		for (const color of colors) {
-			if (color.from <= rank && (color.to == undefined || color.to >= rank)) {
+			if (
+				color.from <= rank &&
+				(color.to == undefined || color.to >= rank)
+			) {
 				return color;
 			}
 		}
@@ -153,7 +156,8 @@ const Component = ({
 					<img src={avatar} class={tw`w-24 rounded-full`} />
 					<div
 						class={tw`absolute bottom-0 right-0 h-6 w-6 rounded-full border-2 border-neutral-900 bg-[${status.toString()}]`}
-					></div>
+					>
+					</div>
 				</div>
 				<div class={tw`mb-2 ml-6 mt-1 flex flex-grow flex-col`}>
 					<div
@@ -163,13 +167,15 @@ const Component = ({
 					</div>
 					<h1 class={tw``}>
 						<span class={tw`text-lg`}>{username}</span>
-						<span class={tw`ml-1 text-sm font-normal text-gray-400`}>
+						<span
+							class={tw`ml-1 text-sm font-normal text-gray-400`}
+						>
 							#{tag}
 						</span>
 					</h1>
 					<h2 class={tw`mt-0.5 text-xs`}>
 						{xp}
-						<span class={tw`text-gray-400`}> / {neededXp}xp</span>
+						<span class={tw`text-gray-400`}>/ {neededXp}xp</span>
 					</h2>
 					<div class={tw`flex flex-grow`}>
 						<div
@@ -179,12 +185,14 @@ const Component = ({
 								<div
 									class={tw`h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded`}
 									style={`width: ${width}%`}
-								></div>
+								>
+								</div>
 							</div>
 							<div
 								class={tw`h-full bg-gradient-to-r from-blue-500 to-blue-600`}
 								style={`width: ${width}%`}
-							></div>
+							>
+							</div>
 							<div class={tw`h-6 w-6 text-blue-600`}>
 								<svg
 									height={24}
@@ -203,9 +211,24 @@ const Component = ({
 										r={`1.5`}
 										fill={`currentColor`}
 									/>
-									<circle cx={`60`} cy={`14`} r={`1`} fill={`currentColor`} />
-									<circle cx={`55`} cy={`35`} r={`1`} fill={`currentColor`} />
-									<circle cx={`37`} cy={`16`} r={`2`} fill={`currentColor`} />
+									<circle
+										cx={`60`}
+										cy={`14`}
+										r={`1`}
+										fill={`currentColor`}
+									/>
+									<circle
+										cx={`55`}
+										cy={`35`}
+										r={`1`}
+										fill={`currentColor`}
+									/>
+									<circle
+										cx={`37`}
+										cy={`16`}
+										r={`2`}
+										fill={`currentColor`}
+									/>
 									<circle
 										cx={`28.5`}
 										cy={`4.5`}
@@ -239,7 +262,11 @@ const Component = ({
 								</svg>
 							</div>
 						</div>
-						<div class={tw`ml-2 rounded ${color.levelBackground} px-2 ${color.levelText}`}>{level}</div>
+						<div
+							class={tw`ml-2 rounded ${color.levelBackground} px-2 ${color.levelText}`}
+						>
+							{level}
+						</div>
 					</div>
 				</div>
 			</div>

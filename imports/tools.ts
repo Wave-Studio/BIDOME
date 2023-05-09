@@ -1,5 +1,6 @@
 export const formatMs = (ms: number, long = false): string => {
 	let seconds = Math.floor(ms / 1000);
+	const showMs = seconds < 1;
 	let minutes = Math.floor(seconds / 60);
 	seconds -= minutes * 60;
 	let hours = Math.floor(minutes / 60);
@@ -13,8 +14,17 @@ export const formatMs = (ms: number, long = false): string => {
 			`${weeks > 0 ? ` ${weeks} Week${weeks > 1 ? "s" : ""}` : ""}`,
 			`${days > 0 ? ` ${days} Day${days > 1 ? "s" : ""}` : ""}`,
 			`${hours > 0 ? ` ${hours} Hour${hours > 1 ? "s" : ""}` : ""}`,
-			`${minutes > 0 ? ` ${minutes} Minute${minutes > 1 ? "s" : ""}` : ""}`,
-			`${seconds > 0 ? ` ${seconds} Second${seconds > 1 ? "s" : ""}` : ""}`,
+			`${
+				minutes > 0
+					? ` ${minutes} Minute${minutes > 1 ? "s" : ""}`
+					: ""
+			}`,
+			`${
+				seconds > 0
+					? ` ${seconds} Second${seconds > 1 ? "s" : ""}`
+					: ""
+			}`,
+			`${showMs ? ` ${ms} Milisecond${ms > 1 ? "s" : ""}` : ""}`,
 		]
 			.join("")
 			.substring(1);
@@ -25,6 +35,7 @@ export const formatMs = (ms: number, long = false): string => {
 			`${hours > 0 ? `${hours < 10 ? `0${hours}` : hours}:` : ""}`,
 			`${minutes < 10 ? `0${minutes}` : minutes}:`,
 			`${seconds < 10 ? `0${seconds}` : seconds}`,
+			`${showMs ? `:${(ms < 10 ? `0${seconds}` : seconds)}` : ""}`,
 		].join("");
 	}
 };
@@ -49,9 +60,11 @@ export const areAllGreaterThan0 = (...args: number[]): boolean => {
 };
 
 export const format = (name: string): string => {
-	return `${name.substring(0, 1).toUpperCase()}${name
-		.substring(1)
-		.toLowerCase()}`;
+	return `${name.substring(0, 1).toUpperCase()}${
+		name
+			.substring(1)
+			.toLowerCase()
+	}`;
 };
 
 export const removeDiscordFormatting = (text: string): string => {
@@ -113,8 +126,7 @@ export const toMs = (str: string) => {
 	let unitValue = "";
 
 	const convertToMS = () => {
-		msValue +=
-			parseInt(unitValue) *
+		msValue += parseInt(unitValue) *
 			({
 				// Shortened
 				ms: TimeUnit.MILISECOND,
@@ -178,7 +190,10 @@ export const toMs = (str: string) => {
 export const sleep = (length: number) =>
 	new Promise((resolve) => setTimeout(resolve, length));
 
-export const loopFilesAndReturn = async (path: string, extensions: string[] = [".ts", ".tsx", ".js", ".jsx"]) => {
+export const loopFilesAndReturn = async (
+	path: string,
+	extensions: string[] = [".ts", ".tsx", ".js", ".jsx"],
+) => {
 	const files: string[] = [];
 
 	try {
@@ -240,11 +255,11 @@ export const formatNumber = (num: number) => {
 			return `${numberValue}${value}`;
 		}
 	}
-	
+
 	return num.toString();
 };
 
 export const truncateString = (str: string, length: number) => {
 	if (str.length <= length) return str;
 	return `${str.slice(0, length)}...`;
-}
+};

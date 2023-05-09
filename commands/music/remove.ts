@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck, Song } from "queue";
+import { doPermCheck, queues, Song } from "queue";
 import { removeDiscordFormatting } from "tools";
 
 export default class Remove extends Command {
@@ -11,12 +11,18 @@ export default class Remove extends Command {
 	async execute(ctx: CommandContext) {
 		if (ctx.guild == undefined) return;
 		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
-		if (queues.has(ctx.guild!.id) && (botState == undefined || botState.channel == undefined)) {
+		if (
+			queues.has(ctx.guild!.id) &&
+			(botState == undefined || botState.channel == undefined)
+		) {
 			queues.get(ctx.guild!.id)!.deleteQueue();
 		}
-		
+
 		const queue = queues.get(ctx.guild.id);
-		if (queue == undefined || botState == undefined || botState.channel == undefined) {
+		if (
+			queue == undefined || botState == undefined ||
+			botState.channel == undefined
+		) {
 			await ctx.message.reply(undefined, {
 				embeds: [
 					new Embed({
@@ -51,7 +57,10 @@ export default class Remove extends Command {
 						],
 					});
 				} else {
-					const queueEntries = [...queue.queue, ...queue.playedSongQueue];
+					const queueEntries = [
+						...queue.queue,
+						...queue.playedSongQueue,
+					];
 					if (
 						ctx.argString == "" ||
 						isNaN(parseInt(ctx.argString)) ||
@@ -66,17 +75,21 @@ export default class Remove extends Command {
 										icon_url: ctx.client.user!.avatarURL(),
 									},
 									title: "Invalid argument",
-									description: `Please select the song's current position (1-${
-										queueEntries.length - 1
-									})`,
+									description:
+										`Please select the song's current position (1-${
+											queueEntries.length - 1
+										})`,
 								}).setColor("red"),
 							],
 						});
 					} else {
 						const position = parseInt(ctx.argString);
 						let [song]: Song[] = queueEntries.splice(position, 1);
-						if (position > queueEntries.length ) {
-							[song] = queue.playedSongQueue.splice(position - queueEntries.length, 1);
+						if (position > queueEntries.length) {
+							[song] = queue.playedSongQueue.splice(
+								position - queueEntries.length,
+								1,
+							);
 						} else {
 							[song] = queue.queue.splice(position, 1);
 						}
@@ -88,9 +101,11 @@ export default class Remove extends Command {
 										icon_url: ctx.client.user!.avatarURL(),
 									},
 									title: "Removed song",
-									description: `Removed [${removeDiscordFormatting(
-										song.title
-									)}](${song.url}) from the queue!`,
+									description: `Removed [${
+										removeDiscordFormatting(
+											song.title,
+										)
+									}](${song.url}) from the queue!`,
 								}).setColor("green"),
 							],
 						});

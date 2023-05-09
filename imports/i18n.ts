@@ -31,10 +31,15 @@ interface Language {
 
 const languages: Record<string, Language> = {};
 
-for (const langFile of await loopFilesAndReturn("./lang/", [".json", ".jsonc"])) {
+for (
+	const langFile of await loopFilesAndReturn("./lang/", [".json", ".jsonc"])
+) {
 	if (/[a-z]{2}\.json/.test(langFile)) {
-		const fileContents = (await Deno.readTextFile(langFile)).replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m);
-		
+		const fileContents = (await Deno.readTextFile(langFile)).replace(
+			/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g,
+			(m, g) => g ? "" : m,
+		);
+
 		let fileData: Language;
 		try {
 			fileData = JSON.parse(fileContents);
@@ -103,7 +108,9 @@ export async function getUserLanguage(
 	return await "en";
 }
 
-export async function getGuildLanguage(_guild: Guild | string): Promise<string> {
+export async function getGuildLanguage(
+	_guild: Guild | string,
+): Promise<string> {
 	return await "en";
 }
 
@@ -147,7 +154,7 @@ export function createEmbedFromLangData(
 		const isJson = (str: string) => {
 			const res = JSON.parse(JSON.stringify(str));
 			return typeof res == "object";
-		}
+		};
 
 		for (const [key] of Object.entries(embed)) {
 			if (
@@ -160,14 +167,22 @@ export function createEmbedFromLangData(
 			} else {
 				if (embed[key] instanceof Array) {
 					if (isJson((embed[key] as string[])[0])) {
-						for (const field of embed[key] as unknown as Record<string, string>[]) {
+						for (
+							const field of embed[key] as unknown as Record<
+								string,
+								string
+							>[]
+						) {
 							for (const [fieldKey] of Object.entries(field)) {
 								for (let i = 0; i < data.length; i++) {
-									if (typeof field[fieldKey] != "string") continue;
-									field[fieldKey] = (field[fieldKey] as string).replace(
-										`{${i}}`,
-										`${data[i]}`,
-									);
+									if (typeof field[fieldKey] != "string") {
+										continue;
+									}
+									field[fieldKey] =
+										(field[fieldKey] as string).replace(
+											`{${i}}`,
+											`${data[i]}`,
+										);
 								}
 							}
 						}

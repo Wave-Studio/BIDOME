@@ -10,21 +10,23 @@ import {
 } from "https://deno.land/x/discord_emoji@v2.2.0/mod.ts";
 
 export const emoji = (name: string) => {
-	for (const emojiJson of [
-		activity,
-		flags,
-		food,
-		nature,
-		objects,
-		people,
-		symbols,
-		travel,
-	]) {
+	for (
+		const emojiJson of [
+			activity,
+			flags,
+			food,
+			nature,
+			objects,
+			people,
+			symbols,
+			travel,
+		]
+	) {
 		// @ts-ignore Typings
 		if (emojiJson[name]) return emojiJson[name];
 	}
 	return undefined;
-}
+};
 
 // TODO: Migrate commands to new emoji system
 
@@ -43,10 +45,11 @@ export const getEmojiByName = (name: string) => {
 export const emojify = (inputString: string) => {
 	const splittedStr = inputString.split(" ");
 	const newArr = splittedStr.map((str: string) => {
-		if (str.includes("$"))
+		if (str.includes("$")) {
 			return filterEmoji(str.substring(1)).length
 				? filterEmoji(str.substring(1))[0].char
 				: str;
+		}
 		return str;
 	});
 	return newArr.join(" ");

@@ -1,4 +1,4 @@
-import { supabase, Database } from "supabase";
+import { Database, supabase } from "supabase";
 import { Guild } from "./harmony.ts";
 
 type DatabaseTable = Database["public"]["Tables"];
@@ -9,14 +9,15 @@ export const serverSettings: {
 	[guildId: string]: Partial<ServerTable>;
 } = {};
 
-export let reminders: ReminderTable[] = (await supabase.from("reminders").select("*")).data ?? [];
+export let reminders: ReminderTable[] =
+	(await supabase.from("reminders").select("*")).data ?? [];
 
 // Prefix
-
 export const getPrefixes = async (guildId: string | Guild) => {
 	if (guildId instanceof Guild) guildId = guildId.id;
-	if (serverSettings[guildId]?.prefix != undefined)
+	if (serverSettings[guildId]?.prefix != undefined) {
 		return serverSettings[guildId].prefix!;
+	}
 
 	const { data } = await supabase
 		.from("servers")
@@ -60,30 +61,33 @@ export const removePrefix = async (guildId: string, prefix: string) => {
 	await setPrefixes(guildId, prefixes);
 };
 
-supabase.channel("public:servers").on(
-	"postgres_changes",
-	{
-		event: "*",
-		schema: "public",
-		table: "servers",
-	},
-	(payload) => {
-		switch (payload.eventType) {
-			case "DELETE": {
-				const data = payload.old;
-				delete serverSettings[data.server_id];
-				break;
-			}
+supabase
+	.channel("public:servers")
+	.on(
+		"postgres_changes",
+		{
+			event: "*",
+			schema: "public",
+			table: "servers",
+		},
+		(payload) => {
+			switch (payload.eventType) {
+				case "DELETE": {
+					const data = payload.old;
+					delete serverSettings[data.server_id];
+					break;
+				}
 
-			case "INSERT": 
-			case "UPDATE":{
-				const data = payload.new;
-				serverSettings[data.server_id] = data;
-				break;
+				case "INSERT":
+				case "UPDATE": {
+					const data = payload.new;
+					serverSettings[data.server_id] = data;
+					break;
+				}
 			}
-		}
-	}
-).subscribe();
+		},
+	)
+	.subscribe();
 
 // Reminders
 let currentReminderId = 0;
@@ -91,51 +95,106 @@ let currentReminderId = 0;
 export const getReminders = (user?: string) => {
 	if (user == undefined) return reminders;
 	return reminders.filter((r) => r.user_id == user);
-}
+};
 
-export const createReminder = async (payload: DatabaseTable["reminders"]["Insert"]): Promise<number> => {
-	const { data } = await supabase.from("reminders")
-	.insert(payload).select("id");
+export const createReminder = async (
+	payload: DatabaseTable["reminders"]["Insert"],
+): Promise<number> => {
+	const { data } = await supabase
+		.from("reminders")
+		.insert(payload)
+		.select("id");
 
 	if (currentReminderId < data![0].id) {
 		currentReminderId = data![0].id;
 	} else {
 		currentReminderId++;
-	} 
+	}
 
 	return parseInt(currentReminderId.toString());
-}
+};
 
 export const removeReminder = async (id: string | number) => {
 	id = id.toString();
 	await supabase.from("reminders").delete().eq("id", id);
 	reminders = reminders.filter((r) => r.id.toString() != id);
-}
+};
 
-supabase.channel("public:reminders").on<ReminderTable>("postgres_changes", {
-	event: "*",
-	schema: "public",
-	table: "reminders",
-}, (
-	payload,
-) => {
-	switch (payload.eventType) {
-		case "DELETE": {
-			const id = payload.old!.id;
-			reminders = reminders.filter((r) => r.id != id);
-			break;
-		}
+supabase
+	.channel("public:reminders")
+	.on<ReminderTable>(
+		"postgres_changes",
+		{
+			event: "*",
+			schema: "public",
+			table: "reminders",
+		},
+		(payload) => {
+			switch (payload.eventType) {
+				case "DELETE": {
+					const id = payload.old!.id;
+					reminders = reminders.filter((r) => r.id != id);
+					break;
+				}
 
-		case "INSERT": {
-			reminders.push(payload.new!);
-			break;
-		}
+				case "INSERT": {
+					reminders.push(payload.new!);
+					break;
+				}
 
-		case "UPDATE": {
-			const id = payload.new!.id;
-			reminders = reminders.filter((r) => r.id != id);
-			reminders.push(payload.new!);
-			break;
-		}
+				case "UPDATE": {
+					const id = payload.new!.id;
+					reminders = reminders.filter((r) => r.id != id);
+					reminders.push(payload.new!);
+					break;
+				}
+			}
+		},
+	)
+	.subscribe();
+
+// Suggestions
+export const getSuggestionChannels = async (guildId: string | Guild) => {
+	if (guildId instanceof Guild) guildId = guildId.id;
+	if (
+		serverSettings[guildId]?.suggestion_channel != undefined ||
+		serverSettings[guildId]?.suggestion_accepted_channel != undefined ||
+		serverSettings[guildId]?.suggestion_denied_channel != undefined
+	) {
+		return {
+			suggestion_channel: serverSettings[guildId].suggestion_channel,
+			suggestion_accepted_channel:
+				serverSettings[guildId].suggestion_accepted_channel,
+			suggestion_denied_channel:
+				serverSettings[guildId].suggestion_denied_channel,
+		};
 	}
-}).subscribe();
+
+	const { data } = await supabase
+		.from("servers")
+		.select("*")
+		.eq("server_id", guildId)
+		.limit(1)
+		.single();
+
+	if (data != undefined) {
+		serverSettings[guildId] ??= {};
+		serverSettings[guildId].suggestion_channel = data.suggestion_channel;
+		serverSettings[guildId].suggestion_accepted_channel =
+			data.suggestion_accepted_channel;
+		serverSettings[guildId].suggestion_denied_channel =
+			data.suggestion_denied_channel;
+		return {
+			suggestion_channel: data.suggestion_channel,
+			suggestion_accepted_channel: data.suggestion_accepted_channel,
+			suggestion_denied_channel: data.suggestion_denied_channel,
+		};
+	} else {
+		await supabase.from("servers").insert({ server_id: guildId });
+		return {
+			suggestion_channel: undefined,
+			suggestion_accepted_channel: undefined,
+			suggestion_denied_channel: undefined,
+		};
+	}
+};

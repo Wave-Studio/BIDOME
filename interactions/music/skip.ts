@@ -1,5 +1,5 @@
-import { MessageComponentInteraction, Embed } from "harmony";
-import { queues, doPermCheck, LoopType } from "queue";
+import { Embed, MessageComponentInteraction } from "harmony";
+import { doPermCheck, LoopType, queues } from "queue";
 
 export async function button(i: MessageComponentInteraction) {
 	if (i.customID == "skip-song") {
@@ -28,14 +28,18 @@ export async function button(i: MessageComponentInteraction) {
 			}
 		} else {
 			const queue = queues.get(i.guild!.id)!;
-			const doesUserNeedToBeAdded = !queue.voteSkipUsers.includes(i.user.id);
+			const doesUserNeedToBeAdded = !queue.voteSkipUsers.includes(
+				i.user.id,
+			);
 
 			if (doesUserNeedToBeAdded) {
 				queue.voteSkipUsers.push(i.user.id);
 			}
 
 			const canVoteSkip = queue.canSkip(
-				(await botState.channel.voiceStates.array()).filter((s) => !s.user.bot)
+				(await botState.channel.voiceStates.array()).filter((s) =>
+					!s.user.bot
+				),
 			);
 
 			if (canVoteSkip) {
@@ -86,14 +90,19 @@ export async function button(i: MessageComponentInteraction) {
 									icon_url: i.client.user!.avatarURL(),
 								},
 								title: "Voted to skip",
-								description: `You have voted to skip the song! ${
-									skippingUsers.length
-								}/${Math.floor(voiceMembers.length / 2) + 1}`,
+								description:
+									`You have voted to skip the song! ${skippingUsers.length}/${
+										Math.floor(voiceMembers.length / 2) + 1
+									}`,
 								footer: {
 									icon_url: i.user.avatarURL(),
 									text: `Vote by ${i.user.tag}${
-										(await doPermCheck(i.member!, botState.channel)) ||
-										queue.queue[0].requestedBy == i.member!.id
+										(await doPermCheck(
+												i.member!,
+												botState.channel,
+											)) ||
+											queue.queue[0].requestedBy ==
+												i.member!.id
 											? " | Use forceskip to skip without a vote"
 											: ""
 									}`,
@@ -111,11 +120,15 @@ export async function button(i: MessageComponentInteraction) {
 									icon_url: i.client.user!.avatarURL(),
 								},
 								title: "Already voted to skip",
-								description: `You have already voted to skip the song! ${
-									skippingUsers.length
-								}/${Math.floor(voiceMembers.length / 2) + 1}`,
+								description:
+									`You have already voted to skip the song! ${skippingUsers.length}/${
+										Math.floor(voiceMembers.length / 2) + 1
+									}`,
 								footer: {
-									text: (await doPermCheck(i.member!, botState.channel))
+									text: (await doPermCheck(
+											i.member!,
+											botState.channel,
+										))
 										? "Use forceskip to skip without a vote"
 										: "",
 								},

@@ -5,17 +5,17 @@ import {
 import { loopFilesAndReturn } from "./tools.ts";
 
 export let buttonInteractionHandlers: ((
-	i: MessageComponentInteraction
+	i: MessageComponentInteraction,
 ) => Promise<boolean | void>)[] = [];
 
 export let modalInteractionHandlers: ((
-	i: ModalSubmitInteraction
+	i: ModalSubmitInteraction,
 ) => Promise<boolean | void>)[] = [];
 
 export const clearInteractions = () => {
 	buttonInteractionHandlers = [];
 	modalInteractionHandlers = [];
-}
+};
 
 export const loadInteractions = async () => {
 	for (const int of await loopFilesAndReturn("./interactions/")) {
@@ -33,4 +33,4 @@ export const loadInteractions = async () => {
 			modalInteractionHandlers.push(interaction.modal);
 		}
 	}
-}
+};

@@ -1,15 +1,14 @@
-import {
-	MessageComponentInteraction,
-	Embed,
-} from "harmony";
+import { Embed, MessageComponentInteraction } from "harmony";
 import { getReminders, removeReminder } from "settings";
-import { createEmbedFromLangData, getUserLanguage, getString } from "i18n";
+import { createEmbedFromLangData, getString, getUserLanguage } from "i18n";
 
 export async function button(i: MessageComponentInteraction) {
 	if (i.customID.startsWith("delrem_")) {
 		const lang = await getUserLanguage(i.user.id);
 		const reminderID = i.customID.substring("delrem_".length);
-		const reminder = getReminders().filter((r) => r.id.toString() == reminderID)[0];
+		const reminder = getReminders().filter((r) =>
+			r.id.toString() == reminderID
+		)[0];
 
 		if (reminder != undefined) {
 			if (reminder.user_id != i.user.id) {
@@ -19,7 +18,7 @@ export async function button(i: MessageComponentInteraction) {
 						new Embed({
 							...createEmbedFromLangData(
 								lang,
-								"interactions.reminder.notyours"
+								"interactions.reminder.notyours",
 							),
 							author: {
 								name: "Bidome bot",
@@ -39,7 +38,10 @@ export async function button(i: MessageComponentInteraction) {
 								{
 									type: 2,
 									style: "RED",
-									label: getString(lang, "interactions.reminder.button.delete"),
+									label: getString(
+										lang,
+										"interactions.reminder.button.delete",
+									),
 									customID: `disabled`,
 									disabled: true,
 								},
@@ -51,7 +53,10 @@ export async function button(i: MessageComponentInteraction) {
 					ephemeral: true,
 					embeds: [
 						new Embed({
-							...createEmbedFromLangData(lang, "interactions.reminder.deleted"),
+							...createEmbedFromLangData(
+								lang,
+								"interactions.reminder.deleted",
+							),
 							author: {
 								name: "Bidome bot",
 								icon_url: i.client.user!.avatarURL(),
@@ -65,7 +70,10 @@ export async function button(i: MessageComponentInteraction) {
 				ephemeral: true,
 				embeds: [
 					new Embed({
-						...createEmbedFromLangData(lang, "interactions.reminder.invalidid"),
+						...createEmbedFromLangData(
+							lang,
+							"interactions.reminder.invalidid",
+						),
 						author: {
 							name: "Bidome bot",
 							icon_url: i.client.user!.avatarURL(),

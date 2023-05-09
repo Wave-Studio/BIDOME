@@ -1,12 +1,12 @@
 import { getRandomInteger } from "../tools.ts";
 import { getEmojiByName } from "../emoji.ts";
 import {
-	fragment,
-	BotUI,
 	ActionRow,
+	BotUI,
 	Button,
-	Embed,
 	CommandClient,
+	Embed,
+	fragment,
 	User,
 } from "../harmony.ts";
 
@@ -28,9 +28,11 @@ export class TicTacToeGame {
 	constructor(
 		player1: User | "ai",
 		player2: User | "ai",
-		client: CommandClient
+		client: CommandClient,
 	) {
-		this.currentPlayersTurn = ["x", "o"][getRandomInteger(0, 1)] as "x" | "o";
+		this.currentPlayersTurn = ["x", "o"][getRandomInteger(0, 1)] as
+			| "x"
+			| "o";
 		const isP1X = getRandomInteger(1, 2) == 1;
 		if (isP1X) {
 			this.x = player1;
@@ -52,7 +54,9 @@ export class TicTacToeGame {
 			const row = Math.floor(square / 3);
 			const col = square % 3;
 			this.board[row][col] = this.currentPlayersTurn;
-			this.currentPlayersTurn = this.currentPlayersTurn == "x" ? "o" : "x";
+			this.currentPlayersTurn = this.currentPlayersTurn == "x"
+				? "o"
+				: "x";
 		}
 
 		this.client = client;
@@ -66,7 +70,9 @@ export class TicTacToeGame {
 		this.board[x][y] = this.currentPlayersTurn;
 
 		if (typeof this.checkForWin() == "boolean") {
-			this.currentPlayersTurn = this.currentPlayersTurn == "x" ? "o" : "x";
+			this.currentPlayersTurn = this.currentPlayersTurn == "x"
+				? "o"
+				: "x";
 			const validMoves = [];
 			for (let row = 0; row < 3; row++) {
 				for (let col = 0; col < 3; col++) {
@@ -78,7 +84,9 @@ export class TicTacToeGame {
 
 			const move = validMoves[getRandomInteger(0, validMoves.length - 1)];
 			this.board[move[0]][move[1]] = this.currentPlayersTurn;
-			this.currentPlayersTurn = this.currentPlayersTurn == "x" ? "o" : "x";
+			this.currentPlayersTurn = this.currentPlayersTurn == "x"
+				? "o"
+				: "x";
 		}
 
 		return true;
@@ -89,33 +97,33 @@ export class TicTacToeGame {
 			const checks = [
 				// Horizontal
 				this.board[0][0] == letter &&
-					this.board[0][1] == letter &&
-					this.board[0][2] == letter,
+				this.board[0][1] == letter &&
+				this.board[0][2] == letter,
 				this.board[1][0] == letter &&
-					this.board[1][1] == letter &&
-					this.board[1][2] == letter,
+				this.board[1][1] == letter &&
+				this.board[1][2] == letter,
 				this.board[2][0] == letter &&
-					this.board[2][1] == letter &&
-					this.board[2][2] == letter,
+				this.board[2][1] == letter &&
+				this.board[2][2] == letter,
 
 				// Vertical
 				this.board[0][0] == letter &&
-					this.board[1][0] == letter &&
-					this.board[2][0] == letter,
+				this.board[1][0] == letter &&
+				this.board[2][0] == letter,
 				this.board[0][1] == letter &&
-					this.board[1][1] == letter &&
-					this.board[2][1] == letter,
+				this.board[1][1] == letter &&
+				this.board[2][1] == letter,
 				this.board[0][2] == letter &&
-					this.board[1][2] == letter &&
-					this.board[2][2] == letter,
+				this.board[1][2] == letter &&
+				this.board[2][2] == letter,
 
 				// Diagonal
 				this.board[0][0] == letter &&
-					this.board[1][1] == letter &&
-					this.board[2][2] == letter,
+				this.board[1][1] == letter &&
+				this.board[2][2] == letter,
 				this.board[0][2] == letter &&
-					this.board[1][1] == letter &&
-					this.board[2][0] == letter,
+				this.board[1][1] == letter &&
+				this.board[2][0] == letter,
 			];
 
 			if (checks.includes(true)) {
@@ -153,19 +161,21 @@ export class TicTacToeGame {
 					? "It's a tie!"
 					: this[this.checkForWin() as "x" | "o"] == "ai"
 					? "Ai Wins!"
-					: `<@!${(this[this.checkForWin() as "x" | "o"] as User).id}> Wins!`
+					: `<@!${
+						(this[this.checkForWin() as "x" | "o"] as User).id
+					}> Wins!`
 				: [
-						`${
-							this.currentPlayersTurn == "x"
-								? getEmojiByName("arrow_forward")
-								: "🟦"
-						} ${this.x == "ai" ? "AI" : `<@!${this.x.id}>`}`,
-						`${
-							this.currentPlayersTurn == "o"
-								? getEmojiByName("arrow_forward")
-								: "🟦"
-						} ${this.o == "ai" ? "AI" : `<@!${this.o.id}>`}`,
-				  ].join("\n"),
+					`${
+						this.currentPlayersTurn == "x"
+							? getEmojiByName("arrow_forward")
+							: "🟦"
+					} ${this.x == "ai" ? "AI" : `<@!${this.x.id}>`}`,
+					`${
+						this.currentPlayersTurn == "o"
+							? getEmojiByName("arrow_forward")
+							: "🟦"
+					} ${this.o == "ai" ? "AI" : `<@!${this.o.id}>`}`,
+				].join("\n"),
 			footer: {
 				icon_url: this.isPlayingWithAI
 					? this[this.currentPlayersTurn] == "ai"
@@ -175,7 +185,9 @@ export class TicTacToeGame {
 				text: this.isPlayingWithAI
 					? this[this.currentPlayersTurn] == "ai"
 						? "AI's turn"
-						: `${(this[this.currentPlayersTurn] as User)!.tag}'s turn`
+						: `${
+							(this[this.currentPlayersTurn] as User)!.tag
+						}'s turn`
 					: `${(this[this.currentPlayersTurn] as User)!.tag}'s turn`,
 			},
 		}).setColor("random");
@@ -189,13 +201,21 @@ export class TicTacToeGame {
 						{row.map((cell, j) => {
 							return (
 								<Button
-									style={cell == null ? "grey" : cell == "x" ? "red" : "green"}
+									style={cell == null
+										? "grey"
+										: cell == "x"
+										? "red"
+										: "green"}
 									id={`ttt-${i}-${j}`}
-									disabled={
-										["x", "o", "tie"].includes(this.checkForWin() || "no") ||
-										cell != null
-									}
-									label={cell == null ? "\u200b" : cell == "x" ? "X" : "O"}
+									disabled={["x", "o", "tie"].includes(
+										this.checkForWin() || "no",
+									) ||
+										cell != null}
+									label={cell == null
+										? "\u200b"
+										: cell == "x"
+										? "X"
+										: "O"}
 								/>
 							);
 						})}

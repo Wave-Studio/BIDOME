@@ -29,18 +29,18 @@ export default class Eval extends Command {
 		try {
 			executed = `${(await eval(code)) ?? "No output!"}`.replace(
 				ctx.client.token!,
-				"lol you thought"
+				"lol you thought",
 			);
 		} catch (e: unknown) {
 			const executed = `${e ?? "No output!"}`.replace(
 				ctx.client.token!,
-				"lol you thought"
+				"lol you thought",
 			);
 			console.log(
 				"An error occured while executing the eval command " +
 					code +
 					"! Error: ",
-				e
+				e,
 			);
 			await message.edit(
 				new Embed({
@@ -54,7 +54,7 @@ export default class Eval extends Command {
 							? "Output too long to send!"
 							: "```ts\n" + executed + "\n```"
 					}`,
-				}).setColor("random")
+				}).setColor("random"),
 			);
 			return;
 		}
@@ -73,7 +73,7 @@ export default class Eval extends Command {
 							? "Output too long to send!"
 							: "```ts\n" + executed + "\n```"
 					}`,
-				}).setColor("random")
+				}).setColor("random"),
 			);
 		}
 	}

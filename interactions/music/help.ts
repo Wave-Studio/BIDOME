@@ -1,4 +1,4 @@
-import { MessageComponentInteraction, Embed } from "harmony";
+import { Embed, MessageComponentInteraction } from "harmony";
 import { getEmojiByName } from "emoji";
 
 export async function button(i: MessageComponentInteraction) {
@@ -14,10 +14,18 @@ export async function button(i: MessageComponentInteraction) {
 					title: "Now Playing - Help",
 					description: [
 						`${getEmojiByName("question")} - Show this menu`,
-						`${getEmojiByName("black_square_for_stop")} - Disconnect the player`,
-						`${getEmojiByName("fast_forward")} - Vote to skip the current song`,
-						`${getEmojiByName("twisted_rightwards_arrows")} - Shuffle the queue`,
-						`${getEmojiByName("arrows_counterclockwise")} - Refresh the nowplaying embed`,
+						`${
+							getEmojiByName("black_square_for_stop")
+						} - Disconnect the player`,
+						`${
+							getEmojiByName("fast_forward")
+						} - Vote to skip the current song`,
+						`${
+							getEmojiByName("twisted_rightwards_arrows")
+						} - Shuffle the queue`,
+						`${
+							getEmojiByName("arrows_counterclockwise")
+						} - Refresh the nowplaying embed`,
 					].join("\n"),
 				}).setColor("random"),
 			],

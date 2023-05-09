@@ -1,5 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck, LoopType } from "queue";
+import { doPermCheck, LoopType, queues } from "queue";
 
 export default class ShuffleLoop extends Command {
 	name = "shuffleloop";
@@ -16,7 +16,7 @@ export default class ShuffleLoop extends Command {
 		) {
 			queues.get(ctx.guild!.id)!.deleteQueue();
 		}
-		
+
 		const queue = queues.get(ctx.guild.id);
 		if (
 			queue == undefined ||
@@ -61,9 +61,14 @@ export default class ShuffleLoop extends Command {
 							},
 							title: "Toggled shuffle loop",
 							description: `Shuffle looping is now ${
-								loopTypeEnum == LoopType.SHUFFLE ? "Enabled" : "Disabled"
+								loopTypeEnum == LoopType.SHUFFLE
+									? "Enabled"
+									: "Disabled"
 							} ${
-								loopTypeEnum != LoopType.OFF && loopTypeEnum != LoopType.SHUFFLE ? `and ${loopType}ing is now disabled` : ""
+								loopTypeEnum != LoopType.OFF &&
+									loopTypeEnum != LoopType.SHUFFLE
+									? `and ${loopType}ing is now disabled`
+									: ""
 							}`,
 						}).setColor("green"),
 					],

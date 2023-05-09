@@ -20,4 +20,3 @@ export const supabase = createClient<Database>(
 	Deno.env.get("PROJECT_URL")!,
 	Deno.env.get("SERVICE_ROLE_KEY")!,
 );
-

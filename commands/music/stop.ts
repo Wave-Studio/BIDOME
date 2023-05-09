@@ -1,9 +1,15 @@
 import { Command, CommandContext, Embed } from "harmony";
-import { queues, doPermCheck } from "queue";
+import { doPermCheck, queues } from "queue";
 
 export default class Stop extends Command {
 	name = "stop";
-	aliases = ["disconnect", "dc", "fuckoff", "leave", "pleaseshutthefuckupnow"];
+	aliases = [
+		"disconnect",
+		"dc",
+		"fuckoff",
+		"leave",
+		"pleaseshutthefuckupnow",
+	];
 	category = "music";
 	description = "Disconnects from the voice channel and stops playing";
 
@@ -11,7 +17,10 @@ export default class Stop extends Command {
 		if (ctx.guild == undefined) return;
 		const queue = queues.get(ctx.guild.id);
 		const botState = await ctx.guild!.voiceStates.get(ctx.client.user!.id);
-		if (queue == undefined || botState == undefined || botState.channel == undefined) {
+		if (
+			queue == undefined || botState == undefined ||
+			botState.channel == undefined
+		) {
 			await ctx.message.reply(undefined, {
 				embeds: [
 					new Embed({
@@ -40,7 +49,8 @@ export default class Stop extends Command {
 								icon_url: ctx.client.user!.avatarURL(),
 							},
 							title: "Stopped playing!",
-							description: "I have left the channel and stopped playing!",
+							description:
+								"I have left the channel and stopped playing!",
 						}).setColor("green"),
 					],
 				});

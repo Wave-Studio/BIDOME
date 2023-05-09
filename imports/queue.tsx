@@ -1,25 +1,20 @@
 import {
-	CommandClient,
-	Gateway,
-	Guild,
-	Message,
-	Embed,
-	AllMessageOptions,
-	fragment,
 	ActionRow,
+	AllMessageOptions,
 	BotUI,
 	Button,
+	ChannelTypes,
+	CommandClient,
+	Embed,
+	fragment,
+	Gateway,
+	Guild,
 	Member,
+	Message,
 	VoiceChannel,
 	VoiceState,
-	ChannelTypes,
 } from "./harmony.ts";
-import {
-	Cluster,
-	Player,
-	PlayerEvents,
-	NodeState,
-} from "./lavadeno.ts";
+import { Cluster, NodeState, Player, PlayerEvents } from "./lavadeno.ts";
 import { formatMs, removeDiscordFormatting, shuffleArray } from "./tools.ts";
 import { nodes } from "./nodes.ts";
 import { getEmojiByName } from "./emoji.ts";
@@ -44,8 +39,9 @@ export const doPermCheck = async (user: Member, channel: VoiceChannel) => {
 	if (
 		((await channel.voiceStates.array()) ?? []).filter((u) => !u.user.bot)
 			.length < 2
-	)
+	) {
 		return true;
+	}
 	if (user.permissions.has("ADMINISTRATOR")) return true;
 	if (channel.guild.ownerID === user.id) return true;
 	return false;
@@ -66,12 +62,11 @@ export class ServerQueue {
 		public channel: string,
 		private guild: Guild,
 		channelObject: VoiceChannel,
-		setAsSpeaker = false
+		setAsSpeaker = false,
 	) {
 		this.guildId = this.guild.id;
 
-		this.player =
-			lavaCluster.players.get(BigInt(this.guildId)) ??
+		this.player = lavaCluster.players.get(BigInt(this.guildId)) ??
 			lavaCluster.createPlayer(BigInt(this.guildId));
 		this.player.connect(BigInt(this.channel), {
 			deafen: true,
@@ -83,14 +78,14 @@ export class ServerQueue {
 				started: new Date().toUTCString(),
 				name: this.queue[0].title,
 				author: this.queue[0].author,
-				thumbnail: this.queue[0].thumbnail,
+				thumbnail: this.queue[0].thumbnail ?? client.user!.avatarURL(),
 				requestedby: this.queue[0].requestedByString,
 				length: this.queue[0].msLength,
-			}
+			};
 
 			await supabase.from("music_notifications").upsert(dbData, {
 				onConflict: "server_id",
-				ignoreDuplicates: false
+				ignoreDuplicates: false,
 			}).select("*");
 
 			if (setAsSpeaker && this.firstSong) {
@@ -117,10 +112,12 @@ export class ServerQueue {
 			this.deleteQueue();
 		});
 
-		for (const errorEvent of [
-			"trackException",
-			"trackStuck",
-		] as (keyof PlayerEvents)[]) {
+		for (
+			const errorEvent of [
+				"trackException",
+				"trackStuck",
+			] as (keyof PlayerEvents)[]
+		) {
 			this.player.on(errorEvent, () => {
 				const song = this.queue.shift()!;
 
@@ -133,9 +130,11 @@ export class ServerQueue {
 									icon_url: client.user!.avatarURL(),
 								},
 								title: "Song removed",
-								description: `An error occured while playing [${removeDiscordFormatting(
-									song.title
-								)}](${song.url}) so it has been removed from the queue!`,
+								description: `An error occured while playing [${
+									removeDiscordFormatting(
+										song.title,
+									)
+								}](${song.url}) so it has been removed from the queue!`,
 							}).setColor("random"),
 						],
 					});
@@ -205,16 +204,18 @@ export class ServerQueue {
 			});
 		}
 		queues.delete(this.guildId);
-		for (const key of [
-			"trackStart",
-			"trackEnd",
-			"trackException",
-			"trackStuck",
-			"disconnected",
-			"channelJoin",
-			"channelLeave",
-			"channelMove",
-		] as (keyof PlayerEvents)[]) {
+		for (
+			const key of [
+				"trackStart",
+				"trackEnd",
+				"trackException",
+				"trackStuck",
+				"disconnected",
+				"channelJoin",
+				"channelLeave",
+				"channelMove",
+			] as (keyof PlayerEvents)[]
+		) {
 			this.player.off(key);
 		}
 		this.player.position = 0;
@@ -227,12 +228,15 @@ export class ServerQueue {
 
 		await this.player.destroy();
 
-		await supabase.from("music_notifications").delete().eq("server_id", this.guildId);
+		await supabase.from("music_notifications").delete().eq(
+			"server_id",
+			this.guildId,
+		);
 	}
 
 	private async makeBotSpeak(channelObject: VoiceChannel) {
 		const botVoiceState = await channelObject.guild.voiceStates.get(
-			client.user!.id
+			client.user!.id,
 		);
 		if (botVoiceState == undefined) return;
 		// Unimplemented methods my beloved
@@ -338,7 +342,9 @@ export class ServerQueue {
 					fields: [
 						{
 							name: "Song",
-							value: `[${removeDiscordFormatting(song.title)}](${song.url})`,
+							value: `[${
+								removeDiscordFormatting(song.title)
+							}](${song.url})`,
 							inline: true,
 						},
 						{
@@ -359,11 +365,13 @@ export class ServerQueue {
 						},
 						{
 							name: "Progress",
-							value: `${formatMs(
-								(this.player.position ?? 0) < 1000
-									? 1000
-									: this.player.position!
-							)}/${formatMs(song.msLength)}`,
+							value: `${
+								formatMs(
+									(this.player.position ?? 0) < 1000
+										? 1000
+										: this.player.position!,
+								)
+							}/${formatMs(song.msLength)}`,
 							inline: true,
 						},
 						{
@@ -392,7 +400,9 @@ export class ServerQueue {
 						/>
 						<Button
 							style={"red"}
-							emoji={{ name: getEmojiByName("black_square_for_stop") }}
+							emoji={{
+								name: getEmojiByName("black_square_for_stop"),
+							}}
 							id={"stop-song"}
 						/>
 						<Button
@@ -402,12 +412,18 @@ export class ServerQueue {
 						/>
 						<Button
 							style={"green"}
-							emoji={{ name: getEmojiByName("twisted_rightwards_arrows") }}
+							emoji={{
+								name: getEmojiByName(
+									"twisted_rightwards_arrows",
+								),
+							}}
 							id={"shuffle-songs"}
 						/>
 						<Button
 							style={"grey"}
-							emoji={{ name: getEmojiByName("arrows_counterclockwise") }}
+							emoji={{
+								name: getEmojiByName("arrows_counterclockwise"),
+							}}
 							id={"refresh-songs"}
 						/>
 					</ActionRow>
@@ -437,7 +453,7 @@ export const initLava = (bot: CommandClient) => {
 		userId: BigInt(bot.user!.id),
 		sendGatewayPayload: (id, payload) => {
 			const shardID = Number(
-				(BigInt(id) << 22n) % BigInt(bot.shards.cachedShardCount ?? 1)
+				(BigInt(id) << 22n) % BigInt(bot.shards.cachedShardCount ?? 1),
 			);
 			const shard = bot.shards.get(shardID) as Gateway;
 			shard.send(payload);
@@ -464,16 +480,18 @@ export const initLava = (bot: CommandClient) => {
 	cluster.on("nodeConnect", (node, took, reconnect) => {
 		reconnectingIDs = reconnectingIDs.filter((id) => id !== node.id);
 		console.log(
-			`[Lavalink] Connected to node ${node.id} in ${formatMs(
-				took < 1000 ? 1000 : took,
-				true
-			).toLowerCase()} Reconnected: ${reconnect ? "Yes" : "No"}`
+			`[Lavalink] Connected to node ${node.id} in ${
+				formatMs(
+					took < 1000 ? 1000 : took,
+					true,
+				).toLowerCase()
+			} Reconnected: ${reconnect ? "Yes" : "No"}`,
 		);
 	});
 
 	cluster.on("nodeDisconnect", (node, code, reason) => {
 		console.log(
-			`[Lavalink] Disconnected from node ${node.id} with code ${code} and reason ${reason}. Attempting to reconnect`
+			`[Lavalink] Disconnected from node ${node.id} with code ${code} and reason ${reason}. Attempting to reconnect`,
 		);
 		reconnectingIDs.push(node.id);
 	});

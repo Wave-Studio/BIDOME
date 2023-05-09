@@ -1,7 +1,7 @@
 import {
-	MessageComponentInteraction,
 	Embed,
 	InteractionResponseType,
+	MessageComponentInteraction,
 } from "harmony";
 import { queues } from "queue";
 

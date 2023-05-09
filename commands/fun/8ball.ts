@@ -39,7 +39,8 @@ export default class Eightball extends Command {
 							icon_url: ctx.message.client.user!.avatarURL(),
 						},
 						title: "Magic 8Ball",
-						description: `You need to provide a question to ask the Magic 8Ball!`,
+						description:
+							`You need to provide a question to ask the Magic 8Ball!`,
 					}).setColor("random"),
 				],
 			});
@@ -76,8 +77,12 @@ export default class Eightball extends Command {
 								},
 								{
 									name: "Response from the Magic 8Ball",
-									value:
-										responses[Math.floor(Math.random() * responses.length)],
+									value: responses[
+										Math.floor(
+											Math.random() *
+												responses.length,
+										)
+									],
 								},
 							],
 						}).setColor("random"),

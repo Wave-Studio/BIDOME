@@ -1,10 +1,10 @@
 import {
 	CommandClient,
-	TextChannel,
-	MessageComponentData,
 	Embed,
+	MessageComponentData,
+	TextChannel,
 } from "harmony";
-import { getUserLanguage, getString } from "i18n";
+import { getString, getUserLanguage } from "i18n";
 import { toMs } from "tools";
 import { supabase } from "supabase";
 import { getReminders, removeReminder } from "settings";
@@ -17,7 +17,9 @@ export default function reminderClock(bot: CommandClient) {
 				const remind_at = new Date(reminder.remind_at);
 				const now = Date.now();
 				if (remind_at.valueOf() <= now) {
-					const userLanguage = await getUserLanguage(reminder.user_id);
+					const userLanguage = await getUserLanguage(
+						reminder.user_id,
+					);
 					const user = await bot.users.get(reminder.user_id);
 					const createdAt = (
 						new Date(reminder.created_at).getTime() / 1000
@@ -31,13 +33,13 @@ export default function reminderClock(bot: CommandClient) {
 						title: getString(
 							userLanguage,
 							"interactions.reminder.notify.title",
-							`#${reminder.id}`
+							`#${reminder.id}`,
 						),
 						description: getString(
 							userLanguage,
 							"interactions.reminder.notify.description",
 							`<t:${createdAt}:R>`,
-							reminder.reminder
+							reminder.reminder,
 						),
 						url: `https://discord.com/channels/${reminder.server_id}/${reminder.channel_id}/${reminder.message_id}`,
 					}).setColor("random");
@@ -51,7 +53,8 @@ export default function reminderClock(bot: CommandClient) {
 
 						for (const futureSend of reminder.future_sends) {
 							const futureDate =
-								new Date(reminder.created_at).getTime() + toMs(futureSend);
+								new Date(reminder.created_at).getTime() +
+								toMs(futureSend);
 							if (futureDate > now) {
 								possibleFutureSends.push(futureSend);
 							}
@@ -62,8 +65,9 @@ export default function reminderClock(bot: CommandClient) {
 								.from("reminders")
 								.update({
 									remind_at: new Date(
-										new Date(reminder.created_at).getTime() +
-											toMs(possibleFutureSends[0])
+										new Date(reminder.created_at)
+											.getTime() +
+											toMs(possibleFutureSends[0]),
 									).toISOString(),
 									future_sends: possibleFutureSends,
 								})
@@ -77,7 +81,7 @@ export default function reminderClock(bot: CommandClient) {
 										style: "RED",
 										label: getString(
 											userLanguage,
-											"interactions.reminder.button.delete"
+											"interactions.reminder.button.delete",
 										),
 										customID: `delrem_${reminder.id}`,
 									},
@@ -98,7 +102,7 @@ export default function reminderClock(bot: CommandClient) {
 					} catch {
 						try {
 							const channel = (await bot.channels.get(
-								reminder.channel_id
+								reminder.channel_id,
 							)) as TextChannel;
 							await channel.send({
 								content: `<@${reminder.user_id}>`,

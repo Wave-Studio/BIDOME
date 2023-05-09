@@ -28,7 +28,7 @@ export const getRandomStatus = async (bot: CommandClient) => {
 		{
 			name: "H",
 			type: "PLAYING",
-		}
+		},
 	];
 
 	if (statusIndex >= statuses.length) {
