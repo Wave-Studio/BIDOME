@@ -1,6 +1,7 @@
 import { Command, CommandContext, Embed, TextChannel } from "harmony";
 import { getSuggestionChannels } from "settings";
-import { createEmbedFromLangData, getString, getUserLanguage } from "i18n";
+import { createEmbedFromLangData, getUserLanguage } from "i18n";
+import { truncateString } from "tools";
 
 export default class Suggest extends Command {
 	name = "suggest";
@@ -16,10 +17,7 @@ export default class Suggest extends Command {
 			await ctx.message.reply({
 				embeds: [
 					new Embed({
-						...createEmbedFromLangData(
-							lang,
-							"commands.suggest.notconfigured",
-						),
+						...createEmbedFromLangData(lang, "commands.suggest.notconfigured"),
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.client.user!.avatarURL(),
@@ -32,10 +30,7 @@ export default class Suggest extends Command {
 				await ctx.message.reply({
 					embeds: [
 						new Embed({
-							...createEmbedFromLangData(
-								lang,
-								"commands.suggest.noargs",
-							),
+							...createEmbedFromLangData(lang, "commands.suggest.noargs"),
 							author: {
 								name: "Bidome bot",
 								icon_url: ctx.client.user!.avatarURL(),
@@ -45,16 +40,13 @@ export default class Suggest extends Command {
 				});
 			} else {
 				const channel = (await ctx.guild!.channels.resolve(
-					suggestionChannels.suggestion_channel,
+					suggestionChannels.suggestion_channel
 				)) as TextChannel | undefined;
 				if (channel == undefined) {
 					await ctx.message.reply({
 						embeds: [
 							new Embed({
-								...createEmbedFromLangData(
-									lang,
-									"commands.suggest.nochannel",
-								),
+								...createEmbedFromLangData(lang, "commands.suggest.nochannel"),
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.client.user!.avatarURL(),
@@ -70,7 +62,7 @@ export default class Suggest extends Command {
 									lang,
 									"commands.suggest.suggestionmessage",
 									`<@!${ctx.author.id}>`,
-									ctx.argString,
+									ctx.argString
 								),
 								author: {
 									name: "Bidome bot",
@@ -84,19 +76,23 @@ export default class Suggest extends Command {
 						],
 					});
 
-					const thread = await suggestion.startThread({
-						name: getString(lang, "commands.suggest.threadname"),
-					});
-
-					await thread.addUser(ctx.author);
+					await Promise.allSettled([
+						(async () => {
+							await suggestion.addReaction("👍");
+							await suggestion.addReaction("👎");
+						})(),
+						(async () => {
+							const thread = await suggestion.startThread({
+								name: truncateString(ctx.argString, 30),
+							});
+							await thread.addUser(ctx.author);
+						})(),
+					]);
 
 					await ctx.message.reply({
 						embeds: [
 							new Embed({
-								...createEmbedFromLangData(
-									lang,
-									"commands.suggest.sent",
-								),
+								...createEmbedFromLangData(lang, "commands.suggest.sent"),
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.client.user!.avatarURL(),
