@@ -1,6 +1,11 @@
 import { Command, CommandContext, Embed, TextChannel } from "harmony";
 import { getSuggestionChannels } from "settings";
-import { createEmbedFromLangData, getUserLanguage } from "i18n";
+import {
+	createEmbedFromLangData,
+	getGuildLanguage,
+	getString,
+	getUserLanguage,
+} from "i18n";
 import { truncateString } from "tools";
 
 export default class Suggest extends Command {
@@ -17,7 +22,10 @@ export default class Suggest extends Command {
 			await ctx.message.reply({
 				embeds: [
 					new Embed({
-						...createEmbedFromLangData(lang, "commands.suggest.notconfigured"),
+						...createEmbedFromLangData(
+							lang,
+							"commands.suggest.notconfigured",
+						),
 						author: {
 							name: "Bidome bot",
 							icon_url: ctx.client.user!.avatarURL(),
@@ -30,7 +38,10 @@ export default class Suggest extends Command {
 				await ctx.message.reply({
 					embeds: [
 						new Embed({
-							...createEmbedFromLangData(lang, "commands.suggest.noargs"),
+							...createEmbedFromLangData(
+								lang,
+								"commands.suggest.noargs",
+							),
 							author: {
 								name: "Bidome bot",
 								icon_url: ctx.client.user!.avatarURL(),
@@ -40,13 +51,16 @@ export default class Suggest extends Command {
 				});
 			} else {
 				const channel = (await ctx.guild!.channels.resolve(
-					suggestionChannels.suggestion_channel
+					suggestionChannels.suggestion_channel,
 				)) as TextChannel | undefined;
 				if (channel == undefined) {
 					await ctx.message.reply({
 						embeds: [
 							new Embed({
-								...createEmbedFromLangData(lang, "commands.suggest.nochannel"),
+								...createEmbedFromLangData(
+									lang,
+									"commands.suggest.nochannel",
+								),
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.client.user!.avatarURL(),
@@ -55,14 +69,15 @@ export default class Suggest extends Command {
 						],
 					});
 				} else {
+					const guildLang = await getGuildLanguage(ctx.guild!.id);
 					const suggestion = await channel.send({
 						embeds: [
 							new Embed({
 								...createEmbedFromLangData(
-									lang,
+									guildLang,
 									"commands.suggest.suggestionmessage",
 									`<@!${ctx.author.id}>`,
-									ctx.argString
+									ctx.argString,
 								),
 								author: {
 									name: "Bidome bot",
@@ -70,7 +85,7 @@ export default class Suggest extends Command {
 								},
 								footer: {
 									icon_url: ctx.author.avatarURL(),
-									text: "Chat in the thread below!",
+									text: getString(guildLang, "commands.suggest.suggestionmessage.suggestedby", ctx.author.tag),
 								},
 							}),
 						],
@@ -92,7 +107,10 @@ export default class Suggest extends Command {
 					await ctx.message.reply({
 						embeds: [
 							new Embed({
-								...createEmbedFromLangData(lang, "commands.suggest.sent"),
+								...createEmbedFromLangData(
+									lang,
+									"commands.suggest.sent",
+								),
 								author: {
 									name: "Bidome bot",
 									icon_url: ctx.client.user!.avatarURL(),

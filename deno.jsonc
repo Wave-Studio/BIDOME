@@ -1,12 +1,13 @@
 {
 	"fmt": {
-		"options": {
-			"useTabs": true,
-			"singleQuote": false,
-			"lineWidth": 80,
-			"proseWrap": "always",
-			"indentWidth": 4
-		}
+		"useTabs": true,
+		"singleQuote": false,
+		"lineWidth": 80,
+		"proseWrap": "always",
+		"indentWidth": 4,
+		"semiColons": true
+	},
+	"lint": {
 	},
 	"compilerOptions": {
 		"jsx": "react",
@@ -17,7 +18,7 @@
 	"tasks": {
 		"run": "deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run index.ts",
 		"runWithChecks": "deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --check index.ts",
-		"types": "supabase gen types typescript --project-id gukjxyrpjvwptnabpchl > assets/db/database.types.ts",
+		"types": "supabase gen types typescript --project-id gukjxyrpjvwptnabpchl > assets/db/database.types.ts && deno fmt --config=deno.jsonc ./assets/db/database.types.ts",
 		"fmt": "deno fmt --config=deno.jsonc ./",
 		"lint": "deno lint --config=deno.jsonc ./"
 	}

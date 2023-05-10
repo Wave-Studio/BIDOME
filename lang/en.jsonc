@@ -178,11 +178,10 @@
 				"description": "Your suggestion has been sent to the suggestions channel!"
 			},
 			"suggestionmessage": {
-				"title": "New suggestion",
-				"description": "Suggested by {0}",
+				"suggestedby": "Suggested by {0}",
 				"fields": [
 					{
-						"name": "Suggestion",
+						"name": "New Suggestion",
 						"value": "{1}",
 						"inline": false
 					}
