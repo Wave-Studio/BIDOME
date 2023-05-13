@@ -52,13 +52,13 @@ export async function button(i: MessageComponentInteraction) {
 		}
 	}
 
-	if (i.customID == "cfg-removeprefix") {
+	if (i.customID == "cfg-rmprefix") {
 		i.showModal({
 			title: getString(
 				lang,
 				"interactions.config.modals.removeprefix.title",
 			),
-			customID: "cfg-removeprefix",
+			customID: "cfg-rmprefix",
 			components: [
 				{
 					type: 1,
@@ -88,7 +88,7 @@ export async function button(i: MessageComponentInteraction) {
 }
 
 export async function modal(i: ModalSubmitInteraction) {
-	if (i.customID == "cfg-removeprefix") {
+	if (i.customID == "cfg-rmprefix") {
 		const lang = await getUserLanguage(i.user.id);
 		const prefixes = await getPrefixes(i.guild!.id);
 		const prefix = i.getComponent("prefix")!.value;
