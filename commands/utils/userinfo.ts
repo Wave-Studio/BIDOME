@@ -75,6 +75,9 @@ export default class UserInfo extends Command {
 						name: "Bidome bot",
 						icon_url: ctx.client.user!.avatarURL(),
 					},
+					thumbnail: {
+						url: user.user.avatarURL()!,
+					}
 				}),
 			);
 		}
