@@ -53,7 +53,7 @@ const bot = new CommandClient({
 		const victims = ["319223591046742016"];
 
 		if (victims.includes(id)) {
-			return getRandomInteger(1, 100) < 20;
+			return getRandomInteger(1, 100) < 10;
 		}
 
 		return false;
