@@ -1,5 +1,6 @@
 import { Command, CommandContext, Embed } from "harmony";
 import { createEmbedFromLangData, getUserLanguage } from "i18n";
+import { format } from "tools";
 
 export default class UserInfo extends Command {
 	name = "userinfo";
@@ -31,6 +32,7 @@ export default class UserInfo extends Command {
 				}).setColor("red"),
 			);
 		} else {
+			const presence = await ctx.guild!.presences.resolve(user.id);
 			await ctx.message.reply(
 				new Embed({
 					...createEmbedFromLangData(
@@ -50,7 +52,12 @@ export default class UserInfo extends Command {
 								0,
 							)
 						}:F>`,
-						`Soon™`,
+						format(
+							presence?.clientStatus.desktop ??
+								presence?.clientStatus.mobile ??
+								presence?.clientStatus.web ??
+								"offline"
+						),
 						(
 							await user.roles.array()
 						)
