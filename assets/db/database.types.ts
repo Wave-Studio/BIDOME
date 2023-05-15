@@ -9,23 +9,6 @@ export type Json =
 export interface Database {
 	public: {
 		Tables: {
-			analytics_opt_out: {
-				Row: {
-					id: string;
-					opt_out_on: string;
-					type: number;
-				};
-				Insert: {
-					id: string;
-					opt_out_on?: string;
-					type: number;
-				};
-				Update: {
-					id?: string;
-					opt_out_on?: string;
-					type?: number;
-				};
-			};
 			cmd_analytics: {
 				Row: {
 					command: string;
