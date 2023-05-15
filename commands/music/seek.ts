@@ -36,7 +36,9 @@ export default class Seek extends Command {
 		} else {
 			const queue = queues.get(ctx.guild!.id)!;
 			if (await doPermCheck(ctx.member!, botState.channel)) {
-				if (ctx.argString == "" || toMs(ctx.argString) < 0) {
+				const position = toMs(ctx.argString);
+
+				if (ctx.argString == "" || isNaN(position)) {
 					await ctx.message.reply({
 						embeds: [
 							new Embed({
@@ -51,7 +53,6 @@ export default class Seek extends Command {
 						],
 					});
 				} else {
-					const position = toMs(ctx.argString);
 					queue.player.seek(position);
 					queue.player.position = position;
 

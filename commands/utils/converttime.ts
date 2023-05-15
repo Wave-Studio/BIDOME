@@ -23,7 +23,7 @@ export default class ConvertTime extends Command {
 			});
 		} else {
 			const timestamp = toMs(ctx.argString);
-			if (timestamp < 0) {
+			if (isNaN(timestamp)) {
 				await ctx.message.reply(undefined, {
 					embeds: [
 						new Embed({

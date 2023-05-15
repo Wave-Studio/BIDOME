@@ -121,50 +121,56 @@ export enum TimeUnit {
 }
 
 export const toMs = (str: string) => {
-	let msValue = -1;
+	let msValue = NaN;
 	let unitType = "";
 	let unitValue = "";
 
 	const convertToMS = () => {
-		msValue += parseInt(unitValue) *
-			({
-				// Shortened
-				ms: TimeUnit.MILISECOND,
-				s: TimeUnit.SECOND,
-				m: TimeUnit.MINUTE,
-				h: TimeUnit.HOUR,
-				d: TimeUnit.DAY,
-				w: TimeUnit.WEEK,
-				mo: TimeUnit.MONTH,
-				y: TimeUnit.YEAR,
+		const value = parseInt(unitValue) *
+		({
+			// Shortened
+			ms: TimeUnit.MILISECOND,
+			s: TimeUnit.SECOND,
+			m: TimeUnit.MINUTE,
+			h: TimeUnit.HOUR,
+			d: TimeUnit.DAY,
+			w: TimeUnit.WEEK,
+			mo: TimeUnit.MONTH,
+			y: TimeUnit.YEAR,
 
-				// Full
-				millisecond: TimeUnit.MILISECOND,
-				second: TimeUnit.SECOND,
-				minute: TimeUnit.MINUTE,
-				hour: TimeUnit.HOUR,
-				day: TimeUnit.DAY,
-				week: TimeUnit.WEEK,
-				month: TimeUnit.MONTH,
-				year: TimeUnit.YEAR,
+			// Full
+			millisecond: TimeUnit.MILISECOND,
+			second: TimeUnit.SECOND,
+			minute: TimeUnit.MINUTE,
+			hour: TimeUnit.HOUR,
+			day: TimeUnit.DAY,
+			week: TimeUnit.WEEK,
+			month: TimeUnit.MONTH,
+			year: TimeUnit.YEAR,
 
-				// Full plural
-				milliseconds: TimeUnit.MILISECOND,
-				seconds: TimeUnit.SECOND,
-				minutes: TimeUnit.MINUTE,
-				hours: TimeUnit.HOUR,
-				days: TimeUnit.DAY,
-				weeks: TimeUnit.WEEK,
-				months: TimeUnit.MONTH,
-				years: TimeUnit.YEAR,
-			}[unitType] as number);
+			// Full plural
+			milliseconds: TimeUnit.MILISECOND,
+			seconds: TimeUnit.SECOND,
+			minutes: TimeUnit.MINUTE,
+			hours: TimeUnit.HOUR,
+			days: TimeUnit.DAY,
+			weeks: TimeUnit.WEEK,
+			months: TimeUnit.MONTH,
+			years: TimeUnit.YEAR,
+		}[unitType] as number)
+		if (value != 0) {
+			if (isNaN(msValue)) {
+				msValue = 0;
+			}
+			msValue += value;
+		}
 		unitType = "";
 		unitValue = "";
 	};
 
 	for (const char of str.toLowerCase()) {
 		if (char == " ") continue;
-		if (!isNaN(parseInt(char))) {
+		if (!isNaN(parseInt(char)) || char == "-") {
 			if (unitType !== "") {
 				convertToMS();
 			}
@@ -180,11 +186,11 @@ export const toMs = (str: string) => {
 		convertToMS();
 	}
 
-	if (msValue < 0) {
-		return -1;
+	if (isNaN(msValue)) {
+		return NaN;
 	}
 
-	return msValue + 1;
+	return msValue;
 };
 
 export const sleep = (length: number) =>

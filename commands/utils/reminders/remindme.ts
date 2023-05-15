@@ -68,7 +68,7 @@ export default class RemindMe extends Command {
 
 					for (const ms of [base, ...parsedTimestamps]) {
 						const msParsed = toMs(ms);
-						if (msParsed < 0 || isNaN(msParsed)) {
+						if (isNaN(msParsed)) {
 							return await ctx.message.reply(undefined, {
 								embeds: [
 									new Embed({
