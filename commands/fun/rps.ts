@@ -13,100 +13,139 @@ export default class RPS extends Command {
 	usage = "Rps";
 	category = "fun";
 	async execute(ctx: CommandContext) {
+		const choiceArg = ctx.argString.split(" ")[0];
 		const options = ["Scissors", "Rock", "Paper"];
 		const now = Date.now();
-		const message = await ctx.message.reply(undefined, {
-			embeds: [new Embed({
-				author: {
-					name: "Bidome bot",
-					icon_url: ctx.message.client.user!.avatarURL(),
-				},
-				title: "RPS",
-				description: "Select your move!",
-				footer: {
-					text: "This will time out in 30 seconds!",
-				},
-			}).setColor("random")],
-			components: [
-				{
-					type: 1,
-					components: options.map((opt) => ({
-						type: 2,
-						label: format(opt),
-						style: "BLURPLE",
-						customID: `${opt.toLowerCase()}-${now}`,
-					})),
-				},
-			],
-		});
-		const choice = await ctx.client.waitFor(
-			"interactionCreate",
-			(i) =>
-				isMessageComponentInteraction(i) &&
-				i.customID.endsWith(`-${now}`),
-			30 * 1000,
-		);
-		if (!choice[0]) {
-			await message.edit({
-				embeds: [new Embed({
+		if (
+			choiceArg != "" &&
+			!options.includes(choiceArg[0].toUpperCase() + choiceArg.slice(1))
+		) {
+			await ctx.message.reply(
+				new Embed({
+					title: "RPS",
+					description: "Please choose a valid option!",
+					color: 0xff0000,
+				})
+			);
+			return;
+		} else if (choiceArg == "") {
+			const message = await ctx.message.reply(undefined, {
+				embeds: [
+					new Embed({
+						author: {
+							name: "Bidome bot",
+							icon_url: ctx.message.client.user!.avatarURL(),
+						},
+						title: "RPS",
+						description: "Select your move!",
+						footer: {
+							text: "This will time out in 30 seconds!",
+						},
+					}).setColor("random"),
+				],
+				components: [
+					{
+						type: 1,
+						components: options.map((opt) => ({
+							type: 2,
+							label: format(opt),
+							style: "BLURPLE",
+							customID: `${opt.toLowerCase()}-${now}`,
+						})),
+					},
+				],
+			});
+			const choice = await ctx.client.waitFor(
+				"interactionCreate",
+				(i) =>
+					isMessageComponentInteraction(i) && i.customID.endsWith(`-${now}`),
+				30 * 1000
+			);
+			if (!choice[0]) {
+				await message.edit({
+					embeds: [
+						new Embed({
+							author: {
+								name: "Bidome bot",
+								icon_url: ctx.message.client.user!.avatarURL(),
+							},
+							title: "RPS",
+							description: "Selection timed out!",
+						}).setColor("random"),
+					],
+				});
+			} else {
+				if (!isMessageComponentInteraction(choice[0])) return;
+				const botchoice = options[Math.floor(Math.random() * options.length)];
+				const playerchoice = format(choice[0].customID.split("-")[0]);
+				if (botchoice === playerchoice) {
+					await message.edit({
+						embeds: [
+							new Embed({
+								author: {
+									name: "Bidome bot",
+									icon_url: ctx.message.client.user!.avatarURL(),
+								},
+								title: "RPS",
+								fields: [
+									{
+										name: "It's a tie!",
+										value: `Bot: \`${botchoice}\`\n You: \`${playerchoice}\``,
+									},
+								],
+							}).setColor("random"),
+						],
+						components: [],
+					});
+				} else {
+					await message.edit({
+						embeds: [
+							new Embed({
+								author: {
+									name: "Bidome bot",
+									icon_url: ctx.message.client.user!.avatarURL(),
+								},
+								title: "RPS",
+								fields: [
+									{
+										name:
+											(botchoice === "Scissors" && playerchoice === "Paper") ||
+											(botchoice === "Paper" && playerchoice === "Rock") ||
+											(botchoice === "Rock" && playerchoice === "Scissors")
+												? `Bot Wins`
+												: `${ctx.author.username} Wins`,
+										value: `Bot: \`${botchoice}\`\n You: \`${playerchoice}\``,
+									},
+								],
+							}).setColor("random"),
+						],
+						components: [],
+					});
+				}
+				return;
+			}
+		} else {
+			const botchoice = options[Math.floor(Math.random() * options.length)];
+			await ctx.message.reply(
+				new Embed({
 					author: {
 						name: "Bidome bot",
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "RPS",
-					description: "Selection timed out!",
-				}).setColor("random")],
-			});
-		} else {
-			if (!isMessageComponentInteraction(choice[0])) return;
-			const botchoice =
-				options[Math.floor(Math.random() * options.length)];
-			const playerchoice = format(choice[0].customID.split("-")[0]);
-			if (botchoice === playerchoice) {
-				await message.edit({
-					embeds: [new Embed({
-						author: {
-							name: "Bidome bot",
-							icon_url: ctx.message.client.user!.avatarURL(),
-						},
-						title: "RPS",
-						fields: [
-							{
-								name: "It's a tie!",
-								value:
-									`Bot: \`${botchoice}\`\n You: \`${playerchoice}\``,
-							},
-						],
-					}).setColor("random")],
-					components: [],
-				});
-			} else {
-				await message.edit({
-					embeds: [new Embed({
-						author: {
-							name: "Bidome bot",
-							icon_url: ctx.message.client.user!.avatarURL(),
-						},
-						title: "RPS",
-						fields: [
-							{
-								name: (botchoice === "Scissors" &&
-										playerchoice === "Paper") ||
-										(botchoice === "Paper" &&
-											playerchoice === "Rock") ||
-										(botchoice === "Rock" &&
-											playerchoice === "Scissors")
+					fields: [
+						{
+							name:
+								(botchoice === "Scissors" && choiceArg === "Paper") ||
+								(botchoice === "Paper" && choiceArg === "Rock") ||
+								(botchoice === "Rock" && choiceArg === "Scissors")
 									? `Bot Wins`
 									: `${ctx.author.username} Wins`,
-								value:
-									`Bot: \`${botchoice}\`\n You: \`${playerchoice}\``,
-							},
-						],
-					}).setColor("random")],
-					components: [],
-				});
-			}
-			return;
+							value: `Bot: \`${botchoice}\`\n You: \`${choiceArg}\``,
+						},
+					],
+				}).setColor("random")
+			);
 		}
 	}
 }
