@@ -62,8 +62,8 @@
 						"inline": true
 					},
 					{
-						"name": "Roles",
-						"value": "{5}",
+						"name": "Roles [{5}]",
+						"value": "{6}",
 						"inline": true
 					}
 				]

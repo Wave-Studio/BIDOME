@@ -9,19 +9,27 @@ import {
 	travel,
 } from "https://deno.land/x/discord_emoji@v2.2.0/mod.ts";
 
-export const emoji = (name: string) => {
-	for (
-		const emojiJson of [
-			activity,
-			flags,
-			food,
-			nature,
-			objects,
-			people,
-			symbols,
-			travel,
-		]
-	) {
+type EmojiKeys =
+	| keyof typeof activity
+	| keyof typeof flags
+	| keyof typeof food
+	| keyof typeof nature
+	| keyof typeof objects
+	| keyof typeof people
+	| keyof typeof symbols
+	| keyof typeof travel;
+
+export const emoji = (name: EmojiKeys) => {
+	for (const emojiJson of [
+		activity,
+		flags,
+		food,
+		nature,
+		objects,
+		people,
+		symbols,
+		travel,
+	]) {
 		// @ts-ignore Typings
 		if (emojiJson[name]) return emojiJson[name];
 	}
@@ -40,17 +48,4 @@ const filterEmoji = (emojiName: string) => {
 export const getEmojiByName = (name: string) => {
 	const filteredData = filterEmoji(name);
 	return filteredData.length ? filteredData[0].char : "emoji not found";
-};
-
-export const emojify = (inputString: string) => {
-	const splittedStr = inputString.split(" ");
-	const newArr = splittedStr.map((str: string) => {
-		if (str.includes("$")) {
-			return filterEmoji(str.substring(1)).length
-				? filterEmoji(str.substring(1))[0].char
-				: str;
-		}
-		return str;
-	});
-	return newArr.join(" ");
 };

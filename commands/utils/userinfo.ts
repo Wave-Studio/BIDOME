@@ -51,6 +51,7 @@ export default class UserInfo extends Command {
 								presence?.clientStatus.web ??
 								"offline"
 						),
+						await user.roles.size(),
 						(
 							await user.roles.array()
 						)
@@ -60,8 +61,7 @@ export default class UserInfo extends Command {
 							((
 								await user.roles.array()
 							).sort((r1, r2) => {
-								console.log(r1.position, r2.position, r1.name, r2.name);
-								return r1.position - r2.position;
+								return r1.name.localeCompare(r2.name);
 							}).length > 46
 								? "..."
 								: "")
