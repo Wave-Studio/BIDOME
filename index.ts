@@ -96,9 +96,7 @@ for (const ext of await loopFilesAndReturn("./extensions/")) {
 	const extension = await import(ext);
 	bot.extensions.load(extension.default);
 	if (extension.slashCommands != undefined) {
-		slashCommands.push(
-			...(extension.slashCommands as ApplicationCommand[]),
-		);
+		slashCommands.push(...(extension.slashCommands as ApplicationCommand[]));
 	}
 }
 for (const clock of await loopFilesAndReturn("./clocks/")) {
@@ -108,7 +106,7 @@ for (const clock of await loopFilesAndReturn("./clocks/")) {
 console.log(
 	`Loaded ${await bot.extensions.list.size} extension${
 		bot.extensions.list.size == 1 ? "" : "s"
-	}!`,
+	}!`
 );
 
 bot.on("ready", async () => {
@@ -121,17 +119,13 @@ bot.on("ready", async () => {
 	for (const cmd of await loopFilesAndReturn("./commands/")) {
 		const command = await import(cmd);
 
-		if (
-			command.slashCommands == undefined && command.default == undefined
-		) {
+		if (command.slashCommands == undefined && command.default == undefined) {
 			console.log(`Command ${cmd} has no default export! Skipping...`);
 			continue;
 		}
 
 		if (command.slashCommands != undefined) {
-			slashCommands.push(
-				...(command.slashCommands as ApplicationCommand[]),
-			);
+			slashCommands.push(...(command.slashCommands as ApplicationCommand[]));
 		}
 
 		if (command.default != undefined) {
@@ -144,7 +138,7 @@ bot.on("ready", async () => {
 	console.log(
 		`Loaded ${await bot.commands.list.size} command${
 			bot.commands.list.size == 1 ? "" : "s"
-		}`,
+		}`
 	);
 	console.log("Registering slash commands...");
 
@@ -153,8 +147,7 @@ bot.on("ready", async () => {
 
 	for (const command of slashCommands) {
 		if (
-			globalSlashCommands.filter(({ name }) => command.name == name)
-				.size > 0
+			globalSlashCommands.filter(({ name }) => command.name == name).size > 0
 		) {
 			continue;
 		}
@@ -169,7 +162,7 @@ bot.on("ready", async () => {
 	console.log(
 		`Registered ${slashCommands.length} slash command${
 			slashCommands.length == 1 ? "" : "s"
-		}!`,
+		}!`
 	);
 
 	for await (const guild of bot.guilds) {
@@ -183,7 +176,7 @@ bot.on("ready", async () => {
 
 bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 	console.log(
-		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`,
+		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`
 	);
 	console.log(err);
 	try {
@@ -195,10 +188,7 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: getString("en", "errors.genericCommand.title"),
-					description: getString(
-						"en",
-						"errors.genericCommand.description",
-					),
+					description: getString("en", "errors.genericCommand.description"),
 				}).setColor("red"),
 			],
 		});
@@ -213,11 +203,7 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 
 bot.on(
 	"commandOnCooldown",
-	async (
-		ctx: CommandContext,
-		remaning: number,
-		_type: CommandCooldownType,
-	) => {
+	async (ctx: CommandContext, remaning: number, _type: CommandCooldownType) => {
 		await ctx.message.reply(undefined, {
 			embeds: [
 				new Embed({
@@ -226,16 +212,14 @@ bot.on(
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Command on cooldown",
-					description: `This command is on cooldown for ${
-						formatMs(
-							remaning,
-							true,
-						)
-					}!`,
+					description: `This command is on cooldown for ${formatMs(
+						remaning,
+						true
+					)}!`,
 				}).setColor("red"),
 			],
 		});
-	},
+	}
 );
 
 bot.on("interactionCreate", async (i) => {
@@ -284,12 +268,12 @@ bot.on(
 					description: getString(
 						userLanguage,
 						"errors.missingPerms.description",
-						missing.join(", "),
+						missing.join(", ")
 					),
 				}).setColor("red"),
 			],
 		});
-	},
+	}
 );
 
 const lifetimeCommandDataCache: {
@@ -341,6 +325,22 @@ const nextStatus = async () => {
 		}
 	}
 };
+
+bot.on("messageCreate", async (msg) => {
+	// We do some trolling on t_cord
+	if (msg.channel.id != "635483003686223913") return;
+	if (msg.author.id != "464221104714809354") return;
+	if (Deno.env.get("IS_DEV") == "true") return;
+	if (msg.embeds.length < 1) return;
+	const title = msg.embeds[0].title;
+	if (title == undefined) return;
+
+	const url = title.toLowerCase().includes("welcome")
+		? "https://media.discordapp.net/attachments/635483003686223913/1107138506544906250/blunder.png"
+		: "https://media.discordapp.net/attachments/635483003686223913/1108577470254432296/brilliant.png";
+
+	await msg.reply(url);
+});
 
 bot.connect(Deno.env.get("token"), [
 	GatewayIntents.GUILDS,
