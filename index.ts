@@ -333,11 +333,11 @@ bot.on("messageCreate", async (msg) => {
 	if (Deno.env.get("IS_DEV") == "true") return;
 	if (msg.embeds.length < 1) return;
 	const title = msg.embeds[0].title;
-	if (title == undefined) return;
+	if (title == undefined || !(title.toLowerCase().includes("welcome") || title.toLocaleLowerCase().includes("goodbye"))) return;
 
 	const url = title.toLowerCase().includes("welcome")
-		? "https://media.discordapp.net/attachments/635483003686223913/1107138506544906250/blunder.png"
-		: "https://media.discordapp.net/attachments/635483003686223913/1108577470254432296/brilliant.png";
+		? "https://cdn.discordapp.com/attachments/849885610378264598/1108577991451230349/blunder.png"
+		: "https://cdn.discordapp.com/attachments/849885610378264598/1108577991145029672/brilliant.png";
 
 	await msg.reply(url);
 });
