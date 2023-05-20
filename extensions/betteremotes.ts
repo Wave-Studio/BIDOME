@@ -128,7 +128,7 @@ export default class BetterEmotes extends Extension {
 
 	@event("messageCreate")
 	async messageCreate(_: Extension, msg: Message) {
-		//if (Deno.env.get("IS_DEV") != "true") return;
+		if (Deno.env.get("IS_DEV") != "true") return;
 		if (
 			msg.author.bot ||
 			msg.guild == undefined ||
