@@ -259,7 +259,7 @@ export default class BetterEmotes extends Extension {
 			],
 		});
 
-		//await msg.delete();
+		await msg.delete();
 	}
 
 	@event("guildEmojiAdd")
