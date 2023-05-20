@@ -97,7 +97,7 @@ while (true) {
 							"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
 					},
 					title: `Bidome has ${
-						status.code == 420 ? "Rebooted at a request" : "Crashed"
+						status.code == 0 ? "Rebooted at a request" : "Crashed"
 					}!`,
 					description: `Rebooting the bot, time bot was alive: ${
 						formatMs(
