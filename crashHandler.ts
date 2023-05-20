@@ -85,7 +85,8 @@ while (true) {
 	}
 
 	if (webhook != undefined) {
-		const outStr = new TextDecoder().decode(status.stdout);
+		const decoder = new TextDecoder();
+		const outStr = decoder.decode(status.stdout) + "\n" + decoder.decode(status.stderr);
 		webhook.send({
 			embeds: [
 				new Embed({
@@ -106,7 +107,7 @@ while (true) {
 					}`,
 					fields: [
 						{
-							name: "Last 10 lines",
+							name: "Error: ",
 							value: `\`\`\`${
 								outStr.split("\n").slice(-10).join("\n")
 							}\`\`\``,
