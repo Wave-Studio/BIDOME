@@ -1,5 +1,5 @@
 import { Embed, Webhook } from "./imports/harmony.ts";
-import { formatMs, sleep } from "./imports/tools.ts";
+import { formatMs, sleep, reverseTruncateString } from "./imports/tools.ts";
 
 const envfile = (await Deno.readTextFile(".env")).split("\n");
 
@@ -22,7 +22,7 @@ console.log = (...args: unknown[]) => {
 
 	logFunction(
 		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${date.getMinutes()}${amOrPm}]`,
-		...args,
+		...args
 	);
 };
 
@@ -30,12 +30,10 @@ let lastLaunch = 0;
 let tooFastCrashes = 0;
 
 const createInstance = async () => {
-	for (
-		const gitcmd of [
-			"git fetch",
-			`git reset --hard origin/${Deno.env.get("GH_BRANCH")}`,
-		]
-	) {
+	for (const gitcmd of [
+		"git fetch",
+		`git reset --hard origin/${Deno.env.get("GH_BRANCH")}`,
+	]) {
 		const git = new Deno.Command(gitcmd.split(" ")[0], {
 			args: gitcmd.split(" ").slice(1),
 		});
@@ -64,18 +62,22 @@ while (true) {
 	console.log("Instance crashed!");
 	const crashTime = Date.now();
 	const liveTime = crashTime - launchTime;
+	const decoder = new TextDecoder();
+	const outStr =
+		decoder.decode(status.stdout) + "\n" + decoder.decode(status.stderr);
+	console.log(outStr);
 
 	if (Date.now() - lastLaunch < 1000 * 30) {
 		tooFastCrashes++;
 		if (tooFastCrashes > 5) {
 			console.log(
-				"Too many crashes have occured in a row, rebooting the container in 5 seconds",
+				"Too many crashes have occured in a row, rebooting the container in 5 seconds"
 			);
 			await sleep(1000 * 5);
 			Deno.exit(1);
 		} else {
 			console.log(
-				"Instance crashed too fast! Waiting 10 seconds before reboot",
+				"Instance crashed too fast! Waiting 10 seconds before reboot"
 			);
 			await sleep(1000 * 10);
 			continue;
@@ -85,32 +87,28 @@ while (true) {
 	}
 
 	if (webhook != undefined) {
-		const decoder = new TextDecoder();
-		const outStr = decoder.decode(status.stdout) + "\n" + decoder.decode(status.stderr);
 		webhook.send({
 			embeds: [
 				new Embed({
 					author: {
-						name: Deno.env.get("WEBHOOK_NAME") ??
-							"Bidome Crash Handler",
+						name: Deno.env.get("WEBHOOK_NAME") ?? "Bidome Crash Handler",
 						icon_url:
 							"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
 					},
 					title: `Bidome has ${
 						status.code == 0 ? "Rebooted at a request" : "Crashed"
 					}!`,
-					description: `Rebooting the bot, time bot was alive: ${
-						formatMs(
-							liveTime,
-							true,
-						)
-					}`,
+					description: `Rebooting the bot, time bot was alive: ${formatMs(
+						liveTime,
+						true
+					)}`,
 					fields: [
 						{
 							name: "Error: ",
-							value: `\`\`\`${
-								outStr.split("\n").slice(-10).join("\n")
-							}\`\`\``,
+							value: `\`\`\`${reverseTruncateString(
+								outStr.split("\n").slice(-10).join("\n"),
+								1000
+							)}\`\`\``,
 						},
 					],
 				}).setColor("random"),

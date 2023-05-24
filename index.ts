@@ -6,6 +6,7 @@ import {
 	Embed,
 	GatewayIntents,
 	InteractionResponseType,
+	Webhook,
 } from "harmony";
 import { getRandomStatus } from "status";
 import { initLava } from "queue";
@@ -179,6 +180,30 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`
 	);
 	console.log(err);
+
+	if (Deno.env.get("WEBHOOK_URL") != undefined) {
+		const webhook = await Webhook.fromURL(Deno.env.get("WEBHOOK_URL")!);
+		webhook.send({
+			embeds: [
+				new Embed({
+					author: {
+						name: ctx.client.user!.username,
+						icon_url: ctx.client.user!.avatarURL(),
+					},
+					title: `An error occured while running ${ctx.command.name}`,
+					fields: [
+						{
+							name: err.name,
+							value: err.message,
+						},
+					],
+				}).setColor("random"),
+			],
+			avatar: ctx.client.user!.avatarURL(),
+			name: ctx.client.user!.username,
+		});
+	}
+
 	try {
 		await ctx.message.reply(undefined, {
 			embeds: [
@@ -333,7 +358,14 @@ bot.on("messageCreate", async (msg) => {
 	if (Deno.env.get("IS_DEV") == "true") return;
 	if (msg.embeds.length < 1) return;
 	const title = msg.embeds[0].title;
-	if (title == undefined || !(title.toLowerCase().includes("welcome") || title.toLocaleLowerCase().includes("goodbye"))) return;
+	if (
+		title == undefined ||
+		!(
+			title.toLowerCase().includes("welcome") ||
+			title.toLocaleLowerCase().includes("goodbye")
+		)
+	)
+		return;
 
 	const url = title.toLowerCase().includes("welcome")
 		? "https://cdn.discordapp.com/attachments/849885610378264598/1108577991451230349/blunder.png"

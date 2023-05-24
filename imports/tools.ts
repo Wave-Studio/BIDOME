@@ -269,3 +269,8 @@ export const truncateString = (str: string, length: number) => {
 	if (str.length <= length) return str;
 	return `${str.slice(0, length)}...`;
 };
+
+export const reverseTruncateString = (str: string, length: number) => {
+	if (str.length <= length) return str;
+	return `...${str.slice(str.length - length)}`;
+}
