@@ -56,6 +56,7 @@ const createInstance = async () => {
 	// deno-lint-ignore no-deprecated-deno-api
 	return Deno.run({
 		cmd: ["./deno", "task", "run"],
+		stdout: "piped"
 	});
 };
 
