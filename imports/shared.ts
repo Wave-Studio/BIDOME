@@ -4,13 +4,15 @@ import {
 } from "./harmony.ts";
 import { loopFilesAndReturn } from "./tools.ts";
 
-export let buttonInteractionHandlers: ((
-	i: MessageComponentInteraction,
-) => Promise<boolean | void>)[] = [];
+export let buttonInteractionHandlers: {
+	file: string;
+	interaction: (i: MessageComponentInteraction) => Promise<boolean | void>;
+}[] = [];
 
-export let modalInteractionHandlers: ((
-	i: ModalSubmitInteraction,
-) => Promise<boolean | void>)[] = [];
+export let modalInteractionHandlers: {
+	file: string;
+	interaction: (i: ModalSubmitInteraction) => Promise<boolean | void>;
+}[] = [];
 
 export const clearInteractions = () => {
 	buttonInteractionHandlers = [];
@@ -26,11 +28,17 @@ export const loadInteractions = async () => {
 		}
 
 		if (interaction.button != undefined) {
-			buttonInteractionHandlers.push(interaction.button);
+			buttonInteractionHandlers.push({
+				file: int,
+				interaction: interaction.button,
+			});
 		}
 
 		if (interaction.modal != undefined) {
-			modalInteractionHandlers.push(interaction.modal);
+			modalInteractionHandlers.push({
+				file: int,
+				interaction: interaction.modal,
+			});
 		}
 	}
 };

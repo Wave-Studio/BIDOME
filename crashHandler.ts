@@ -1,6 +1,12 @@
 import { Embed, Webhook } from "./imports/harmony.ts";
 import { formatMs, sleep, reverseTruncateString } from "./imports/tools.ts";
 
+try {
+	await Deno.mkdir("./logs");
+} catch {
+	// Already exists
+}
+
 const envfile = (await Deno.readTextFile(".env")).split("\n");
 
 for (const line of envfile) {
@@ -29,6 +35,8 @@ console.log = (...args: unknown[]) => {
 let lastLaunch = 0;
 let tooFastCrashes = 0;
 
+const decoder = new TextDecoder();
+
 const createInstance = async () => {
 	for (const gitcmd of [
 		"git fetch",
@@ -38,13 +46,16 @@ const createInstance = async () => {
 			args: gitcmd.split(" ").slice(1),
 		});
 
-		await git.output();
+		const output = await git.output();
+		console.log(decoder.decode(output.stdout));
 	}
 
 	lastLaunch = Date.now();
 
-	return new Deno.Command("./deno", {
-		args: ["task", "run"],
+	// Because Deno.Command doesn't log
+	// deno-lint-ignore no-deprecated-deno-api
+	return Deno.run({
+		cmd: ["./deno", "task", "run"],
 	});
 };
 
@@ -58,33 +69,14 @@ while (true) {
 	const launchTime = Date.now();
 	const instance = await createInstance();
 	console.log("Instance created");
-	const status = await instance.output();
+	const status = await instance.status();
 	console.log("Instance crashed!");
 	const crashTime = Date.now();
 	const liveTime = crashTime - launchTime;
-	const decoder = new TextDecoder();
 	const outStr =
-		decoder.decode(status.stdout) + "\n" + decoder.decode(status.stderr);
-	console.log(outStr);
+		decoder.decode(await instance.output());
 
-	if (Date.now() - lastLaunch < 1000 * 30) {
-		tooFastCrashes++;
-		if (tooFastCrashes > 5) {
-			console.log(
-				"Too many crashes have occured in a row, rebooting the container in 5 seconds"
-			);
-			await sleep(1000 * 5);
-			Deno.exit(1);
-		} else {
-			console.log(
-				"Instance crashed too fast! Waiting 10 seconds before reboot"
-			);
-			await sleep(1000 * 10);
-			continue;
-		}
-	} else {
-		tooFastCrashes = 0;
-	}
+	await Deno.writeTextFile(`./logs/${Date.now()}.log`, outStr)
 
 	if (webhook != undefined) {
 		webhook.send({
@@ -117,5 +109,24 @@ while (true) {
 				"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
 			name: Deno.env.get("WEBHOOK_NAME") ?? "Bidome Crash Handler",
 		});
+	}
+
+	if (Date.now() - lastLaunch < 1000 * 30) {
+		tooFastCrashes++;
+		if (tooFastCrashes > 5) {
+			console.log(
+				"Too many crashes have occured in a row, rebooting the container in 5 seconds"
+			);
+			await sleep(1000 * 5);
+			Deno.exit(1);
+		} else {
+			console.log(
+				"Instance crashed too fast! Waiting 10 seconds before reboot"
+			);
+			await sleep(1000 * 10);
+			continue;
+		}
+	} else {
+		tooFastCrashes = 0;
 	}
 }

@@ -86,6 +86,7 @@ bot.on("error", (_err) => {
 });
 
 bot.on("debug", (message) => {
+	if (message.includes("Received Heartbeat Ack. Ping Recognized:")) return;
 	console.log("Debug:", message);
 });
 
@@ -256,9 +257,10 @@ bot.on("interactionCreate", async (i) => {
 			});
 		} else {
 			for (const handler of buttonInteractionHandlers) {
-				const res = await handler(i);
+				const res = await handler.interaction(i);
 				if (typeof res == "boolean") {
 					if (!res) {
+						console.log("Temporary crash prevention debug: ", handler.file);
 						return;
 					}
 				}
@@ -268,9 +270,10 @@ bot.on("interactionCreate", async (i) => {
 
 	if (i.isModalSubmit()) {
 		for (const handler of modalInteractionHandlers) {
-			const res = await handler(i);
+			const res = await handler.interaction(i);
 			if (typeof res == "boolean") {
 				if (!res) {
+					console.log("Temporary crash prevention debug: ", handler.file);
 					return;
 				}
 			}
