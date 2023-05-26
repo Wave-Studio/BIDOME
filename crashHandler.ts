@@ -1,11 +1,5 @@
 import { Embed, Webhook } from "./imports/harmony.ts";
-import { formatMs, sleep, reverseTruncateString } from "./imports/tools.ts";
-
-try {
-	await Deno.mkdir("./logs");
-} catch {
-	// Already exists
-}
+import { formatMs, sleep } from "./imports/tools.ts";
 
 const envfile = (await Deno.readTextFile(".env")).split("\n");
 
@@ -35,28 +29,28 @@ console.log = (...args: unknown[]) => {
 let lastLaunch = 0;
 let tooFastCrashes = 0;
 
-const decoder = new TextDecoder();
-
 const createInstance = async () => {
 	for (const gitcmd of [
 		"git fetch",
 		`git reset --hard origin/${Deno.env.get("GH_BRANCH")}`,
 	]) {
-		const git = new Deno.Command(gitcmd.split(" ")[0], {
-			args: gitcmd.split(" ").slice(1),
+		// No logging with new api
+		// deno-lint-ignore no-deprecated-deno-api
+		const git = Deno.run({
+			cmd: gitcmd.split(" "),
 		});
 
-		const output = await git.output();
-		console.log(decoder.decode(output.stdout));
+		await git.status();
 	}
 
 	lastLaunch = Date.now();
 
-	// Because Deno.Command doesn't log
+	// No logging with new api
 	// deno-lint-ignore no-deprecated-deno-api
 	return Deno.run({
-		cmd: ["./deno", "task", "run"],
-		stdout: "piped"
+		cmd: "./deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts".split(
+			" "
+		),
 	});
 };
 
@@ -71,13 +65,10 @@ while (true) {
 	const instance = await createInstance();
 	console.log("Instance created");
 	const status = await instance.status();
+	await instance.close();
 	console.log("Instance crashed!");
 	const crashTime = Date.now();
 	const liveTime = crashTime - launchTime;
-	const outStr =
-		decoder.decode(await instance.output());
-
-	await Deno.writeTextFile(`./logs/${Date.now()}.log`, outStr)
 
 	if (webhook != undefined) {
 		webhook.send({
@@ -95,15 +86,6 @@ while (true) {
 						liveTime,
 						true
 					)}`,
-					fields: [
-						{
-							name: "Error: ",
-							value: `\`\`\`${reverseTruncateString(
-								outStr.split("\n").slice(-10).join("\n"),
-								1000
-							)}\`\`\``,
-						},
-					],
 				}).setColor("random"),
 			],
 			avatar:
