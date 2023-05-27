@@ -77,7 +77,7 @@ const startNewInstance = async () => {
 		if (e.data.type != "log") return;
 		const logPrefix = e.data.prefix;
 		const logData = e.data.data;
-		console.log(logPrefix, ...logData);
+		//console.log(logPrefix, ...logData);
 		logContent += `${logPrefix} ${logData.map(convertStr).join(" ")}\n`;
 	});
 
