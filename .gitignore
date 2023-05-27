@@ -8,3 +8,4 @@ deno.lock
 # Ignore temporary files (for dev)
 /temp
 /.cache
+/logs

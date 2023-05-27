@@ -11,12 +11,20 @@ console.log = (...args: unknown[]) => {
 	const amOrPm = date.getHours() > 12 ? "PM" : "AM";
 	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
 
-	logFunction(
+	const logPrefix =
 		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${
 			date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
-		}${amOrPm}]`,
-		...args,
-	);
+		}${amOrPm}]`;
+
+	if (self.postMessage != undefined) {
+		self.postMessage({
+			type: "log",
+			prefix: logPrefix,
+			data: args,
+		});
+	}
+
+	logFunction(...[logPrefix, ...args]);
 };
 
 import { loopFilesAndReturn } from "./tools.ts";

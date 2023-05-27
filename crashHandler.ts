@@ -1,8 +1,17 @@
 import { Embed, Webhook } from "./imports/harmony.ts";
-import { formatMs, sleep } from "./imports/tools.ts";
+import { formatMs, reverseTruncateString, sleep } from "./imports/tools.ts";
+
+try {
+	await Deno.remove("logs", {
+		recursive: true,
+	});
+} catch {
+	// Ignore
+}
+
+await Deno.mkdir("logs");
 
 const envfile = (await Deno.readTextFile(".env")).split("\n");
-
 for (const line of envfile) {
 	const [key, ...value] = line.split("=");
 	if (key.trim() == "" || key.startsWith("#")) continue;
@@ -13,64 +22,103 @@ for (const line of envfile) {
 	Deno.env.set(key, newValue);
 }
 
+let currentLogFile = `${Date.now()}.log`;
+let logContent = "";
+
+const textDecoder = new TextDecoder();
+
 const logFunction = console.log;
 
-console.log = (...args: unknown[]) => {
+console.log = (...args) => {
 	const date = new Date();
 	const amOrPm = date.getHours() > 12 ? "PM" : "AM";
 	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
-
 	logFunction(
 		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${date.getMinutes()}${amOrPm}]`,
 		...args
 	);
 };
 
-let lastLaunch = 0;
-let tooFastCrashes = 0;
+const startNewInstance = async () => {
+	logContent = "";
+	currentLogFile = `${Date.now()}.log`;
 
-const createInstance = async () => {
-	for (const gitcmd of [
-		"git fetch",
-		`git reset --hard origin/${Deno.env.get("GH_BRANCH")}`,
+	for (const command of [
+		"fetch",
+		`reset --hard origin/${Deno.env.get("GH_BRANCH")}`,
 	]) {
-		// No logging with new api
-		// deno-lint-ignore no-deprecated-deno-api
-		const git = Deno.run({
-			cmd: gitcmd.split(" "),
+		if (Deno.env.get("IS_LOCAL") == "true") break;
+		const git = new Deno.Command("git", {
+			args: command.split(" "),
+			stdout: "piped",
+			stderr: "piped",
 		});
-
-		await git.status();
+		const out = await git.output();
+		console.log(
+			textDecoder.decode(out.stdout) + textDecoder.decode(out.stderr)
+		);
 	}
 
-	lastLaunch = Date.now();
+	const instance = new Worker(new URL("./index.ts", import.meta.url), {
+		type: "module",
+	});
 
-	// No logging with new api
-	// deno-lint-ignore no-deprecated-deno-api
-	return Deno.run({
-		cmd: "./deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --no-check index.ts".split(
-			" "
-		),
+	const convertStr = (str: unknown) => {
+		if (str instanceof Error) {
+			return `${str.name}: ${str.message}\n${str.stack}\n${str.cause ?? ""}`;
+		}
+		if (typeof str == "object") {
+			return JSON.stringify(str);
+		}
+		return `${str}`;
+	};
+
+	instance.addEventListener("message", (e) => {
+		if (e.data.type != "log") return;
+		const logPrefix = e.data.prefix;
+		const logData = e.data.data;
+		console.log(logPrefix, ...logData);
+		logContent += `${logPrefix} ${logData.map(convertStr).join(" ")}\n`;
+	});
+
+	return new Promise<number>((resolve, _reject) => {
+		instance.addEventListener("error", async (e) => {
+			instance.terminate();
+			console.log("Instance errored");
+			console.log(e);
+			logContent += `${e}\n`;
+			await Deno.writeTextFile(`./logs/${currentLogFile}`, logContent);
+			await sleep(1000);
+			resolve(1);
+		});
+
+		instance.addEventListener("message", (e) => {
+			if (e.data.type == "exit") {
+				instance.terminate();
+				resolve(0);
+			}
+		});
 	});
 };
 
-let webhook: Webhook | undefined = undefined;
-if (Deno.env.get("WEBHOOK_URL") != undefined) {
-	webhook = await Webhook.fromURL(Deno.env.get("WEBHOOK_URL") as string);
-}
+const webhook =
+	Deno.env.get("WEBHOOK_URL") != undefined
+		? await Webhook.fromURL(Deno.env.get("WEBHOOK_URL")!)
+		: undefined;
+let tooFastCrashes = 0;
 
 while (true) {
-	console.log("Launching instance...");
-	const launchTime = Date.now();
-	const instance = await createInstance();
-	console.log("Instance created");
-	const status = await instance.status();
-	await instance.close();
-	console.log("Instance crashed!");
-	const crashTime = Date.now();
-	const liveTime = crashTime - launchTime;
+	console.log("Creating instance");
+	const created = Date.now();
+	const res = await startNewInstance();
+	console.log(res);
+	const crashed = Date.now();
+	const aliveFor = crashed - created;
 
-	if (webhook != undefined) {
+	console.log("Instance crashed");
+	console.log(`Instance ran for ${formatMs(aliveFor)}`);
+
+	if (webhook != undefined && Deno.env.get("IS_LOCAL") != "true") {
 		webhook.send({
 			embeds: [
 				new Embed({
@@ -79,36 +127,46 @@ while (true) {
 						icon_url:
 							"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
 					},
-					title: `Bidome has ${
-						status.code == 0 ? "Rebooted at a request" : "Crashed"
-					}!`,
+					title: `Bidome has crashed!`,
 					description: `Rebooting the bot, time bot was alive: ${formatMs(
-						liveTime,
+						aliveFor,
 						true
 					)}`,
+					fields: [
+						{
+							name: "Crash Log",
+							value: `\`\`\`ansi\n${reverseTruncateString(
+								logContent,
+								1000
+							)}\n\`\`\``,
+						},
+					],
 				}).setColor("random"),
 			],
-			avatar:
-				"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
-			name: Deno.env.get("WEBHOOK_NAME") ?? "Bidome Crash Handler",
 		});
 	}
 
-	if (Date.now() - lastLaunch < 1000 * 30) {
+	await sleep(1000);
+
+	if (tooFastCrashes >= 5) {
+		console.log("Instance crashed to often! Restarting container in 5 minutes");
+		await sleep(1000 * 60 * 5);
+		Deno.exit(1);
+	}
+
+	if (tooFastCrashes >= 3) {
+		console.log(
+			"Instance crashed too fast multiple times in a row! Waiting 10 minutes before restarting"
+		);
+		await sleep(1000 * 60 * 10);
+	}
+
+	if (aliveFor < 1000 * 10) {
+		console.log(
+			"Instance crashed too fast! Waiting 10 seconds before restarting"
+		);
 		tooFastCrashes++;
-		if (tooFastCrashes > 5) {
-			console.log(
-				"Too many crashes have occured in a row, rebooting the container in 5 seconds"
-			);
-			await sleep(1000 * 5);
-			Deno.exit(1);
-		} else {
-			console.log(
-				"Instance crashed too fast! Waiting 10 seconds before reboot"
-			);
-			await sleep(1000 * 10);
-			continue;
-		}
+		await sleep(1000 * 10);
 	} else {
 		tooFastCrashes = 0;
 	}
