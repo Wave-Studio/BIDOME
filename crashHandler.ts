@@ -92,9 +92,9 @@ const startNewInstance = async () => {
 		instance.addEventListener("error", async (e) => {
 			instance.terminate();
 			console.log("Instance errored");
-			logContent += `${getLogPrefix()} Error info:\n`;
-			logContent += JSON.stringify(e);
-			logContent += `\n${e.message} ${e.filename}:${e.lineno}:${e.colno}\n`;
+			console.log("Error info:")
+			console.log(e);
+			console.log(`${e.message} ${e.filename}:${e.lineno}:${e.colno}`);
 			await Deno.writeTextFile(`./logs/${currentLogFile}`, logContent);
 			await sleep(1000);
 			resolve(1);
