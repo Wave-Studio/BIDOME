@@ -29,14 +29,29 @@ const textDecoder = new TextDecoder();
 
 const logFunction = console.log;
 
-console.log = (...args) => {
+const convertStr = (str: unknown) => {
+	if (str instanceof Error) {
+		return `${str.name}: ${str.message}\n${str.stack}\n${str.cause ?? ""}`;
+	}
+	if (typeof str == "object") {
+		return JSON.stringify(str);
+	}
+	return `${str}`;
+};
+
+const getLogPrefix = () => {
 	const date = new Date();
 	const amOrPm = date.getHours() > 12 ? "PM" : "AM";
 	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
+	return `[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${
+		date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
+	}${amOrPm}]`
+}
+
+console.log = (...args) => {
+	logContent += `${getLogPrefix()} ${args.map(convertStr).join(" ")}\n`;
 	logFunction(
-		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${
-			date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
-		}${amOrPm}]`,
+		getLogPrefix(),
 		...args
 	);
 };
@@ -65,16 +80,6 @@ const startNewInstance = async () => {
 		type: "module",
 	});
 
-	const convertStr = (str: unknown) => {
-		if (str instanceof Error) {
-			return `${str.name}: ${str.message}\n${str.stack}\n${str.cause ?? ""}`;
-		}
-		if (typeof str == "object") {
-			return JSON.stringify(str);
-		}
-		return `${str}`;
-	};
-
 	instance.addEventListener("message", (e) => {
 		if (e.data.type != "log") return;
 		const logPrefix = e.data.prefix;
@@ -87,7 +92,7 @@ const startNewInstance = async () => {
 		instance.addEventListener("error", async (e) => {
 			instance.terminate();
 			console.log("Instance errored");
-			logContent += "Error info:\n";
+			logContent += `${getLogPrefix()} Error info:\n`;
 			logContent += JSON.stringify(e);
 			logContent += `\n${e.message} ${e.filename}:${e.lineno}:${e.colno}\n`;
 			await Deno.writeTextFile(`./logs/${currentLogFile}`, logContent);
