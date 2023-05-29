@@ -34,7 +34,9 @@ console.log = (...args) => {
 	const amOrPm = date.getHours() > 12 ? "PM" : "AM";
 	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
 	logFunction(
-		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${date.getMinutes()}${amOrPm}]`,
+		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${
+			date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
+		}${amOrPm}]`,
 		...args
 	);
 };
@@ -85,11 +87,17 @@ const startNewInstance = async () => {
 		instance.addEventListener("error", async (e) => {
 			instance.terminate();
 			console.log("Instance errored");
-			console.log(e);
-			logContent += `${e}\n`;
+			logContent += "Error info:\n";
+			logContent += JSON.stringify(e);
+			logContent += `\n${e.message} ${e.filename}:${e.lineno}:${e.colno}\n`;
 			await Deno.writeTextFile(`./logs/${currentLogFile}`, logContent);
 			await sleep(1000);
 			resolve(1);
+		});
+
+		instance.addEventListener("error", (e) => {
+			// For some reason this doesn't work in async
+			e.preventDefault();
 		});
 
 		instance.addEventListener("message", (e) => {
