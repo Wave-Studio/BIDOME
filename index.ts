@@ -260,7 +260,6 @@ bot.on("interactionCreate", async (i) => {
 				const res = await handler.interaction(i);
 				if (typeof res == "boolean") {
 					if (!res) {
-						console.log("Temporary crash prevention debug: ", handler.file);
 						return;
 					}
 				}
@@ -273,7 +272,6 @@ bot.on("interactionCreate", async (i) => {
 			const res = await handler.interaction(i);
 			if (typeof res == "boolean") {
 				if (!res) {
-					console.log("Temporary crash prevention debug: ", handler.file);
 					return;
 				}
 			}
