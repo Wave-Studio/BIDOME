@@ -18,7 +18,7 @@ import { truncateString } from "tools";
 // Yes, I really only use this for one purpose
 import { Image } from "https://deno.land/x/imagescript@1.2.15/mod.ts";
 
-const dataImage = new Image(1, 100);
+const dataImage = new Image(100, 1);
 const dataImageExported = await dataImage.encode();
 
 interface ServerEmoteList {
