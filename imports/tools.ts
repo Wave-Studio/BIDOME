@@ -225,7 +225,7 @@ export const loopFilesAndReturn = async (
 		}
 	}
 
-	return files;
+	return files.map((file) => `${file}#${Date.now()}`);
 };
 
 export enum NumberUnit {
