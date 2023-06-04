@@ -368,11 +368,15 @@ bot.on("messageCreate", async (msg) => {
 	)
 		return;
 
-	const url = title.toLowerCase().includes("welcome")
-		? "https://cdn.discordapp.com/attachments/849885610378264598/1108577991451230349/blunder.png"
-		: "https://cdn.discordapp.com/attachments/849885610378264598/1108577991145029672/brilliant.png";
+	const isBlunder = title.toLowerCase().includes("welcome");
 
-	await msg.reply(url);
+	if (isBlunder) {
+		await msg.addReaction("1114721683677401139");
+		await msg.reply("https://cdn.discordapp.com/attachments/849885610378264598/1108577991451230349/blunder.png");
+	} else {
+		await msg.addReaction("1114721734050984086");
+		await msg.reply("https://cdn.discordapp.com/attachments/849885610378264598/1108577991145029672/brilliant.png");
+	}
 });
 
 bot.connect(Deno.env.get("token"), [
