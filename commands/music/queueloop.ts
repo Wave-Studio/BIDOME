@@ -62,8 +62,8 @@ export default class QueueLoop extends Command {
 							title: "Toggled loop",
 							description: `Queue looping is now ${
 								loopTypeEnum == LoopType.QUEUE
-									? "Enabled"
-									: "Disabled"
+									? "Disabled"
+									: "Enabled"
 							} ${
 								loopTypeEnum != LoopType.OFF &&
 									loopTypeEnum != LoopType.QUEUE

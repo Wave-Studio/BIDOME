@@ -62,8 +62,8 @@ export default class Loop extends Command {
 							title: "Toggled song loop",
 							description: `Song looping is now ${
 								loopTypeEnum == LoopType.SONG
-									? "Enabled"
-									: "Disabled"
+									? "Disabled"
+									: "Enabled"
 							} ${
 								loopTypeEnum != LoopType.OFF &&
 									loopTypeEnum != LoopType.SONG

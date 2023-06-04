@@ -62,8 +62,8 @@ export default class ShuffleLoop extends Command {
 							title: "Toggled shuffle loop",
 							description: `Shuffle looping is now ${
 								loopTypeEnum == LoopType.SHUFFLE
-									? "Enabled"
-									: "Disabled"
+									? "Disabled"
+									: "Enabled"
 							} ${
 								loopTypeEnum != LoopType.OFF &&
 									loopTypeEnum != LoopType.SHUFFLE
