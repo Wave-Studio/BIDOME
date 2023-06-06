@@ -115,6 +115,7 @@ export default class BetterEmotes extends Extension {
 	name = "BetterEmotes";
 
 	private serverEmoteCache: Map<string, ServerEmoteList[]> = new Map();
+	private serverIds?: string[];
 
 	async cacheServerEmotes(guild: Guild) {
 		if (this.serverEmoteCache.has(guild.id)) return;
@@ -156,7 +157,11 @@ export default class BetterEmotes extends Extension {
 
 		const mutualGuilds = [];
 
-		for await (const guild of msg.client.guilds) {
+		const guildsToSearch = this.serverIds ?? await msg.client.guilds.keys();	
+
+		for await (const guildId of guildsToSearch) {
+			const guild = await msg.client.guilds.resolve(guildId);
+			if (guild == undefined) continue;
 			const user = await guild.members.resolve(msg.author.id);
 			if (user != undefined) {
 				await this.cacheServerEmotes(guild);
@@ -346,5 +351,31 @@ export default class BetterEmotes extends Extension {
 		});
 
 		this.serverEmoteCache.set(before.guild.id, serverEmojisArray);
+	}
+
+	@event("guildCreate")
+	async guildCreate(_: Extension, guild: Guild) {
+		if (this.serverIds == null) {
+			this.serverIds = [];
+		}
+		if (this.serverIds.length < 1) {
+			this.serverIds = (await this.client.guilds.keys()) ?? [];
+		}
+		if (!this.serverIds.includes(guild.id)) {
+			this.serverIds.push(guild.id);
+		}
+	}
+
+	@event("guildDelete")
+	async guildDelete(_: Extension, guild: Guild) {
+		if (this.serverIds == null) {
+			this.serverIds = [];
+		}
+		if (this.serverIds.length < 1) {
+			this.serverIds = (await this.client.guilds.keys()) ?? [];
+		}
+		if (this.serverIds.includes(guild.id)) {
+			this.serverIds = this.serverIds.filter((id) => id != guild.id);
+		}
 	}
 }
