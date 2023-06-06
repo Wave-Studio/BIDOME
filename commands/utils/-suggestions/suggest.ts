@@ -85,7 +85,11 @@ export default class Suggest extends Command {
 								},
 								footer: {
 									icon_url: ctx.author.avatarURL(),
-									text: getString(guildLang, "commands.suggest.suggestionmessage.suggestedby", ctx.author.tag),
+									text: getString(
+										guildLang,
+										"commands.suggest.suggestionmessage.suggestedby",
+										ctx.author.tag,
+									),
 								},
 							}),
 						],

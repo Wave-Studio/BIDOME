@@ -16,7 +16,11 @@ export default class RPS extends Command {
 
 	async execute(ctx: CommandContext) {
 		const options = ["scissors", "rock", "paper"];
-		const emojis = [emoji("scissors"), emoji("rock"), emoji("page_facing_up")];
+		const emojis = [
+			emoji("scissors"),
+			emoji("rock"),
+			emoji("page_facing_up"),
+		];
 		const botChoice = options[Math.floor(Math.random() * options.length)];
 
 		if (ctx.argString.trim() != "") {
@@ -29,9 +33,12 @@ export default class RPS extends Command {
 								icon_url: ctx.client.user!.avatarURL(),
 							},
 							title: "Invalid option!",
-							description: `Please select one of the following options: \`${options
-								.map((m) => format(m))
-								.join("`, `")}\``,
+							description:
+								`Please select one of the following options: \`${
+									options
+										.map((m) => format(m))
+										.join("`, `")
+								}\``,
 						}).setColor("red"),
 					],
 				});
@@ -48,21 +55,23 @@ export default class RPS extends Command {
 							title: "RPS",
 							fields: [
 								{
-									name:
-										userChoice == botChoice
-											? "It's a tie!"
-											: (userChoice == "scissors" && botChoice == "paper") ||
-											  (userChoice == "paper" && botChoice == "rock") ||
-											  (userChoice == "rock" && botChoice == "scissors")
-											? "You win!"
-											: "I win!",
+									name: userChoice == botChoice
+										? "It's a tie!"
+										: (userChoice == "scissors" &&
+												botChoice == "paper") ||
+												(userChoice == "paper" &&
+													botChoice == "rock") ||
+												(userChoice == "rock" &&
+													botChoice == "scissors")
+										? "You win!"
+										: "I win!",
 									value: [
-										`${emojis[options.indexOf(botChoice)]} <@!${
-											ctx.client.user!.id
-										}>`,
-										`${emojis[options.indexOf(userChoice)]} <@!${
-											ctx.author.id
-										}>`,
+										`${
+											emojis[options.indexOf(botChoice)]
+										} <@!${ctx.client.user!.id}>`,
+										`${
+											emojis[options.indexOf(userChoice)]
+										} <@!${ctx.author.id}>`,
 									].join("\n"),
 								},
 							],
@@ -84,7 +93,7 @@ export default class RPS extends Command {
 						footer: {
 							icon_url: ctx.author.avatarURL(),
 							text: "Requested by " + ctx.author.tag,
-						}
+						},
 					}).setColor("random"),
 				],
 				components: [
@@ -133,8 +142,10 @@ export default class RPS extends Command {
 		});
 		const choice = await ctx.client.waitFor(
 			"interactionCreate",
-			(i) => isMessageComponentInteraction(i) && i.customID.endsWith(`-${now}`),
-			30 * 1000
+			(i) =>
+				isMessageComponentInteraction(i) &&
+				i.customID.endsWith(`-${now}`),
+			30 * 1000,
 		);
 		if (!choice[0]) {
 			await message.edit({
@@ -151,7 +162,8 @@ export default class RPS extends Command {
 			});
 		} else {
 			if (!isMessageComponentInteraction(choice[0])) return;
-			const botchoice = options[Math.floor(Math.random() * options.length)];
+			const botchoice =
+				options[Math.floor(Math.random() * options.length)];
 			const playerchoice = format(choice[0].customID.split("-")[0]);
 			if (botchoice === playerchoice) {
 				await message.edit({
@@ -165,7 +177,8 @@ export default class RPS extends Command {
 							fields: [
 								{
 									name: "It's a tie!",
-									value: `Bot: \`${botchoice}\`\n You: \`${playerchoice}\``,
+									value:
+										`Bot: \`${botchoice}\`\n You: \`${playerchoice}\``,
 								},
 							],
 						}).setColor("random"),
@@ -183,13 +196,16 @@ export default class RPS extends Command {
 							title: "RPS",
 							fields: [
 								{
-									name:
-										(botchoice === "Scissors" && playerchoice === "Paper") ||
-										(botchoice === "Paper" && playerchoice === "Rock") ||
-										(botchoice === "Rock" && playerchoice === "Scissors")
-											? `Bot Wins`
-											: `${ctx.author.username} Wins`,
-									value: `Bot: \`${botchoice}\`\n You: \`${playerchoice}\``,
+									name: (botchoice === "Scissors" &&
+											playerchoice === "Paper") ||
+											(botchoice === "Paper" &&
+												playerchoice === "Rock") ||
+											(botchoice === "Rock" &&
+												playerchoice === "Scissors")
+										? `Bot Wins`
+										: `${ctx.author.username} Wins`,
+									value:
+										`Bot: \`${botchoice}\`\n You: \`${playerchoice}\``,
 								},
 							],
 						}).setColor("random"),

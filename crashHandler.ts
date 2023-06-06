@@ -45,14 +45,14 @@ const getLogPrefix = () => {
 	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
 	return `[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${
 		date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
-	}${amOrPm}]`
-}
+	}${amOrPm}]`;
+};
 
 console.log = (...args) => {
 	logContent += `${getLogPrefix()} ${args.map(convertStr).join(" ")}\n`;
 	logFunction(
 		getLogPrefix(),
-		...args
+		...args,
 	);
 };
 
@@ -60,10 +60,12 @@ const startNewInstance = async () => {
 	logContent = "";
 	currentLogFile = `${Date.now()}.log`;
 
-	for (const command of [
-		"fetch",
-		`reset --hard origin/${Deno.env.get("GH_BRANCH")}`,
-	]) {
+	for (
+		const command of [
+			"fetch",
+			`reset --hard origin/${Deno.env.get("GH_BRANCH")}`,
+		]
+	) {
 		if (Deno.env.get("IS_LOCAL") == "true") break;
 		const git = new Deno.Command("git", {
 			args: command.split(" "),
@@ -72,7 +74,7 @@ const startNewInstance = async () => {
 		});
 		const out = await git.output();
 		console.log(
-			textDecoder.decode(out.stdout) + textDecoder.decode(out.stderr)
+			textDecoder.decode(out.stdout) + textDecoder.decode(out.stderr),
 		);
 	}
 
@@ -92,7 +94,7 @@ const startNewInstance = async () => {
 		instance.addEventListener("error", async (e) => {
 			instance.terminate();
 			console.log("Instance errored");
-			console.log("Error info:")
+			console.log("Error info:");
 			console.log(e);
 			console.log(`${e.message} ${e.filename}:${e.lineno}:${e.colno}`);
 			await Deno.writeTextFile(`./logs/${currentLogFile}`, logContent);
@@ -114,10 +116,9 @@ const startNewInstance = async () => {
 	});
 };
 
-const webhook =
-	Deno.env.get("WEBHOOK_URL") != undefined
-		? await Webhook.fromURL(Deno.env.get("WEBHOOK_URL")!)
-		: undefined;
+const webhook = Deno.env.get("WEBHOOK_URL") != undefined
+	? await Webhook.fromURL(Deno.env.get("WEBHOOK_URL")!)
+	: undefined;
 let tooFastCrashes = 0;
 
 while (true) {
@@ -136,22 +137,27 @@ while (true) {
 			embeds: [
 				new Embed({
 					author: {
-						name: Deno.env.get("WEBHOOK_NAME") ?? "Bidome Crash Handler",
+						name: Deno.env.get("WEBHOOK_NAME") ??
+							"Bidome Crash Handler",
 						icon_url:
 							"https://cdn.discordapp.com/avatars/778670182956531773/75fdc201ce942f628a61f9022db406dc.png?size=1024",
 					},
 					title: `Bidome has crashed!`,
-					description: `Rebooting the bot, time bot was alive: ${formatMs(
-						aliveFor,
-						true
-					)}`,
+					description: `Rebooting the bot, time bot was alive: ${
+						formatMs(
+							aliveFor,
+							true,
+						)
+					}`,
 					fields: [
 						{
 							name: "Crash Log",
-							value: `\`\`\`ansi\n${reverseTruncateString(
-								logContent,
-								1000
-							)}\n\`\`\``,
+							value: `\`\`\`ansi\n${
+								reverseTruncateString(
+									logContent,
+									1000,
+								)
+							}\n\`\`\``,
 						},
 					],
 				}).setColor("random"),
@@ -162,21 +168,23 @@ while (true) {
 	await sleep(1000);
 
 	if (tooFastCrashes >= 5) {
-		console.log("Instance crashed to often! Restarting container in 5 minutes");
+		console.log(
+			"Instance crashed to often! Restarting container in 5 minutes",
+		);
 		await sleep(1000 * 60 * 5);
 		Deno.exit(1);
 	}
 
 	if (tooFastCrashes >= 3) {
 		console.log(
-			"Instance crashed too fast multiple times in a row! Waiting 10 minutes before restarting"
+			"Instance crashed too fast multiple times in a row! Waiting 10 minutes before restarting",
 		);
 		await sleep(1000 * 60 * 10);
 	}
 
 	if (aliveFor < 1000 * 10) {
 		console.log(
-			"Instance crashed too fast! Waiting 10 seconds before restarting"
+			"Instance crashed too fast! Waiting 10 seconds before restarting",
 		);
 		tooFastCrashes++;
 		await sleep(1000 * 10);

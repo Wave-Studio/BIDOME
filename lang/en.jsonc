@@ -235,6 +235,7 @@
 			"buttons": {
 				"prefix": "Prefix",
 				"suggestions": "Suggestions",
+				"betas": "Betas",
 				"addprefix": "Add Prefix",
 				"removeprefix": "Remove Prefix",
 				"setsuggestionchannel": "Set Suggestion Channel",
@@ -377,6 +378,38 @@
 				"canceled": {
 					"title": "Canceled",
 					"description": "I have canceled the channel selection!"
+				}
+			},
+			"betas": {
+				"menu": {
+					"title": "Bidome Beta Settings",
+					"description": "Please select one of the following betas to view more information"
+				},
+				"nqn": {
+					"info": {
+						"title": "Free Nitro Emotes",
+						"fields": [
+							{
+								"name": "Description",
+								"value": "Allows users to use any animated emojis in this server or any other server where the user and bot are mutuals",
+								"inline": true
+							},
+							{
+								"name": "Status",
+								"value": "{0}",
+								"inline": true
+							}
+						]
+					}
+				},
+				"buttons": {
+					"nqn": "Free Nitro Emotes"
+				},
+				"toggle": {
+					"enable": "Enable",
+					"disable": "Disable",
+					"enabled": "Enabled",
+					"disabled": "Disabled"
 				}
 			}
 		}

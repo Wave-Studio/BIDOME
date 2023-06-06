@@ -198,3 +198,36 @@ export const getSuggestionChannels = async (guildId: string | Guild) => {
 		};
 	}
 };
+
+// Betas
+export const hasNQNBeta = async (guildId: Guild | string) => {
+	if (guildId instanceof Guild) guildId = guildId.id;
+	if (serverSettings[guildId]?.free_nitro_emotes != undefined) {
+		return serverSettings[guildId].free_nitro_emotes!;
+	}
+
+	const { data } = await supabase
+		.from("servers")
+		.select("free_nitro_emotes")
+		.eq("server_id", guildId)
+		.limit(1)
+		.single();
+
+	if (data != undefined) {
+		serverSettings[guildId] ??= {};
+		serverSettings[guildId].free_nitro_emotes = data.free_nitro_emotes;
+		return data.free_nitro_emotes;
+	} else {
+		await supabase.from("servers").insert({ server_id: guildId });
+		return false;
+	}
+};
+
+export const setNQNBeta = async (guildId: Guild | string, value: boolean) => {
+	if (guildId instanceof Guild) guildId = guildId.id;
+	serverSettings[guildId].free_nitro_emotes = value;
+	await supabase
+		.from("servers")
+		.update({ free_nitro_emotes: value })
+		.eq("server_id", guildId);
+};

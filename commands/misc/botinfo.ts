@@ -87,12 +87,14 @@ export default class Botinfo extends Command {
 						},
 						{
 							name: "Library",
-							value: "[Harmony](https://github.com/harmonyland/harmony)",
+							value:
+								"[Harmony](https://github.com/harmonyland/harmony)",
 							inline: true,
 						},
 						{
 							name: "Source code",
-							value: "[Github](https://github.com/Wave-Studio/BIDOME)",
+							value:
+								"[Github](https://github.com/Wave-Studio/BIDOME)",
 							inline: true,
 						},
 					],

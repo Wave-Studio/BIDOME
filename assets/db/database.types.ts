@@ -112,6 +112,7 @@ export interface Database {
 			};
 			servers: {
 				Row: {
+					free_nitro_emotes: boolean;
 					id: number;
 					invited_at: string;
 					prefix: string[];
@@ -121,6 +122,7 @@ export interface Database {
 					suggestion_denied_channel: string | null;
 				};
 				Insert: {
+					free_nitro_emotes?: boolean;
 					id?: number;
 					invited_at?: string;
 					prefix?: string[];
@@ -130,6 +132,7 @@ export interface Database {
 					suggestion_denied_channel?: string | null;
 				};
 				Update: {
+					free_nitro_emotes?: boolean;
 					id?: number;
 					invited_at?: string;
 					prefix?: string[];

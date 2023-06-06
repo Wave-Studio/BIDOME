@@ -127,37 +127,37 @@ export const toMs = (str: string) => {
 
 	const convertToMS = () => {
 		const value = parseInt(unitValue) *
-		({
-			// Shortened
-			ms: TimeUnit.MILISECOND,
-			s: TimeUnit.SECOND,
-			m: TimeUnit.MINUTE,
-			h: TimeUnit.HOUR,
-			d: TimeUnit.DAY,
-			w: TimeUnit.WEEK,
-			mo: TimeUnit.MONTH,
-			y: TimeUnit.YEAR,
+			({
+				// Shortened
+				ms: TimeUnit.MILISECOND,
+				s: TimeUnit.SECOND,
+				m: TimeUnit.MINUTE,
+				h: TimeUnit.HOUR,
+				d: TimeUnit.DAY,
+				w: TimeUnit.WEEK,
+				mo: TimeUnit.MONTH,
+				y: TimeUnit.YEAR,
 
-			// Full
-			millisecond: TimeUnit.MILISECOND,
-			second: TimeUnit.SECOND,
-			minute: TimeUnit.MINUTE,
-			hour: TimeUnit.HOUR,
-			day: TimeUnit.DAY,
-			week: TimeUnit.WEEK,
-			month: TimeUnit.MONTH,
-			year: TimeUnit.YEAR,
+				// Full
+				millisecond: TimeUnit.MILISECOND,
+				second: TimeUnit.SECOND,
+				minute: TimeUnit.MINUTE,
+				hour: TimeUnit.HOUR,
+				day: TimeUnit.DAY,
+				week: TimeUnit.WEEK,
+				month: TimeUnit.MONTH,
+				year: TimeUnit.YEAR,
 
-			// Full plural
-			milliseconds: TimeUnit.MILISECOND,
-			seconds: TimeUnit.SECOND,
-			minutes: TimeUnit.MINUTE,
-			hours: TimeUnit.HOUR,
-			days: TimeUnit.DAY,
-			weeks: TimeUnit.WEEK,
-			months: TimeUnit.MONTH,
-			years: TimeUnit.YEAR,
-		}[unitType] as number)
+				// Full plural
+				milliseconds: TimeUnit.MILISECOND,
+				seconds: TimeUnit.SECOND,
+				minutes: TimeUnit.MINUTE,
+				hours: TimeUnit.HOUR,
+				days: TimeUnit.DAY,
+				weeks: TimeUnit.WEEK,
+				months: TimeUnit.MONTH,
+				years: TimeUnit.YEAR,
+			}[unitType] as number);
 		if (value != 0) {
 			if (isNaN(msValue)) {
 				msValue = 0;
@@ -273,4 +273,4 @@ export const truncateString = (str: string, length: number) => {
 export const reverseTruncateString = (str: string, length: number) => {
 	if (str.length <= length) return str;
 	return `...${str.slice(str.length - length)}`;
-}
+};

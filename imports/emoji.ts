@@ -20,16 +20,18 @@ type EmojiKeys =
 	| keyof typeof travel;
 
 export const emoji = (name: EmojiKeys) => {
-	for (const emojiJson of [
-		activity,
-		flags,
-		food,
-		nature,
-		objects,
-		people,
-		symbols,
-		travel,
-	]) {
+	for (
+		const emojiJson of [
+			activity,
+			flags,
+			food,
+			nature,
+			objects,
+			people,
+			symbols,
+			travel,
+		]
+	) {
 		// @ts-ignore Typings
 		if (emojiJson[name]) return emojiJson[name];
 	}

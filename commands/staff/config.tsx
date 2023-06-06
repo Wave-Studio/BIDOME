@@ -44,12 +44,22 @@ export default class Config extends Command {
 								"commands.config.buttons.prefix",
 							)}
 						/>
-						<Button
+						{
+							/* <Button
 							style="blurple"
 							id={"cfg-suggest"}
 							label={getString(
 								lang,
 								"commands.config.buttons.suggestions",
+							)}
+						/> */
+						}
+						<Button
+							style="blurple"
+							id={"cfg-betas"}
+							label={getString(
+								lang,
+								"commands.config.buttons.betas",
 							)}
 						/>
 					</ActionRow>

@@ -15,6 +15,7 @@ import { getDiscordImage } from "cache";
 import { encode } from "https://deno.land/std@0.175.0/encoding/base64.ts";
 import { getEmojiByName } from "emoji";
 import { truncateString } from "tools";
+import { hasNQNBeta } from "settings";
 // Yes, I really only use this for one purpose
 import { Image } from "https://deno.land/x/imagescript@1.2.15/mod.ts";
 
@@ -55,7 +56,9 @@ export const slashCommands: ApplicationCommand[] = [
 			} else {
 				if (
 					message.attachments.filter(
-						(a) => a.filename.toLowerCase() == `b-data-${i.user.id}.png`
+						(a) =>
+							a.filename.toLowerCase() ==
+								`b-data-${i.user.id}.png`,
 					) ||
 					i.member?.permissions.has("MANAGE_MESSAGES")
 				) {
@@ -121,14 +124,14 @@ export default class BetterEmotes extends Extension {
 				id: id!,
 				animated: animated!,
 				available: available!,
-			})
+			}),
 		);
 		this.serverEmoteCache.set(guild.id, emotes);
 	}
 
 	@event("messageCreate")
 	async messageCreate(_: Extension, msg: Message) {
-		if (Deno.env.get("IS_DEV") != "true") return;
+		if (Deno.env.get("IS_DEV") == "true") return;
 		if (
 			msg.author.bot ||
 			msg.guild == undefined ||
@@ -137,6 +140,7 @@ export default class BetterEmotes extends Extension {
 		) {
 			return;
 		}
+		if (!(await hasNQNBeta(msg.guild!))) return;
 
 		const emojiRegex = /(?!<a?):[a-zA-Z0-9_]+:(?![0-9]+>)/g;
 		const emojis = msg.content.match(emojiRegex);
@@ -146,7 +150,8 @@ export default class BetterEmotes extends Extension {
 		const webhooks = await msg.channel.fetchWebhooks();
 
 		let webhook = webhooks.find(
-			(w) => w.name?.toLowerCase() == "bidome bot" && w.token != undefined
+			(w) =>
+				w.name?.toLowerCase() == "bidome bot" && w.token != undefined,
 		);
 
 		const mutualGuilds = [];
@@ -164,7 +169,7 @@ export default class BetterEmotes extends Extension {
 		for (const guild of mutualGuilds) {
 			for (const emoji of this.serverEmoteCache.get(guild) ?? []) {
 				const sameNamedEmotes = validEmojisArray.filter(
-					(e) => e.name == emoji.name
+					(e) => e.name == emoji.name,
 				);
 				if (sameNamedEmotes.length > 0) {
 					validEmojisArray.push({
@@ -183,7 +188,7 @@ export default class BetterEmotes extends Extension {
 			if (!emote.available) continue;
 			message = message.replace(
 				new RegExp(`(?!<a?):${emote.name}:(?![0-9]+>)`, "g"),
-				`<${emote.animated ? "a" : ""}:${emote.name}:${emote.id}>`
+				`<${emote.animated ? "a" : ""}:${emote.name}:${emote.id}>`,
 			);
 		}
 
@@ -204,7 +209,7 @@ export default class BetterEmotes extends Extension {
 
 		if (msg.messageReference != undefined) {
 			const refMsg = await msg.channel.messages.fetch(
-				msg.messageReference.message_id!
+				msg.messageReference.message_id!,
 			);
 			if (refMsg != undefined) {
 				messageEmbeds.push(
@@ -213,12 +218,16 @@ export default class BetterEmotes extends Extension {
 							name: `Replying to: ${refMsg.author.tag}`,
 							icon_url: refMsg.author.avatarURL(),
 						},
-						description: `${truncateString(
-							refMsg.content,
-							100
-						)} \n\n[Click to jump to message](${refMsg.url})`,
-						image: msg.attachments.length > 0 ? msg.attachments[0] : undefined,
-					}).setColor("random")
+						description: `${
+							truncateString(
+								refMsg.content,
+								100,
+							)
+						} \n\n[Click to jump to message](${refMsg.url})`,
+						image: msg.attachments.length > 0
+							? msg.attachments[0]
+							: undefined,
+					}).setColor("random"),
 				);
 			}
 		}
@@ -234,11 +243,13 @@ export default class BetterEmotes extends Extension {
 							name: "Bidome bot",
 							icon_url: msg.client.user!.avatarURL(),
 						},
-						title: `${getEmojiByName(
-							/.\.(png|webm|gif|jpg|jpeg)/i.test(a.filename)
-								? "frame_with_picture"
-								: "open_file_folder"
-						)} ${a.filename}`,
+						title: `${
+							getEmojiByName(
+								/.\.(png|webm|gif|jpg|jpeg)/i.test(a.filename)
+									? "frame_with_picture"
+									: "open_file_folder",
+							)
+						} ${a.filename}`,
 						url: a.url,
 						image: {
 							url: /.\.(png|webm|gif|jpg|jpeg)/i.test(a.filename)
@@ -255,7 +266,10 @@ export default class BetterEmotes extends Extension {
 				users: [],
 			},
 			files: [
-				new MessageAttachment(`B-Data-${msg.author.id}.png`, dataImageExported),
+				new MessageAttachment(
+					`B-Data-${msg.author.id}.png`,
+					dataImageExported,
+				),
 			],
 		});
 
@@ -269,13 +283,13 @@ export default class BetterEmotes extends Extension {
 		const serverEmojisArray = this.serverEmoteCache.has(emoji.guild.id)
 			? this.serverEmoteCache.get(emoji.guild.id)
 			: (await emoji.guild.emojis.fetchAll()).map(
-					({ name, id, animated, available }) => ({
-						name: name!,
-						id: id!,
-						animated: animated!,
-						available: available!,
-					})
-			  );
+				({ name, id, animated, available }) => ({
+					name: name!,
+					id: id!,
+					animated: animated!,
+					available: available!,
+				}),
+			);
 
 		serverEmojisArray!.push({
 			name: emoji.name!,
@@ -294,17 +308,17 @@ export default class BetterEmotes extends Extension {
 		const serverEmojisArray = this.serverEmoteCache.has(emoji.guild.id)
 			? this.serverEmoteCache.get(emoji.guild.id)
 			: (await emoji.guild.emojis.fetchAll()).map(
-					({ name, id, animated, available }) => ({
-						name: name!,
-						id: id!,
-						animated: animated!,
-						available: available!,
-					})
-			  );
+				({ name, id, animated, available }) => ({
+					name: name!,
+					id: id!,
+					animated: animated!,
+					available: available!,
+				}),
+			);
 
 		this.serverEmoteCache.set(
 			emoji.guild.id,
-			serverEmojisArray!.filter((e) => e.id != emoji.id)
+			serverEmojisArray!.filter((e) => e.id != emoji.id),
 		);
 	}
 
@@ -315,13 +329,13 @@ export default class BetterEmotes extends Extension {
 		let serverEmojisArray = this.serverEmoteCache.has(before.guild.id)
 			? this.serverEmoteCache.get(before.guild.id)
 			: (await before.guild.emojis.fetchAll()).map(
-					({ name, id, animated, available }) => ({
-						name: name!,
-						id: id!,
-						animated: animated!,
-						available: available!,
-					})
-			  );
+				({ name, id, animated, available }) => ({
+					name: name!,
+					id: id!,
+					animated: animated!,
+					available: available!,
+				}),
+			);
 
 		serverEmojisArray = serverEmojisArray!.filter((e) => e.id != before.id);
 		serverEmojisArray.push({

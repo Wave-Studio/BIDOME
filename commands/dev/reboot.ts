@@ -15,8 +15,7 @@ export default class Reboot extends Command {
 					name: "Bidome bot",
 					icon_url: ctx.client.user!.avatarURL(),
 				},
-				description:
-					"Restarting bot <a:typing:779775412829028373>",
+				description: "Restarting bot <a:typing:779775412829028373>",
 			}).setColor("random")],
 		});
 

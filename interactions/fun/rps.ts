@@ -1,4 +1,4 @@
-import { MessageComponentInteraction, Embed } from "harmony";
+import { Embed, MessageComponentInteraction } from "harmony";
 import { emoji } from "emoji";
 
 export async function button(i: MessageComponentInteraction) {
@@ -24,21 +24,23 @@ export async function button(i: MessageComponentInteraction) {
 						title: "RPS",
 						fields: [
 							{
-								name:
-									userChoice == botChoice
-										? "It's a tie!"
-										: (userChoice == "scissors" && botChoice == "paper") ||
-										  (userChoice == "paper" && botChoice == "rock") ||
-										  (userChoice == "rock" && botChoice == "scissors")
-										? "You win!"
-										: "I win!",
+								name: userChoice == botChoice
+									? "It's a tie!"
+									: (userChoice == "scissors" &&
+											botChoice == "paper") ||
+											(userChoice == "paper" &&
+												botChoice == "rock") ||
+											(userChoice == "rock" &&
+												botChoice == "scissors")
+									? "You win!"
+									: "I win!",
 								value: [
 									`${emojis[options.indexOf(botChoice)]} <@!${
 										i.client.user!.id
 									}>`,
-									`${emojis[options.indexOf(userChoice)]} <@!${
-										i.user.id
-									}>`,
+									`${
+										emojis[options.indexOf(userChoice)]
+									} <@!${i.user.id}>`,
 								].join("\n"),
 							},
 						],
@@ -46,7 +48,6 @@ export async function button(i: MessageComponentInteraction) {
 				],
 				components: [],
 			});
-
 		} else {
 			await i.respond({
 				ephemeral: true,
