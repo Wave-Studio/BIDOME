@@ -5,6 +5,27 @@ type DatabaseTable = Database["public"]["Tables"];
 type ServerTable = DatabaseTable["servers"]["Row"];
 type ReminderTable = DatabaseTable["reminders"]["Row"];
 
+export enum Feature {
+	BETTER_EMOTES = "better_emotes",
+	SUGGESTIONS = "suggestions",
+}
+
+export type GuildConfig = {
+	enabledBetaFeatures: (Feature)[];
+	enabledFeatures: (Feature | typeof Feature)[];
+	suggestion_channel: string | null;
+	suggestion_accepted_channel: string | null;
+	suggestion_denied_channel: string | null;
+};
+
+export const defaultGuildConfig: GuildConfig = {
+	enabledBetaFeatures: [],
+	enabledFeatures: [],
+	suggestion_channel: null,
+	suggestion_accepted_channel: null,
+	suggestion_denied_channel: null,
+};
+
 export const serverSettings: {
 	[guildId: string]: Partial<ServerTable>;
 } = {};
@@ -229,5 +250,57 @@ export const setNQNBeta = async (guildId: Guild | string, value: boolean) => {
 	await supabase
 		.from("servers")
 		.update({ free_nitro_emotes: value })
+		.eq("server_id", guildId);
+};
+
+// Config
+export const getConfig = async (guildId: Guild | string) => {
+	if (guildId instanceof Guild) guildId = guildId.id;
+	if (serverSettings[guildId]?.config != undefined) {
+		return serverSettings[guildId].config as GuildConfig;
+	}
+
+	const { data } = await supabase
+		.from("servers")
+		.select("config")
+		.eq("server_id", guildId)
+		.limit(1)
+		.single();
+
+	if (data == undefined) {
+		await supabase
+			.from("servers")
+			.insert({ server_id: guildId, config: defaultGuildConfig });
+		serverSettings[guildId] ??= {};
+		serverSettings[guildId].config = defaultGuildConfig;
+		return defaultGuildConfig;
+	}
+
+	serverSettings[guildId] ??= {};
+	serverSettings[guildId].config = data.config;
+
+	return {
+		...defaultGuildConfig,
+		...(data.config as GuildConfig),
+	};
+};
+
+export const setConfigValues = async (
+	guildId: Guild | string,
+	config: Partial<GuildConfig>,
+) => {
+	if (guildId instanceof Guild) guildId = guildId.id;
+
+	const currentConfig = await getConfig(guildId);
+	const newConfig = {
+		...currentConfig,
+		...config,
+	};
+
+	serverSettings[guildId].config = newConfig;
+
+	await supabase
+		.from("servers")
+		.update({ config: newConfig })
 		.eq("server_id", guildId);
 };
