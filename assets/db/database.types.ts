@@ -22,6 +22,7 @@ export interface Database {
 					command?: string;
 					times?: number;
 				};
+				Relationships: [];
 			};
 			music_notifications: {
 				Row: {
@@ -51,6 +52,7 @@ export interface Database {
 					started?: string;
 					thumbnail?: string;
 				};
+				Relationships: [];
 			};
 			ranks: {
 				Row: {
@@ -74,6 +76,7 @@ export interface Database {
 					user_id?: string | null;
 					xp?: number | null;
 				};
+				Relationships: [];
 			};
 			reminders: {
 				Row: {
@@ -109,9 +112,11 @@ export interface Database {
 					server_id?: string;
 					user_id?: string;
 				};
+				Relationships: [];
 			};
 			servers: {
 				Row: {
+					config: Json | null;
 					free_nitro_emotes: boolean;
 					id: number;
 					invited_at: string;
@@ -122,6 +127,7 @@ export interface Database {
 					suggestion_denied_channel: string | null;
 				};
 				Insert: {
+					config?: Json | null;
 					free_nitro_emotes?: boolean;
 					id?: number;
 					invited_at?: string;
@@ -132,6 +138,7 @@ export interface Database {
 					suggestion_denied_channel?: string | null;
 				};
 				Update: {
+					config?: Json | null;
 					free_nitro_emotes?: boolean;
 					id?: number;
 					invited_at?: string;
@@ -141,6 +148,7 @@ export interface Database {
 					suggestion_channel?: string | null;
 					suggestion_denied_channel?: string | null;
 				};
+				Relationships: [];
 			};
 		};
 		Views: {

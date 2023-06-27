@@ -157,7 +157,7 @@ export default class BetterEmotes extends Extension {
 
 		const mutualGuilds = [];
 
-		const guildsToSearch = this.serverIds ?? await msg.client.guilds.keys();	
+		const guildsToSearch = this.serverIds ?? await msg.client.guilds.keys();
 
 		for await (const guildId of guildsToSearch) {
 			const guild = await msg.client.guilds.resolve(guildId);
@@ -228,7 +228,9 @@ export default class BetterEmotes extends Extension {
 								refMsg.content,
 								100,
 							)
-						} \n\n[Click to jump to message](${`https://discord.com/channels/${refMsg.guild!.id}/${refMsg.channel.id}/${refMsg.id}`})`,
+						} \n\n[Click to jump to message](${`https://discord.com/channels/${
+							refMsg.guild!.id
+						}/${refMsg.channel.id}/${refMsg.id}`})`,
 						image: msg.attachments.length > 0
 							? msg.attachments[0]
 							: undefined,

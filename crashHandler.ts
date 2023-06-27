@@ -66,7 +66,10 @@ const startNewInstance = async () => {
 			`reset --hard origin/${Deno.env.get("GH_BRANCH")}`,
 		]
 	) {
-		if (Deno.env.get("IS_LOCAL") == "true") break;
+		if (
+			Deno.env.get("IS_LOCAL") == "true" ||
+			Deno.env.get("DISABLE_UPDATER") == "true"
+		) break;
 		const git = new Deno.Command("git", {
 			args: command.split(" "),
 			stdout: "piped",
@@ -125,14 +128,14 @@ while (true) {
 	console.log("Creating instance");
 	const created = Date.now();
 	const res = await startNewInstance();
-	console.log(res);
+	console.log(res == 0 ? "Instance restarting" : "Instance errored");
 	const crashed = Date.now();
 	const aliveFor = crashed - created;
 
 	console.log("Instance crashed");
 	console.log(`Instance ran for ${formatMs(aliveFor)}`);
 
-	if (webhook != undefined && Deno.env.get("IS_LOCAL") != "true") {
+	if (webhook != undefined) {
 		webhook.send({
 			embeds: [
 				new Embed({

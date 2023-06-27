@@ -13,53 +13,29 @@ for (const line of envfile) {
 	Deno.env.set(key, newValue);
 }
 
-// https://lavalink.darrennathanael.com/NoSSL/lavalink-without-ssl/ my beloved
-export const nodes: ClusterNodeOptions[] = [
-	// This node has been offline for long enough to not try and connect to it
-	// @cloudy pl0x fix
-	// {
-	// 	host: Deno.env.get("LAVALINK_HOST")!,
-	// 	port: parseInt(Deno.env.get("LAVALINK_PORT")!),
-	// 	password: Deno.env.get("LAVALINK_PASSWORD")!,
-	// 	id: "main-1",
-	// 	reconnect: {
-	// 		type: "exponential",
-	// 		maxDelay: 15000,
-	// 		initialDelay: 1000,
-	// 		tries: -1, // unlimited
-	// 	},
-	// 	resuming: {
-	// 		key: `Bidome-${Date.now()}`,
-	// 	},
-	// },
-	{
-		host: "lavalink.cyber-host.eu",
-		port: 2333,
-		password: "discord.gg/cyberhost",
-		id: "backup-1",
-		reconnect: {
-			type: "exponential",
-			maxDelay: 15000,
-			initialDelay: 1000,
-			tries: -1, // unlimited
-		},
-		resuming: {
-			key: `Bidome-${Date.now()}`,
-		},
+const nodesCount = parseInt(Deno.env.get("LAVALINK_NODES")!);
+
+if (isNaN(nodesCount)) {
+	throw new Error("Invalid node count");
+}
+
+export const nodes: ClusterNodeOptions[] = new Array(nodesCount).map((
+	_,
+	i,
+) => ({
+	host: Deno.env.get(`LAVALINK_${i}_HOST`)!,
+	id: Deno.env.get(`LAVALINK_${i}_NAME`)!,
+	password: Deno.env.get(`LAVALINK_${i}_PASSWORD`)!,
+	port: parseInt(Deno.env.get(`LAVALINK_${i}_PORT`)!),
+	resuming: {
+		key: `Bidome-${Date.now()}`,
 	},
-	{
-		host: "narco.buses.rocks",
-		port: 2269,
-		password: "glasshost1984",
-		id: "backup-2",
-		reconnect: {
-			type: "exponential",
-			maxDelay: 15000,
-			initialDelay: 1000,
-			tries: -1, // unlimited
-		},
-		resuming: {
-			key: `Bidome-${Date.now()}`,
-		},
+	reconnect: {
+		type: "exponential",
+		// One minute for reconnect
+		maxDelay: 60 * 1000,
+		initialDelay: 1000,
+		tries: -1,
 	},
-];
+	secure: Deno.env.get(`LAVALINK_${i}_SECURE`) == "true",
+}));
