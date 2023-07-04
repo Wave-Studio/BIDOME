@@ -32,5 +32,5 @@ selfhost then follow the guide below:
 1. Enable the `presence`, `message content`, and `server members` intent on the
    Discord Dashboard
 1. Run the bot
-	- To use the Crash handler run `deno task runProd`
-	- To not use the Crash handler run `deno task run`
+   - To use the Crash handler run `deno task runProd`
+   - To not use the Crash handler run `deno task run`
