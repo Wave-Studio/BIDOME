@@ -115,6 +115,7 @@ export default class BetterEmotes extends Extension {
 	name = "BetterEmotes";
 
 	private serverEmoteCache: Map<string, ServerEmoteList[]> = new Map();
+	private memberServerCache: Map<string, string[]> = new Map();
 	private serverIds?: string[];
 
 	async cacheServerEmotes(guild: Guild) {
@@ -155,19 +156,23 @@ export default class BetterEmotes extends Extension {
 				w.name?.toLowerCase() == "bidome bot" && w.token != undefined,
 		);
 
-		const mutualGuilds = [];
+		const mutualGuilds = this.memberServerCache.get(msg.author.id) ?? [];
 
-		const guildsToSearch = this.serverIds ?? await msg.client.guilds.keys();
+		if (!this.memberServerCache.has(msg.author.id)) {
+			const guildsToSearch = this.serverIds ?? await msg.client.guilds.keys();
 
-		for await (const guildId of guildsToSearch) {
-			const guild = await msg.client.guilds.resolve(guildId);
-			if (guild == undefined) continue;
-			const user = await guild.members.resolve(msg.author.id);
-			if (user != undefined) {
-				await this.cacheServerEmotes(guild);
-				mutualGuilds.push(guild.id);
+			for await (const guildId of guildsToSearch) {
+				const guild = await msg.client.guilds.resolve(guildId);
+				if (guild == undefined) continue;
+				const user = await guild.members.resolve(msg.author.id);
+				if (user != undefined) {
+					await this.cacheServerEmotes(guild);
+					mutualGuilds.push(guild.id);
+				}
 			}
 		}
+
+		this.memberServerCache.set(msg.author.id, mutualGuilds);
 
 		const validEmojisArray: ServerEmoteList[] = [];
 
@@ -229,8 +234,8 @@ export default class BetterEmotes extends Extension {
 								100,
 							)
 						} \n\n[Click to jump to message](${`https://discord.com/channels/${
-							refMsg.guild!.id
-						}/${refMsg.channel.id}/${refMsg.id}`})`,
+							msg.guild!.id
+						}/${msg.channel.id}/${refMsg.id}`})`,
 						image: msg.attachments.length > 0
 							? msg.attachments[0]
 							: undefined,
