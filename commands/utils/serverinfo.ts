@@ -2,17 +2,18 @@ import { Command, CommandContext, Embed } from "harmony";
 
 export default class ServerInfo extends Command {
 	name = "serverinfo";
-	aliases = ["si", "server-info", "guildinfo", "gi"]
+	aliases = ["si", "server-info", "guildinfo", "gi"];
 	category = "utils";
 	description = "Get information regarding this server";
 	usage = "Serverinfo";
 	async execute(ctx: CommandContext) {
 		const membersArray = (await ctx.message.guild?.members.array()) ?? [];
-		const owner =
-			(await ctx.message.guild!.members.resolve(
-				ctx.message.guild!.ownerID as string
-			)) ??
-			(await ctx.guild?.members.fetch(ctx.message.guild!.ownerID as string));
+		const owner = (await ctx.message.guild!.members.resolve(
+			ctx.message.guild!.ownerID as string,
+		)) ??
+			(await ctx.guild?.members.fetch(
+				ctx.message.guild!.ownerID as string,
+			));
 
 		await ctx.message.reply(undefined, {
 			embeds: [
@@ -30,38 +31,49 @@ export default class ServerInfo extends Command {
 						{
 							name: `Humans`,
 							value: `${
-								membersArray.filter((m) => !m.user.bot).length ?? 0
+								membersArray.filter((m) => !m.user.bot)
+									.length ?? 0
 							}`,
 							inline: true,
 						},
 						{
 							name: `Bots`,
 							value: `${
-								membersArray.filter((m) => m.user.bot).length ?? 0
+								membersArray.filter((m) => m.user.bot).length ??
+									0
 							}`,
 							inline: true,
 						},
 						{
 							name: "Channels",
-							value: `${(await ctx.message.guild?.channels.size()) ?? 0}`,
+							value: `${
+								(await ctx.message.guild?.channels.size()) ?? 0
+							}`,
 							inline: true,
 						},
 						{
 							name: "Roles",
-							value: `${(await ctx.message.guild?.roles.size()) ?? 0}`,
+							value: `${
+								(await ctx.message.guild?.roles.size()) ?? 0
+							}`,
 							inline: true,
 						},
 						{
 							name: "Owner",
-							value: `${owner!.user.mention ?? "`Unable to fetch`"}`,
+							value: `${
+								owner!.user.mention ?? "`Unable to fetch`"
+							}`,
 							inline: true,
 						},
 						{
 							name: "Creation Date",
 							// Hacky workaround
-							value: `<t:${(new Date(owner!.joinedAt).getTime() / 1000).toFixed(
-								0
-							)}:F>`,
+							value: `<t:${
+								(new Date(owner!.joinedAt).getTime() / 1000)
+									.toFixed(
+										0,
+									)
+							}:F>`,
 							inline: true,
 						},
 					],

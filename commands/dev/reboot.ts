@@ -1,4 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
+import { getEmote } from "i18n";
 
 export default class Reboot extends Command {
 	name = "reboot";
@@ -15,7 +16,7 @@ export default class Reboot extends Command {
 					name: "Bidome bot",
 					icon_url: ctx.client.user!.avatarURL(),
 				},
-				description: "Restarting bot <a:typing:779775412829028373>",
+				description: `Restarting bot ${getEmote("typing")}`,
 			}).setColor("random")],
 		});
 

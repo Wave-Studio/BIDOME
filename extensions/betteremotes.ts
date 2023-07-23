@@ -19,7 +19,7 @@ import { hasNQNBeta } from "settings";
 // Yes, I really only use this for one purpose
 import { Image } from "https://deno.land/x/imagescript@1.2.15/mod.ts";
 
-const dataImage = new Image(100, 1);
+const dataImage = new Image(1, 1);
 const dataImageExported = await dataImage.encode();
 
 interface ServerEmoteList {
@@ -159,7 +159,8 @@ export default class BetterEmotes extends Extension {
 		const mutualGuilds = this.memberServerCache.get(msg.author.id) ?? [];
 
 		if (!this.memberServerCache.has(msg.author.id)) {
-			const guildsToSearch = this.serverIds ?? await msg.client.guilds.keys();
+			const guildsToSearch = this.serverIds ??
+				(await msg.client.guilds.keys());
 
 			for await (const guildId of guildsToSearch) {
 				const guild = await msg.client.guilds.resolve(guildId);

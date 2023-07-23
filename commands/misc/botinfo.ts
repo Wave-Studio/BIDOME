@@ -1,4 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
+import { getEmote } from "i18n";
 
 export default class Botinfo extends Command {
 	name = "botinfo";
@@ -15,8 +16,9 @@ export default class Botinfo extends Command {
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Bidome bot info",
-					description:
-						"<a:typing:779775412829028373> Please wait, fetching data...",
+					description: `${
+						getEmote("typing")
+					} Please wait, fetching data...`,
 				}).setColor("random"),
 			],
 		});

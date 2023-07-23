@@ -95,6 +95,12 @@ export default class Reload extends Command {
 						}).setColor("random"),
 					],
 				});
+
+				console.log(
+					`Command ${command.name} has been ${
+						didFindCommand ? "reloaded" : "unloaded"
+					} by ${ctx.author.username}`,
+				);
 			}
 		}
 	}

@@ -42,7 +42,18 @@
 				"title": "Unable to find user",
 				"description": "I was unable to find a user with the ID or mention you provided."
 			},
-			"info": {
+			"userinfo": {
+				"title": "{0}",
+				"description": "Information about {1}",
+				"fields": [
+					{
+						"name": "Created",
+						"value": "{2}",
+						"inline": true
+					}
+				]
+			},
+			"memberinfo": {
 				"title": "{0}",
 				"description": "Information about {1}",
 				"fields": [
@@ -153,8 +164,8 @@
 			},
 			"successBulk": {
 				"title": "{0} Reminders deleted",
-				"success": "<a:check:1093342814919741440> {0}",
-				"failure": "<a:cross:1093342980519243927> {0}"
+				"success": "{e:check} {0}",
+				"failure": "{e:cross} {0}"
 			}
 		},
 

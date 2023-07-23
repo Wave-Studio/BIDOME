@@ -12,6 +12,7 @@ import { doPermCheck, lavaCluster, queues, ServerQueue, Song } from "queue";
 import { LoadType, Track } from "lavadeno";
 import { getEmojiByName } from "emoji";
 import { removeDiscordFormatting } from "tools";
+import { getEmote } from "i18n";
 
 export default class Play extends Command {
 	name = "play";
@@ -70,8 +71,7 @@ export default class Play extends Command {
 								icon_url: ctx.client.user!.avatarURL(),
 							},
 							title: "Searching for songs",
-							description:
-								"<a:typing:779775412829028373> Searching",
+							description: `${getEmote("typing")} Searching`,
 						}).setColor("random"),
 					],
 				});

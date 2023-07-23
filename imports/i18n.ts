@@ -1,8 +1,39 @@
-import { Embed, EmbedPayload, Guild } from "./harmony.ts";
+import { Embed, EmbedPayload, Guild, Member, User } from "./harmony.ts";
+import { loopFilesAndReturn } from "./tools.ts";
+import { parse } from "https://deno.land/std@0.195.0/yaml/mod.ts";
 
 interface RecursiveRecord {
 	[key: string]: string | string[] | RecursiveRecord;
 }
+
+type ValidEmojis =
+	| "nitro"
+	| "earlysupporter"
+	| "boost1m"
+	| "boost2m"
+	| "boost3m"
+	| "boost6m"
+	| "boost9m"
+	| "boost12m"
+	| "boost15m"
+	| "boost18m"
+	| "boost24m"
+	| "bravery"
+	| "balance"
+	| "brilliance"
+	| "hypesquadevent"
+	| "staff"
+	| "serverowner"
+	| "partner"
+	| "verifiedbotdev"
+	| "certifiedmod"
+	| "bughunter"
+	| "bughunter2"
+	| "typing"
+	| "check"
+	| "cross"
+	| "activedev"
+	| "certifiedmodalumni";
 
 const logFunction = console.log;
 
@@ -27,9 +58,6 @@ console.log = (...args: unknown[]) => {
 	logFunction(...[logPrefix, ...args]);
 };
 
-import { loopFilesAndReturn } from "./tools.ts";
-import { Member, User } from "./harmony.ts";
-
 interface Language {
 	language: {
 		short: string;
@@ -38,15 +66,16 @@ interface Language {
 }
 
 const languages: Record<string, Language> = {};
+const emotes: Record<string, string> = parse(
+	await Deno.readTextFile("./lang/emotes.yml"),
+) as Record<string, string>;
 
-for (
-	let langFile of await loopFilesAndReturn("./lang/", [".json", ".jsonc"])
-) {
+for (let langFile of await loopFilesAndReturn("./lang/", [".json", ".jsonc"])) {
 	langFile = langFile.split("#")[0];
 	if (/[a-z]{2}\.json/.test(langFile)) {
 		const fileContents = (await Deno.readTextFile(langFile)).replace(
 			/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g,
-			(m, g) => g ? "" : m,
+			(m, g) => (g ? "" : m),
 		);
 
 		let fileData: Language;
@@ -106,6 +135,10 @@ export function getString(
 		for (let i = 0; i < data.length; i++) {
 			fetchedString = fetchedString.replace(`{${i}}`, `${data[i]}`);
 		}
+	}
+
+	for (const [emote, emoteString] of Object.entries(emotes)) {
+		fetchedString = fetchedString.replace(`{e:${emote}}`, emoteString);
 	}
 
 	return fetchedString;
@@ -187,11 +220,20 @@ export function createEmbedFromLangData(
 									if (typeof field[fieldKey] != "string") {
 										continue;
 									}
-									field[fieldKey] =
-										(field[fieldKey] as string).replace(
-											`{${i}}`,
-											`${data[i]}`,
-										);
+									field[fieldKey] = field[fieldKey].replace(
+										`{${i}}`,
+										`${data[i]}`,
+									);
+									for (
+										const [emote, emoteString] of Object
+											.entries(emotes)
+									) {
+										field[fieldKey] = field[fieldKey]
+											.replace(
+												`{e:${emote}}`,
+												emoteString,
+											);
+									}
 								}
 							}
 						}
@@ -205,6 +247,12 @@ export function createEmbedFromLangData(
 						`{${i}}`,
 						`${data[i]}`,
 					);
+					for (const [emote, emoteString] of Object.entries(emotes)) {
+						embed[key] = (embed[key] as string).replace(
+							`{e:${emote}}`,
+							emoteString,
+						);
+					}
 				}
 			}
 		}
@@ -212,12 +260,13 @@ export function createEmbedFromLangData(
 	};
 
 	const embedData = grabData(path);
-	const embedWithVariables = applyVariables(
-		embedData,
-		data,
-	);
+	const embedWithVariables = applyVariables(embedData, data);
 
 	return new Embed({
-		...embedWithVariables as EmbedPayload,
-	}).setColor("random").toJSON();
+		...(embedWithVariables as EmbedPayload),
+	})
+		.setColor("random")
+		.toJSON();
 }
+
+export const getEmote = (emote: ValidEmojis) => emotes[emote];
