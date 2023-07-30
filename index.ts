@@ -370,13 +370,15 @@ const nextStatus = async () => {
 
 bot.on("messageCreate", async (msg) => {
 	// We do some trolling on t_cord
-	if (msg.channel.id != "635483003686223913") return;
-	if (msg.author.id != "464221104714809354") return;
+	if (msg.guildID != "471700758354460672") return;
 	if (Deno.env.get("IS_DEV") == "true") return;
 
 	if (msg.content != undefined && msg.content.includes("1984")) {
 		await msg.reply("https://cdn.discordapp.com/attachments/652793531068579840/1135322572926505040/13e5050bf3b5bd9ececebae95cc30507-Full.png");
 	} 
+
+	if (msg.channel.id != "635483003686223913") return;
+	if (msg.author.id != "464221104714809354") return;
 
 	if (msg.embeds.length < 1) return;
 	const title = msg.embeds[0].title;
