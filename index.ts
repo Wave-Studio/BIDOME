@@ -373,7 +373,7 @@ bot.on("messageCreate", async (msg) => {
 	if (msg.guildID != "471700758354460672") return;
 	if (Deno.env.get("IS_DEV") == "true") return;
 
-	if (msg.content != undefined && msg.content.includes("1984")) {
+	if (msg.content.includes("1984")) {
 		await msg.reply("https://cdn.discordapp.com/attachments/652793531068579840/1135322572926505040/13e5050bf3b5bd9ececebae95cc30507-Full.png");
 	} 
 
