@@ -116,6 +116,7 @@ export default class BetterEmotes extends Extension {
 
 	private serverEmoteCache: Map<string, ServerEmoteList[]> = new Map();
 	private memberServerCache: Map<string, string[]> = new Map();
+	private hasCacheLoaded = false;
 	private serverIds?: string[];
 
 	async cacheServerEmotes(guild: Guild) {
@@ -129,6 +130,48 @@ export default class BetterEmotes extends Extension {
 			}),
 		);
 		this.serverEmoteCache.set(guild.id, emotes);
+		await this.saveCache();
+	}
+
+	async doesTextFileExist(path: string) {
+		try {
+			const contents = await Deno.readTextFile(path);
+			return contents;
+		} catch {
+			return undefined;
+		}
+	}
+
+	async loadCache() {
+		if (this.hasCacheLoaded) return;
+		if (this.memberServerCache.size > 0) return;
+		if (this.serverEmoteCache.size > 0) return;
+		
+		const [memberServerCache, serverEmoteCache] = await Promise.all([
+			this.doesTextFileExist("./.cache/memberServerCache.json"),
+			this.doesTextFileExist("./.cache/serverEmoteCache.json"),
+		]);
+
+		if (memberServerCache != undefined) {
+			this.memberServerCache = new Map(JSON.parse(memberServerCache));
+		} else {
+			await Deno.writeTextFile("./.cache/memberServerCache.json", "{}");
+		}
+
+		if (serverEmoteCache != undefined) {
+			this.serverEmoteCache = new Map(JSON.parse(serverEmoteCache));
+		} else {
+			await Deno.writeTextFile("./.cache/serverEmoteCache.json", "{}");
+		}
+
+		this.hasCacheLoaded = true;
+	}
+
+	async saveCache() {
+		await Promise.all([
+			Deno.writeTextFile("./.cache/memberServerCache.json", JSON.stringify(Object.fromEntries(this.memberServerCache))),
+			Deno.writeTextFile("./.cache/serverEmoteCache.json", JSON.stringify(Object.fromEntries(this.serverEmoteCache))),
+		]);
 	}
 
 	@event("messageCreate")
@@ -156,6 +199,7 @@ export default class BetterEmotes extends Extension {
 				w.name?.toLowerCase() == "bidome bot" && w.token != undefined,
 		);
 
+		await this.loadCache();
 		const mutualGuilds = this.memberServerCache.get(msg.author.id) ?? [];
 
 		if (!this.memberServerCache.has(msg.author.id)) {
@@ -171,9 +215,11 @@ export default class BetterEmotes extends Extension {
 					mutualGuilds.push(guild.id);
 				}
 			}
-		}
 
-		this.memberServerCache.set(msg.author.id, mutualGuilds);
+			this.memberServerCache.set(msg.author.id, mutualGuilds);
+
+			await this.saveCache();
+		}
 
 		const validEmojisArray: ServerEmoteList[] = [];
 
