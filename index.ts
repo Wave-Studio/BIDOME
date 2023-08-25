@@ -69,8 +69,26 @@ bot.on("commandBlockedUser", async (ctx) => {
 	}
 });
 
+let reconnectHandler: number | undefined;
+
 bot.on("gatewayError", (err) => {
 	console.log("Gateway error occured", err);
+	if (err.message == "Error: failed to lookup address information: Temporary failure in name resolution") {
+		console.log("Error resolving DNS, attempting Automatic reconnects");
+		if (reconnectHandler == undefined) {
+			reconnectHandler = setInterval(async () => {
+				try {
+					const req = await fetch("https://gateway.discord.gg");
+					if (req.status == 404) {
+						await bot.gateway.reconnect();
+					}
+				} catch {
+					// Ignore
+				}
+			// Wait 30 seconds
+			}, 30 * 1000)
+		}
+	}
 });
 
 bot.on("reconnect", () => {
@@ -79,6 +97,10 @@ bot.on("reconnect", () => {
 
 bot.on("resumed", () => {
 	console.log("Reconnected.");
+	if (reconnectHandler != undefined) {
+		clearInterval(reconnectHandler);
+		reconnectHandler = undefined;
+	}
 });
 
 bot.on("error", (_err) => {
@@ -113,7 +135,14 @@ console.log(
 	}!`,
 );
 
-bot.on("ready", async () => {
+bot.on("ready", () => {
+	if (reconnectHandler != undefined) {
+		clearInterval(reconnectHandler);
+		reconnectHandler = undefined;
+	}
+})
+
+bot.once("ready", async () => {
 	console.log(`Logged in as ${bot.user!.tag}`);
 	console.log("Loaded bot!");
 	console.log("Loading all commands!");
