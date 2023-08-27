@@ -75,7 +75,7 @@ bot.on("gatewayError", (err) => {
 	console.log("Gateway error occured", err);
 	if (
 		err.message ==
-		"Error: failed to lookup address information: Temporary failure in name resolution"
+			"Error: failed to lookup address information: Temporary failure in name resolution"
 	) {
 		console.log("Error resolving DNS, attempting Automatic reconnects");
 		if (reconnectHandler == undefined) {
@@ -123,7 +123,9 @@ for (const ext of await loopFilesAndReturn("./extensions/")) {
 	const extension = await import(ext);
 	bot.extensions.load(extension.default);
 	if (extension.slashCommands != undefined) {
-		slashCommands.push(...(extension.slashCommands as ApplicationCommand[]));
+		slashCommands.push(
+			...(extension.slashCommands as ApplicationCommand[]),
+		);
 	}
 }
 for (const clock of await loopFilesAndReturn("./clocks/")) {
@@ -133,7 +135,7 @@ for (const clock of await loopFilesAndReturn("./clocks/")) {
 console.log(
 	`Loaded ${await bot.extensions.list.size} extension${
 		bot.extensions.list.size == 1 ? "" : "s"
-	}!`
+	}!`,
 );
 
 bot.on("ready", () => {
@@ -153,13 +155,17 @@ bot.once("ready", async () => {
 	for (const cmd of await loopFilesAndReturn("./commands/")) {
 		const command = await import(cmd);
 
-		if (command.slashCommands == undefined && command.default == undefined) {
+		if (
+			command.slashCommands == undefined && command.default == undefined
+		) {
 			console.log(`Command ${cmd} has no default export! Skipping...`);
 			continue;
 		}
 
 		if (command.slashCommands != undefined) {
-			slashCommands.push(...(command.slashCommands as ApplicationCommand[]));
+			slashCommands.push(
+				...(command.slashCommands as ApplicationCommand[]),
+			);
 		}
 
 		if (command.default != undefined) {
@@ -172,7 +178,7 @@ bot.once("ready", async () => {
 	console.log(
 		`Loaded ${await bot.commands.list.size} command${
 			bot.commands.list.size == 1 ? "" : "s"
-		}`
+		}`,
 	);
 	console.log("Registering slash commands...");
 
@@ -181,7 +187,8 @@ bot.once("ready", async () => {
 
 	for (const command of slashCommands) {
 		if (
-			globalSlashCommands.filter(({ name }) => command.name == name).size > 0
+			globalSlashCommands.filter(({ name }) => command.name == name)
+				.size > 0
 		) {
 			continue;
 		}
@@ -196,7 +203,7 @@ bot.once("ready", async () => {
 	console.log(
 		`Registered ${slashCommands.length} slash command${
 			slashCommands.length == 1 ? "" : "s"
-		}!`
+		}!`,
 	);
 
 	for await (const guild of bot.guilds) {
@@ -210,7 +217,7 @@ bot.once("ready", async () => {
 
 bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 	console.log(
-		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`
+		`An error occured while executing ${ctx.command.name}! Here is the stacktrace:`,
 	);
 	console.log(err);
 
@@ -246,7 +253,10 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: getString("en", "errors.genericCommand.title"),
-					description: getString("en", "errors.genericCommand.description"),
+					description: getString(
+						"en",
+						"errors.genericCommand.description",
+					),
 				}).setColor("red"),
 			],
 		});
@@ -261,7 +271,11 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 
 bot.on(
 	"commandOnCooldown",
-	async (ctx: CommandContext, remaning: number, _type: CommandCooldownType) => {
+	async (
+		ctx: CommandContext,
+		remaning: number,
+		_type: CommandCooldownType,
+	) => {
 		await ctx.message.reply(undefined, {
 			embeds: [
 				new Embed({
@@ -270,14 +284,16 @@ bot.on(
 						icon_url: ctx.message.client.user!.avatarURL(),
 					},
 					title: "Command on cooldown",
-					description: `This command is on cooldown for ${formatMs(
-						remaning,
-						true
-					)}!`,
+					description: `This command is on cooldown for ${
+						formatMs(
+							remaning,
+							true,
+						)
+					}!`,
 				}).setColor("red"),
 			],
 		});
-	}
+	},
 );
 
 bot.on("interactionCreate", async (i) => {
@@ -326,12 +342,12 @@ bot.on(
 					description: getString(
 						userLanguage,
 						"errors.missingPerms.description",
-						missing.join(", ")
+						missing.join(", "),
 					),
 				}).setColor("red"),
 			],
 		});
-	}
+	},
 );
 
 const lifetimeCommandDataCache: {
@@ -383,51 +399,6 @@ const nextStatus = async () => {
 		}
 	}
 };
-
-bot.on("messageCreate", async (msg) => {
-	// We do some trolling on t_cord
-	if (msg.guildID != "471700758354460672") return;
-	if (Deno.env.get("IS_DEV") == "true") return;
-
-	if (msg.content.includes("1984")) {
-		await msg.reply(
-			"https://cdn.discordapp.com/attachments/652793531068579840/1135322572926505040/13e5050bf3b5bd9ececebae95cc30507-Full.png"
-		);
-	}
-
-	if (msg.channel.id != "635483003686223913") return;
-	if (msg.author.id != "464221104714809354") return;
-
-	if (msg.embeds.length < 1) return;
-	const title = msg.embeds[0].title;
-	if (
-		title == undefined ||
-		!(
-			title.toLowerCase().includes("welcome") ||
-			title.toLocaleLowerCase().includes("goodbye")
-		)
-	) {
-		return;
-	}
-
-	const isBlunder = title.toLowerCase().includes("welcome");
-
-	try {
-		if (isBlunder) {
-			await msg.addReaction("1114721683677401139");
-			await msg.reply(
-				"https://cdn.discordapp.com/attachments/849885610378264598/1108577991451230349/blunder.png"
-			);
-		} else {
-			await msg.addReaction("1114721734050984086");
-			await msg.reply(
-				"https://cdn.discordapp.com/attachments/849885610378264598/1108577991145029672/brilliant.png"
-			);
-		}
-	} catch {
-		console.log("T likes george orwelling");
-	}
-});
 
 bot.connect(Deno.env.get("token"), [
 	GatewayIntents.GUILDS,

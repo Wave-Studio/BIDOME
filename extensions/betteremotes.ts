@@ -146,7 +146,7 @@ export default class BetterEmotes extends Extension {
 		if (this.hasCacheLoaded) return;
 		if (this.memberServerCache.size > 0) return;
 		if (this.serverEmoteCache.size > 0) return;
-		
+
 		const [memberServerCache, serverEmoteCache] = await Promise.all([
 			this.doesTextFileExist("./.cache/memberServerCache.json"),
 			this.doesTextFileExist("./.cache/serverEmoteCache.json"),
@@ -169,8 +169,14 @@ export default class BetterEmotes extends Extension {
 
 	async saveCache() {
 		await Promise.all([
-			Deno.writeTextFile("./.cache/memberServerCache.json", JSON.stringify(Object.fromEntries(this.memberServerCache))),
-			Deno.writeTextFile("./.cache/serverEmoteCache.json", JSON.stringify(Object.fromEntries(this.serverEmoteCache))),
+			Deno.writeTextFile(
+				"./.cache/memberServerCache.json",
+				JSON.stringify(Object.fromEntries(this.memberServerCache)),
+			),
+			Deno.writeTextFile(
+				"./.cache/serverEmoteCache.json",
+				JSON.stringify(Object.fromEntries(this.serverEmoteCache)),
+			),
 		]);
 	}
 
