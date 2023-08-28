@@ -153,13 +153,13 @@ export default class BetterEmotes extends Extension {
 		]);
 
 		if (memberServerCache != undefined) {
-			this.memberServerCache = new Map(JSON.parse(memberServerCache));
+			this.memberServerCache = new Map(Object.entries(JSON.parse(memberServerCache)));
 		} else {
 			await Deno.writeTextFile("./.cache/memberServerCache.json", "{}");
 		}
 
 		if (serverEmoteCache != undefined) {
-			this.serverEmoteCache = new Map(JSON.parse(serverEmoteCache));
+			this.serverEmoteCache = new Map(Object.entries(JSON.parse(serverEmoteCache)));
 		} else {
 			await Deno.writeTextFile("./.cache/serverEmoteCache.json", "{}");
 		}
