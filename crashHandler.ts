@@ -81,7 +81,7 @@ const startNewInstance = async () => {
 		);
 	}
 
-	const instance = new Worker(new URL("./index.ts", import.meta.url), {
+	const instance = new Worker(new URL(`./index.ts#${Date.now()}`, import.meta.url), {
 		type: "module",
 	});
 
