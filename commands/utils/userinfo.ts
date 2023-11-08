@@ -186,11 +186,7 @@ export default class UserInfo extends Command {
 						...createEmbedFromLangData(
 							lang,
 							"commands.userinfo.userinfo",
-							`${user.username}${
-								user.discriminator != "0"
-									? `#${user.discriminator}`
-									: ""
-							}${
+							`${banInfo != undefined ? `${getEmote("banhammer")} ` : ""}${user.tag}${
 								userBadges.trim() != ""
 									? ` ${userBadges}`
 									: ""
