@@ -2,6 +2,7 @@ import {
 	Command,
 	CommandContext,
 	Embed,
+	GuildBan,
 	Member,
 	User,
 	UserFlags,
@@ -97,6 +98,14 @@ export default class UserInfo extends Command {
 				}).setColor("red"),
 			);
 		} else {
+			let banInfo: GuildBan | undefined = undefined;
+
+			try {
+				banInfo = await ctx.guild!.bans.get(userId);
+			} catch {
+				// Not banned
+			}
+
 			if (member != undefined) {
 				user = user!;
 
@@ -113,11 +122,7 @@ export default class UserInfo extends Command {
 						...createEmbedFromLangData(
 							lang,
 							"commands.userinfo.memberinfo",
-							`${member.user.username}${
-								member.user.discriminator != "0"
-									? `#${member.user.discriminator}`
-									: ""
-							}${
+							`${banInfo != undefined ? `${getEmote("banhammer")} ` : ""}${member.user.tag}${
 								member.nick != undefined
 									? ` (${member.nick})`
 									: ""

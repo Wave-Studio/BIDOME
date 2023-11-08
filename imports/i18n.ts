@@ -33,7 +33,7 @@ type ValidEmojis =
 	| "check"
 	| "cross"
 	| "activedev"
-	| "certifiedmodalumni";
+	| "certifiedmodalumni" | "banhammer";
 
 const logFunction = console.log;
 

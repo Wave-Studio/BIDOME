@@ -1,5 +1,5 @@
-export * from "https://deno.land/x/harmony@v2.9.0/mod.ts";
-//export * from "https://raw.githubusercontent.com/harmonyland/harmony/5d3cf6dff35ed56df91ef55a084be0508f23b309/mod.ts";
+export * from "https://raw.githubusercontent.com/harmonyland/harmony/e504976fdc155c17af0e1f29df4cf3c10d8297e9/mod.ts";
+
 import {
 	ApplicationCommandInteraction,
 	ApplicationCommandPartial,
