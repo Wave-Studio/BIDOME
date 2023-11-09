@@ -1,4 +1,7 @@
 import { Command, CommandContext, Embed } from "harmony";
+// To be used in eval as an import
+// deno-lint-ignore no-unused-vars
+import * as harmony from "harmony";
 
 export default class Eval extends Command {
 	name = "eval";
@@ -27,7 +30,15 @@ export default class Eval extends Command {
 		let executed: string;
 
 		try {
-			executed = `${(await eval(code)) ?? "No output!"}`.replace(
+			executed = `${(await eval(`
+				(async () => {
+					async function _func() {
+						${code}
+					}
+
+					return await _func();
+				})();
+			`)) ?? "No output!"}`.replace(
 				ctx.client.token!,
 				"lol you thought",
 			);

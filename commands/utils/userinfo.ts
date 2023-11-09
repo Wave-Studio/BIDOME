@@ -9,6 +9,8 @@ import {
 } from "harmony";
 import { createEmbedFromLangData, getEmote, getUserLanguage } from "i18n";
 import { format } from "tools";
+import { getDiscordImage } from "cache";
+import { Image } from "imagescript";
 
 export const getBadges = (
 	flags: (keyof typeof UserFlags)[],
@@ -106,6 +108,19 @@ export default class UserInfo extends Command {
 				// Not banned
 			}
 
+			const userAvatarURL = user?.avatarURL() ?? member?.user.avatarURL();
+			let embedColor = "random";
+
+			if (userAvatarURL != undefined) {
+				const avatar = await Image.decode(
+					await getDiscordImage(userAvatarURL),
+				);
+
+				const avgColor = avatar.averageColor();
+
+				embedColor = `#${avgColor.toString(16).substring(0, 6)}`;
+			}
+
 			if (member != undefined) {
 				user = user!;
 
@@ -172,7 +187,7 @@ export default class UserInfo extends Command {
 						thumbnail: {
 							url: member.user.avatarURL()!,
 						},
-					}),
+					}).setColor(embedColor),
 				);
 			} else {
 				// Make ts know it's not undefined
@@ -204,7 +219,7 @@ export default class UserInfo extends Command {
 						thumbnail: {
 							url: user.avatarURL()!,
 						},
-					}),
+					}).setColor(embedColor),
 				);
 			}
 		}
