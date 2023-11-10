@@ -18,7 +18,7 @@ import {
 	loadInteractions,
 	modalInteractionHandlers,
 } from "shared";
-import { getString, getUserLanguage } from "i18n";
+import { getString, getUserLanguage, getEmote } from "i18n";
 
 const bot = new CommandClient({
 	prefix: [],
@@ -262,7 +262,7 @@ bot.on("commandError", async (ctx: CommandContext, err: Error) => {
 		});
 	} catch {
 		try {
-			await ctx.message.addReaction("❗");
+			await ctx.message.addReaction(getEmote("error"));
 		} catch {
 			return;
 		}
@@ -349,6 +349,14 @@ bot.on(
 		});
 	},
 );
+
+bot.on("commandOwnerOnly", async (ctx: CommandContext) => {
+	try {
+		await ctx.message.addReaction("1033569702489899101");
+	} catch {
+		return;
+	}
+})
 
 const lifetimeCommandDataCache: {
 	[key: string]: number;

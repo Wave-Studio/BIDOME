@@ -33,7 +33,9 @@ type ValidEmojis =
 	| "check"
 	| "cross"
 	| "activedev"
-	| "certifiedmodalumni" | "banhammer";
+	| "certifiedmodalumni"
+	| "banhammer"
+	| "error";
 
 const logFunction = console.log;
 
@@ -42,10 +44,9 @@ console.log = (...args: unknown[]) => {
 	const amOrPm = date.getHours() > 12 ? "PM" : "AM";
 	const hours = amOrPm == "AM" ? date.getHours() : date.getHours() - 12;
 
-	const logPrefix =
-		`[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${
-			date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
-		}${amOrPm}]`;
+	const logPrefix = `[${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${hours}:${
+		date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
+	}${amOrPm}]`;
 
 	if (self.postMessage != undefined) {
 		self.postMessage({
@@ -67,7 +68,7 @@ interface Language {
 
 const languages: Record<string, Language> = {};
 const emotes: Record<string, string> = parse(
-	await Deno.readTextFile("./lang/emotes.yml"),
+	await Deno.readTextFile("./lang/emotes.yml")
 ) as Record<string, string>;
 
 for (let langFile of await loopFilesAndReturn("./lang/", [".json", ".jsonc"])) {
@@ -75,7 +76,7 @@ for (let langFile of await loopFilesAndReturn("./lang/", [".json", ".jsonc"])) {
 	if (/[a-z]{2}\.json/.test(langFile)) {
 		const fileContents = (await Deno.readTextFile(langFile)).replace(
 			/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g,
-			(m, g) => (g ? "" : m),
+			(m, g) => (g ? "" : m)
 		);
 
 		let fileData: Language;
@@ -90,7 +91,7 @@ for (let langFile of await loopFilesAndReturn("./lang/", [".json", ".jsonc"])) {
 		const langCode = fileData.language.short;
 		languages[langCode] = fileData;
 		console.log(
-			`[i18n] Loaded language ${fileData.language.short}-${fileData.language.full}`,
+			`[i18n] Loaded language ${fileData.language.short}-${fileData.language.full}`
 		);
 	}
 }
@@ -106,7 +107,7 @@ export function getString(
 
 	const getStringFromJson = (
 		key: string,
-		currentObject = langData,
+		currentObject = langData
 	): string | string[] => {
 		const [next, ...rest] = key.split(".");
 		if (rest.length == 0) {
@@ -145,13 +146,13 @@ export function getString(
 }
 
 export async function getUserLanguage(
-	_user: User | Member | string,
+	_user: User | Member | string
 ): Promise<string> {
 	return await "en";
 }
 
 export async function getGuildLanguage(
-	_guild: Guild | string,
+	_guild: Guild | string
 ): Promise<string> {
 	return await "en";
 }
@@ -177,7 +178,7 @@ export function createEmbedFromLangData(
 
 	const grabData = (
 		path: string,
-		currentObject = langData,
+		currentObject = langData
 	): RecursiveRecord => {
 		const [next, ...rest] = path.split(".");
 		// @ts-expect-error it should work
@@ -191,7 +192,7 @@ export function createEmbedFromLangData(
 
 	const applyVariables = (
 		embed: RecursiveRecord,
-		data: unknown[],
+		data: unknown[]
 	): RecursiveRecord => {
 		const isJson = (str: string) => {
 			const res = JSON.parse(JSON.stringify(str));
@@ -199,22 +200,15 @@ export function createEmbedFromLangData(
 		};
 
 		for (const [key] of Object.entries(embed)) {
-			if (
-				typeof embed[key] == "object" && !(embed[key] instanceof Array)
-			) {
-				return applyVariables(
-					embed[key] as Record<string, string>,
-					data,
-				);
+			if (typeof embed[key] == "object" && !(embed[key] instanceof Array)) {
+				return applyVariables(embed[key] as Record<string, string>, data);
 			} else {
 				if (embed[key] instanceof Array) {
 					if (isJson((embed[key] as string[])[0])) {
-						for (
-							const field of embed[key] as unknown as Record<
-								string,
-								string
-							>[]
-						) {
+						for (const field of embed[key] as unknown as Record<
+							string,
+							string
+						>[]) {
 							for (const [fieldKey] of Object.entries(field)) {
 								for (let i = 0; i < data.length; i++) {
 									if (typeof field[fieldKey] != "string") {
@@ -222,17 +216,13 @@ export function createEmbedFromLangData(
 									}
 									field[fieldKey] = field[fieldKey].replace(
 										`{${i}}`,
-										`${data[i]}`,
+										`${data[i]}`
 									);
-									for (
-										const [emote, emoteString] of Object
-											.entries(emotes)
-									) {
-										field[fieldKey] = field[fieldKey]
-											.replace(
-												`{e:${emote}}`,
-												emoteString,
-											);
+									for (const [emote, emoteString] of Object.entries(emotes)) {
+										field[fieldKey] = field[fieldKey].replace(
+											`{e:${emote}}`,
+											emoteString
+										);
 									}
 								}
 							}
@@ -243,14 +233,11 @@ export function createEmbedFromLangData(
 				}
 				if (typeof embed[key] != "string") continue;
 				for (let i = 0; i < data.length; i++) {
-					embed[key] = (embed[key] as string).replace(
-						`{${i}}`,
-						`${data[i]}`,
-					);
+					embed[key] = (embed[key] as string).replace(`{${i}}`, `${data[i]}`);
 					for (const [emote, emoteString] of Object.entries(emotes)) {
 						embed[key] = (embed[key] as string).replace(
 							`{e:${emote}}`,
-							emoteString,
+							emoteString
 						);
 					}
 				}

@@ -17,6 +17,7 @@ import { getEmojiByName } from "emoji";
 import { truncateString } from "tools";
 import { hasNQNBeta } from "settings";
 import { Image } from "imagescript";
+import { getEmote } from "i18n";
 
 try {
 	await Deno.readFile("./.cache/betteremotes.png");
@@ -336,7 +337,11 @@ export default class BetterEmotes extends Extension {
 			],
 		});
 
-		await msg.delete();
+		try {
+			await msg.delete();
+		} catch {
+			await msg.addReaction(getEmote("error"))
+		}
 	}
 
 	@event("guildEmojiAdd")
