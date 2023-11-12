@@ -1,27 +1,58 @@
 {
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact"
+	},
+
 	"fmt": {
+		"indentWidth": 4,
 		"useTabs": true,
 		"singleQuote": false,
-		"lineWidth": 80,
-		"proseWrap": "always",
-		"indentWidth": 4,
-		"semiColons": true
+		"semiColons": true,
+		"lineWidth": 80
 	},
-	"lint": {
-	},
-	"compilerOptions": {
-		"jsx": "react",
-		"jsxFactory": "BotUI.createElement",
-		"jsxFragmentFactory": "fragment",
-		"lib": ["dom", "esnext", "deno.window"]
-	},
+
+	"lint": {},
+
 	"tasks": {
-		"run": "deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run index.ts",
-		"runProd": "deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --unstable crashHandler.ts",
-		"runWithChecks": "deno run --import-map=imports.json --config=deno.jsonc --allow-net --allow-env --allow-read --allow-write --allow-run --check index.ts",
-		"types": "supabase gen types typescript --project-id gukjxyrpjvwptnabpchl > assets/db/database.types.ts && deno fmt --config=deno.jsonc ./assets/db/database.types.ts",
-		"fmt": "deno fmt --config=deno.jsonc ./",
-		"lint": "deno lint --config=deno.jsonc ./"
+		"lint": "deno task lint:bot && deno task lint:dash",
+		"fmt": "deno task fmt:bot && deno task fmt:dash",
+		"check": "deno task check:bot && deno task check:dash && deno task check:files",
+
+		"check:files": "deno check --config=deno.jsonc **/*.ts && deno check --config=deno.jsonc **/*.tsx",
+
+		// Bot Specific
+		"check:bot": "deno fmt --config=deno.jsonc --check --ignore=dashboard/ && deno task lint:bot",
+		"lint:bot": "deno lint --config=deno.jsonc --unstable --ignore=dashboard/",
+		"fmt:bot": "deno fmt --config=deno.jsonc --unstable --ignore=dashboard/",
+
+		// Dashboard specific
+		"check:dash": "deno fmt --config=deno.jsonc --check --ignore=bot/ && deno task lint:dash",
+		"lint:dash": "deno lint --config=deno.jsonc --unstable --ignore=bot/",
+		"fmt:dash": "deno fmt --config=deno.jsonc --unstable --ignore=bot/",
+
+		"dev": "deno run --config=deno.jsonc -A --unstable --watch=static/,routes/ ./dashboard/dev.ts",
+		"build": "deno run --config=deno.jsonc -A --unstable ./dashboard/dev.ts build",
+		"serve": "deno run --config=deno.jsonc -A --unstable ./dashboard/main.ts",
+		"upgrade": "deno run --config=deno.jsonc -A -r https://fresh.deno.dev/update ./dashboard/"
 	},
-	"importMap": "./imports.json"
+
+	"imports": {
+		// Global
+		"@/": "./",
+		"$std/": "https://deno.land/std@0.206.0/",
+
+		// Bot
+
+		// Dashboard
+		"$fresh/": "https://deno.land/x/fresh@1.5.4/",
+		"preact": "https://esm.sh/preact@10.18.1",
+		"preact/": "https://esm.sh/preact@10.18.1/",
+		"preact-render-to-string": "https://esm.sh/*preact-render-to-string@6.2.2",
+		"@preact/signals": "https://esm.sh/*@preact/signals@1.2.1",
+		"@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.0",
+
+		"@unocss/core": "https://esm.sh/@unocss/core@0.56.5",
+		"@unocss/preset": "https://esm.sh/@unocss/preset-uno@0.56.5"
+	}
 }

@@ -1,0 +1,34 @@
+key:
+  _if:
+    query: "{0} < 2"
+
+    # Content to add
+    description: "smol"
+  
+  field:
+    _loop: "{1}"
+
+    # Content to loop
+    name: "{1:name}"
+    value: "{1:value}"
+
+
+cmd:
+  reply: true
+  message: "Hello {0:mention}"
+  embeds:
+    - title: "Roles list"
+      description: "Here r ur'e rols"
+      fields:
+        - name: "Rol"
+          _loop:
+            loop: "{1}"
+            join: ","
+
+            value: "{1:name}"
+        _if:
+          query: "{0:owner}"
+
+          value: 
+            - name: "Owner"
+              value: "Ur'e owner"

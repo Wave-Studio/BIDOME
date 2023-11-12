@@ -1,11 +1,23 @@
-# Ignore ENV vars
-/.env
+# Global
+## Env
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
 
-# Ignore Cache files
-/.cache
+## Ignore Cache files
+.cache/
 deno.lock
 
-# Ignore temporary files (for dev)
-/temp
-/.cache
-/logs
+## Database
+db/
+
+# Bot
+## Temporary files
+temp/
+logs/
+
+# Dashboard
+## Fresh build directory
+_fresh/
