@@ -9,6 +9,8 @@
 ## Ignore Cache files
 .cache/
 deno.lock
+node_modules
+dist
 
 ## Database
 db/
