@@ -1,4 +1,4 @@
-name: "Build Desktop App"
+name: "Build Desktop Windows App"
 on:
   release:
     types: ["created"]
@@ -22,4 +22,4 @@ jobs:
       - name: "Upload files"
         uses: "svenstaro/upload-release-action@2.7.0"
         with:
-            file: "desktop/dist/**/*"
+            file: "desktop/dist/windows/Bidome-Desktop.exe"
