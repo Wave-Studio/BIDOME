@@ -13,7 +13,8 @@ export default function reminderClock(bot: CommandClient) {
 	setInterval(async () => {
 		if (Deno.env.get("IS_DEV") == "true") return;
 		if (bot.gateway.connected) {
-			for (const reminder of getReminders()) {
+			const reminders = getReminders();
+			for (const reminder of reminders) {
 				const remind_at = new Date(reminder.remind_at);
 				const now = Date.now();
 				if (remind_at.valueOf() <= now) {
@@ -69,7 +70,7 @@ export default function reminderClock(bot: CommandClient) {
 											.getTime() +
 											toMs(possibleFutureSends[0]),
 									).toISOString(),
-									future_sends: possibleFutureSends,
+									future_sends: possibleFutureSends.slice(1),
 								})
 								.eq("id", reminder.id);
 
