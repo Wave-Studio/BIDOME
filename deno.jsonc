@@ -42,12 +42,12 @@
 		/// Compilation
 		"desktop:rebuild": "rm -rf desktop/dist && deno run --config=deno.jsonc -A --unstable --allow-read --allow-write --allow-run ./desktop/prebuild.ts",
 		"desktop:build": "deno task desktop:rebuild && deno task desktop:build:linux && deno task desktop:build:windows",
-		"desktop:build:linux": "deno compile --include=routes/ --config=deno.jsonc -A --unstable --output=desktop/dist/linux/Bidome-Desktop --target=x86_64-unknown-linux-gnu ./desktop/index.ts",
-		"desktop:build:windows": "deno compile --include=routes/ --config=deno.jsonc -A --unstable --output=desktop/dist/windows/Bidome-Desktop.exe --target=x86_64-pc-windows-msvc --no-terminal ./desktop/index.ts",
+		"desktop:build:linux": "deno compile --include=desktop/routes/ --config=deno.jsonc -A --unstable --output=desktop/dist/linux/Bidome-Desktop --target=x86_64-unknown-linux-gnu ./desktop/index.ts",
+		"desktop:build:windows": "deno compile --include=desktop/routes/ --config=deno.jsonc -A --unstable --output=desktop/dist/windows/Bidome-Desktop.exe --target=x86_64-pc-windows-msvc --no-terminal ./desktop/index.ts",
 
 		"desktop:build-dev": "deno task desktop:rebuild && deno task desktop:build-dev:linux && deno task desktop:build-dev:windows",
-		"desktop:build-dev:linux": "deno compile --include=routes/ --config=deno.jsonc -A --unstable --output=desktop/dist/linux/Bidome-Desktop-Dev --target=x86_64-unknown-linux-gnu ./desktop/index.ts",
-		"desktop:build-dev:windows": "deno compile --include=routes/ --config=deno.jsonc -A --unstable --output=desktop/dist/windows/Bidome-Desktop-Dev.exe --target=x86_64-pc-windows-msvc ./desktop/index.ts"
+		"desktop:build-dev:linux": "deno compile --include=desktop/routes/ --config=deno.jsonc -A --unstable --output=desktop/dist/linux/Bidome-Desktop-Dev --target=x86_64-unknown-linux-gnu ./desktop/index.ts",
+		"desktop:build-dev:windows": "deno compile --include=desktop/routes/ --config=deno.jsonc -A --unstable --output=desktop/dist/windows/Bidome-Desktop-Dev.exe --target=x86_64-pc-windows-msvc ./desktop/index.ts"
 	},
 	"imports": {
 		"@/": "./",
