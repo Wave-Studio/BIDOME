@@ -6,6 +6,10 @@
 	"deno.config": "./deno.jsonc",
 	"editor.formatOnSave": true,
 	"editor.defaultFormatter": "denoland.vscode-deno",
+	"deno.suggest.imports.autoDiscover": true,
+	"deno.suggest.imports.hosts": {
+		"https://deno.land": true
+	},
 	"[github-actions-workflow]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	}

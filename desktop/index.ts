@@ -1,14 +1,19 @@
 import { Webview } from "https://deno.land/x/webview@0.7.6/mod.ts";
+import { renderRoute } from "./utils/prebuild/routes.ts";
+import { getConfig } from "./utils/config.ts";
 
-const html = `
-  <html>
-  <body>
-    <h1>Hello from deno v${Deno.version.deno}</h1>
-  </body>
-  </html>
-`;
+const config = await getConfig();
 
-const webview = new Webview();
+if (config instanceof Error) {
+	const webview = new Webview();
+	renderRoute(webview, "error.html", config.message, config.cause as string)
+	webview.run();
+	Deno.exit(1);
+} 
 
-webview.navigate(`data:text/html,${encodeURIComponent(html)}`);
-webview.run();
+if (!config.rememberSettings) {
+	const webview = new Webview();
+	renderRoute(webview, "prelaunch.html")
+	webview.run();
+	console.log("Webview closed");
+}
