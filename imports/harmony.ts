@@ -1,4 +1,4 @@
-export * from "https://raw.githubusercontent.com/harmonyland/harmony/e3e3c73056b1980ee214d7047aa2d104c515f737/mod.ts";
+export * from "https://raw.githubusercontent.com/harmonyland/harmony/04bbcfc6d6afc79d72ad2b44b38f4c27c2854d06/mod.ts";
 
 import {
 	ApplicationCommandInteraction,
