@@ -1,4 +1,4 @@
-import { Database, supabase } from "supabase";
+import { Database, supabase } from "./supabase.ts";
 import { Guild } from "./harmony.ts";
 
 type DatabaseTable = Database["public"]["Tables"];

@@ -13,6 +13,7 @@
 		"i18n": "./imports/i18n.ts",
 		"tictactoe": "./imports/games/tictactoe.tsx",
 		"settings": "./imports/settings.ts",
-		"imagescript": "./imports/imagescript.ts"
+		"imagescript": "./imports/imagescript.ts",
+		"env": "./imports/env.ts"
 	}
 }
