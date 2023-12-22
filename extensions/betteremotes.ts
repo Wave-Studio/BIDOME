@@ -1,5 +1,6 @@
 import {
 	ApplicationCommand,
+	BotUI,
 	ChannelTypes,
 	Embed,
 	Emoji,
@@ -7,6 +8,7 @@ import {
 	Extension,
 	Guild,
 	isApplicationCommandInteraction,
+	Member,
 	Message,
 	MessageAttachment,
 	Webhook,
@@ -340,7 +342,7 @@ export default class BetterEmotes extends Extension {
 		try {
 			await msg.delete();
 		} catch {
-			await msg.addReaction(getEmote("error"))
+			await msg.addReaction(getEmote("error"));
 		}
 	}
 
@@ -441,5 +443,47 @@ export default class BetterEmotes extends Extension {
 		if (this.serverIds.includes(guild.id)) {
 			this.serverIds = this.serverIds.filter((id) => id != guild.id);
 		}
+	}
+
+	@event("guildMemberAdd")
+	async guildMemberAdd(_: Extension, member: Member) {
+		const mutualGuilds = this.memberServerCache.get(member.id) ?? [];
+		const guildsToSearch =
+			this.serverIds ?? (await member.client.guilds.keys());
+
+		for await (const guildId of guildsToSearch) {
+			const guild = await member.client.guilds.resolve(guildId);
+			if (guild == undefined) continue;
+			const user = await guild.members.resolve(member.id);
+			if (user != undefined) {
+				await this.cacheServerEmotes(guild);
+				mutualGuilds.push(guild.id);
+			}
+		}
+
+		this.memberServerCache.set(member.id, mutualGuilds);
+
+		await this.saveCache();
+	}
+
+	@event("guildMemberRemove")
+	async guildMemberRemove(_: Extension, member: Member) {
+		const mutualGuilds = this.memberServerCache.get(member.id) ?? [];
+		const guildsToSearch =
+			this.serverIds ?? (await member.client.guilds.keys());
+
+		for await (const guildId of guildsToSearch) {
+			const guild = await member.client.guilds.resolve(guildId);
+			if (guild == undefined) continue;
+			const user = await guild.members.resolve(member.id);
+			if (user != undefined) {
+				await this.cacheServerEmotes(guild);
+				mutualGuilds.push(guild.id);
+			}
+		}
+
+		this.memberServerCache.set(member.id, mutualGuilds);
+
+		await this.saveCache();
 	}
 }
