@@ -1,6 +1,5 @@
 import {
 	ApplicationCommand,
-	BotUI,
 	ChannelTypes,
 	Embed,
 	Emoji,
