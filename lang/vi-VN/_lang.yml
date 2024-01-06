@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Tiếng Việt"
+  #Language name in English
+  en-name: "Vietnamese"
+  #Language code (should match folder (in locale with - format))
+  locale: "vi-VN"
