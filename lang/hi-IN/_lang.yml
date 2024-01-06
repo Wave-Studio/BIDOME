@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "हिन्दी"
+  #Language name in English
+  en-name: "Hindi"
+  #Language code (should match folder (in locale with - format))
+  locale: "hi-IN"
