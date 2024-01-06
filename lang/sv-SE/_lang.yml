@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Svenska"
+  #Language name in English
+  en-name: "Swedish"
+  #Language code (should match folder (in locale with - format))
+  locale: "sv-SE"
