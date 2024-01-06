@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "ภาษาไทย"
+  #Language name in English
+  en-name: "Thai"
+  #Language code (should match folder (in locale with - format))
+  locale: "th-TH"
