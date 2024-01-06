@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Deutsch"
+  #Language name in English
+  en-name: "German"
+  #Language code (should match folder (in locale with - format))
+  locale: "de-DE"
