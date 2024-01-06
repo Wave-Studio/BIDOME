@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Suomi"
+  #Language name in English
+  en-name: "Finnish"
+  #Language code (should match folder (in locale with - format))
+  locale: "fi-FI"

@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Italiano"
+  #Language name in English
+  en-name: "Italian"
+  #Language code (should match folder (in locale with - format))
+  locale: "it-IT"

@@ -1,34 +1,28 @@
-key:
-  _if:
-    query: "{0} < 2"
-
-    # Content to add
-    description: "smol"
-  
-  field:
-    _loop: "{1}"
-
-    # Content to loop
-    name: "{1:name}"
-    value: "{1:value}"
-
-
 cmd:
   reply: true
-  message: "Hello {0:mention}"
+  message: "Hello {0:mention}!"
   embeds:
-    - title: "Roles list"
-      description: "Here r ur'e rols"
+    - title: "Demoing translation syntax!"
+      _if:
+        _query: "{0} > 80"
+        _conflict: 
+          _action: "PREPEND" # PREPEND, REPLACE, APPEND
+          _join: " " # Only needed when _action is PREPEND or APPEND
+
+        _then:
+          description: "Oh dear! Better go inside!"
+        _else:
+          description: "Outside seems nice today!"
+
       fields:
-        - name: "Rol"
-          _loop:
-            loop: "{1}"
-            join: ","
+        - name: "Your roles"
+          value: "Check it out!"
 
-            value: "{1:name}"
-        _if:
-          query: "{0:owner}"
+        - _loop:
+            _value: "{1}"
+            
+            # _join: "," # Only works when _content is a string
 
-          value: 
-            - name: "Owner"
-              value: "Ur'e owner"
+            _content:
+              name: "{1:name}"
+              value: "{1:mention}"

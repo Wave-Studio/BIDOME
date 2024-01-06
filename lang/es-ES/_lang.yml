@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Español"
+  #Language name in English
+  en-name: "Spanish"
+  #Language code (should match folder (in locale with - format))
+  locale: "es-ES"

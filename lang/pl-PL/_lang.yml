@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Polski"
+  #Language name in English
+  en-name: "Polish"
+  #Language code (should match folder (in locale with - format))
+  locale: "pl-PL"

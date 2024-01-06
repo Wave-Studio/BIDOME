@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Lietuvių"
+  #Language name in English
+  en-name: "Lithuanian"
+  #Language code (should match folder (in locale with - format))
+  locale: "lt-LT"

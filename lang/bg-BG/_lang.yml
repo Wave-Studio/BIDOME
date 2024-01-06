@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Български"
+  #Language name in English
+  en-name: "Bulgarian"
+  #Language code (should match folder (in locale with - format))
+  locale: "bg-BG"

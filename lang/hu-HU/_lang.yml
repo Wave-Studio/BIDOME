@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Magyar"
+  #Language name in English
+  en-name: "Hungarian"
+  #Language code (should match folder (in locale with - format))
+  locale: "hu-HU"
