@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Українська"
+  #Language name in English
+  en-name: "Ukrainian"
+  #Language code (should match folder (in locale with - format))
+  locale: "uk-UA"
