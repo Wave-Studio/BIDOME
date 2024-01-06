@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Türkçe"
+  #Language name in English
+  en-name: "Turkish"
+  #Language code (should match folder (in locale with - format))
+  locale: "tr-TR"
