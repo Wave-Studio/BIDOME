@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "日本語"
+  #Language name in English
+  en-name: "Japanese"
+  #Language code (should match folder (in locale with - format))
+  locale: "ja-JP"
