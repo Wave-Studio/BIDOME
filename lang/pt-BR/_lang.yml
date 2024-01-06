@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Português (Brasil)"
+  #Language name in English
+  en-name: "Brazilian Portuguese"
+  #Language code (should match folder (in locale with - format))
+  locale: "pt-BR"
