@@ -1,0 +1,7 @@
+_lang:
+  #Language name localized
+  name: "Français"
+  #Language name in English
+  en-name: "French"
+  #Language code (should match folder (in locale with - format))
+  locale: "fr-FR"
