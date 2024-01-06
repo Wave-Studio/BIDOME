@@ -12,5 +12,9 @@
 	},
 	"[github-actions-workflow]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	}
+	},
+	"workbench.iconTheme": "vscode-icons",
+	"[yaml]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
 }

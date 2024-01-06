@@ -1,0 +1,39 @@
+name: "Bug Report"
+description: "Report something broken"
+labels: ["bug"]
+
+body:
+  - type: "markdown"
+    attributes:
+      value: "Please make sure you fill out this form completely otherwise your issue will be closed without resolution"
+
+  - type: "checkboxes"
+    attributes:
+      label: "Confirmations"
+      description: "This is soley for determining if your issue is recent and/or reproducable"
+      options:
+        - label: "I am on the latest version of said software or using the publically hosted version"
+          required: true
+        - label: "This is not a security vulnerability (Please disclose those to us directly rather than via issue)"
+          required: true
+
+  - type: "dropdown"
+    id: "platform"
+    attributes:
+      label: "Platforms"
+      description: "Where does this issue occur?"
+      multiple: true
+      options:
+        - "Discord bot"
+        - "Guilded bot"
+        - "Dashboard"
+    validations:
+      required: true
+
+  - type: "textarea"
+    attributes:
+      label: "Bug Explanation"
+      description: "Explain what's the issue, provide images to explain what's going on. In the case of bug reports for items like the dashboard provide your browser and os"
+      placeholder: "This command <command> returns the wrong response"
+    validations:
+      required: true
