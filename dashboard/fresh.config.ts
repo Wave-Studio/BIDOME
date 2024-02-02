@@ -2,6 +2,8 @@ import { defineConfig } from "$fresh/server.ts";
 import unocssPlugin from "./plugins/unocss.ts";
 import unocssConfig from "./uno.config.ts";
 
+// TODO: Switch this to tailwind as it now supports fresh - Bloxs
+
 export default defineConfig({
 	plugins: [
 		unocssPlugin({

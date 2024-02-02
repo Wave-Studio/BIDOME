@@ -1,2 +1,5 @@
 # Bidome/lang
-This folder is used for Bidome's localization, if you'd like to contribute to these translations do it via our [Crowdin](https://crowdin.com/project/bidome) rather than committing directly to this folder
+
+This folder is used for Bidome's localization, if you'd like to contribute to
+these translations do it via our [Crowdin](https://crowdin.com/project/bidome)
+rather than committing directly to this folder

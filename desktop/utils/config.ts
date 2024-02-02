@@ -6,11 +6,11 @@ export interface Config {
 const defaultConfig: Config = {
 	configVersion: 3,
 	rememberSettings: false,
-}
+};
 
 const configRoutes = {
 	darwin: `${Deno.env.get(
-		"HOME"
+		"HOME",
 	)!}/Library/Application Support/bidome/config.json`,
 	linux: `${Deno.env.get("HOME")!}/.config/bidome/config.json`,
 	windows: `${Deno.env.get("USERPROFILE")!}/bidome/config.json`,
@@ -21,13 +21,17 @@ let config: Config;
 const writeDefaultConfig = async () => {
 	const configPath = configRoutes[Deno.build.os as keyof typeof configRoutes];
 
-	await Deno.writeTextFile(configPath, JSON.stringify(defaultConfig, undefined, 4));
-}
+	await Deno.writeTextFile(
+		configPath,
+		JSON.stringify(defaultConfig, undefined, 4),
+	);
+};
 
 export const getConfig = async (): Promise<Error | Config> => {
 	if (config != undefined) return config;
-	if (!["darwin", "linux", "windows"].includes(Deno.build.os))
+	if (!["darwin", "linux", "windows"].includes(Deno.build.os)) {
 		return new Error("Unsupported OS (Make an issue to add support!)");
+	}
 
 	const configPath = configRoutes[Deno.build.os as keyof typeof configRoutes];
 

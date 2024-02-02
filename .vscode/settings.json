@@ -16,5 +16,5 @@
 	"workbench.iconTheme": "vscode-icons",
 	"[yaml]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
+	}
 }

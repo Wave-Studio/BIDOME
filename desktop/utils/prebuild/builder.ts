@@ -23,7 +23,7 @@ const recursiveWalk = async (path: string) => {
 
 			if (
 				["ts", "tsx", "jsx"].includes(
-					filePath.substring(filePath.lastIndexOf(".") + 1)
+					filePath.substring(filePath.lastIndexOf(".") + 1),
 				)
 			) {
 				const code = await bundle(filePath, {
@@ -48,7 +48,8 @@ const recursiveWalk = async (path: string) => {
 				content = css as string;
 			}
 
-			routes[filePath.substring(root.length + "/routes/".length)] = content;
+			routes[filePath.substring(root.length + "/routes/".length)] =
+				content;
 		}
 	}
 };
@@ -74,16 +75,18 @@ const postCssPlugins: unknown = [
 	tailwindCss(tailwindConfig) as postcss.Plugin,
 	cssnano(),
 	autoprefixer() as postcss.Plugin,
-]
+];
 
 const post = postcss(postCssPlugins as postcss.Plugin[]);
 
 for (const [key, value] of Object.entries(routes)) {
-	if (!["scss", "css"].includes(key.substring(key.lastIndexOf(".") + 1))) continue;
+	if (!["scss", "css"].includes(key.substring(key.lastIndexOf(".") + 1))) {
+		continue;
+	}
 
 	const res = await post.process(value, {
-		from: undefined
-	})
+		from: undefined,
+	});
 
 	routes[key] = res.css;
 }

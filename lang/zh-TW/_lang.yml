@@ -1,6 +1,4 @@
 _lang:
-  #Language name localized
-  name: "English"
   #Language name in English
   en-name: "Chinese (Traditional)"
   #Language code (should match folder (in locale with - format))

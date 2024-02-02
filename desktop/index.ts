@@ -6,14 +6,14 @@ const config = await getConfig();
 
 if (config instanceof Error) {
 	const webview = new Webview();
-	renderRoute(webview, "error.html", config.message, config.cause as string)
+	renderRoute(webview, "error.html", config.message, config.cause as string);
 	webview.run();
 	Deno.exit(1);
-} 
+}
 
 if (!config.rememberSettings) {
 	const webview = new Webview();
-	renderRoute(webview, "prelaunch.html")
+	renderRoute(webview, "prelaunch.html");
 	webview.run();
 	console.log("Webview closed");
 }

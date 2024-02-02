@@ -1,6 +1,6 @@
 _lang:
   #Language name localized
-  name: "English"
+  name: "Norsk"
   #Language name in English
   en-name: "Norwegian (Bokmal)"
   #Language code (should match folder (in locale with - format))

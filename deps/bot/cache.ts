@@ -1,7 +1,7 @@
 try {
 	await Deno.mkdir("./.cache");
 } catch {
-	// ignore
+	// Unimportant error so we ignore it - Bloxs
 }
 
 const dataVersion = "alyx";
@@ -78,7 +78,7 @@ interface Cache {
 				};
 			};
 
-			// Because discord is dumb and keeps server & user banners in the same path
+			// Because discord is dumb and keeps server & user banners in the same path - Bloxs
 			banners: {
 				[id: string]: string;
 			};
@@ -224,7 +224,7 @@ export const getImage = async (urlString: string) => {
 								recursive: true,
 							});
 						} catch {
-							// Ignore
+							// Ignore as it's not important - Bloxs
 						}
 
 						await Deno.writeFile(
@@ -267,7 +267,7 @@ export const getImage = async (urlString: string) => {
 								},
 							);
 						} catch {
-							// Ignore
+							// Ignore as it's not important - Bloxs
 						}
 
 						await Deno.writeFile(
@@ -359,7 +359,7 @@ export const getImage = async (urlString: string) => {
 								recursive: true,
 							});
 						} catch {
-							// Ignore
+							// Ignore as it's not important - Bloxs
 						}
 
 						await Deno.writeFile(
@@ -393,8 +393,8 @@ export const getImage = async (urlString: string) => {
 			break;
 		}
 
-		case "img.guildedcdn.com": {
-			// https://img.guildedcdn.com/<type>/<filehash>.<ext>[?w=<width>&h=<height>]
+		// img.guildedcdn.com used to be a valid cdn link but it looks like guilded has migrated to a new url - Bloxs
+		case "cdn.gilcdn.com": {
 			const [_, type, filehash] = path.split("/");
 
 			switch (type) {
@@ -470,7 +470,7 @@ export const getImage = async (urlString: string) => {
 								},
 							);
 						} catch {
-							// Ignore
+							// Ignore as it's not important - Bloxs
 						}
 
 						await Deno.writeFile(
@@ -495,7 +495,13 @@ export const getImage = async (urlString: string) => {
 				}
 			}
 
+			// Deno TS doesn't like this being here as it's unreachable
+			// But removing it throws an error about fallthrough so I'm just going to leave it - Bloxs
 			break;
+		}
+
+		default: {
+			throw new Error("Unknown image host " + host);
 		}
 	}
 };

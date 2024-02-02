@@ -1,1 +1,1 @@
-export const balls = 1
+export const balls = 1;

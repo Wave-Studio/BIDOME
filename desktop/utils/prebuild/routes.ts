@@ -1,7 +1,10 @@
 import { Webview } from "../../../deps/desktop/webview.ts";
 import Routes from "../../dist/routes.ts";
 
-export const getRoute = <T extends keyof typeof Routes>(path: T, ...args: string[]): typeof Routes[T] => {
+export const getRoute = <T extends keyof typeof Routes>(
+	path: T,
+	...args: string[]
+): typeof Routes[T] => {
 	const route = Routes[path];
 
 	if (!route) {
@@ -29,8 +32,14 @@ export const getRoute = <T extends keyof typeof Routes>(path: T, ...args: string
 	});
 
 	return filledRoute;
-}
+};
 
-export const renderRoute = <T extends keyof typeof Routes>(webview: Webview, path: T, ...args: string[]): void => {
-	webview.navigate(`data:text/html,${encodeURIComponent(getRoute(path, ...args))}`);
-}
+export const renderRoute = <T extends keyof typeof Routes>(
+	webview: Webview,
+	path: T,
+	...args: string[]
+): void => {
+	webview.navigate(
+		`data:text/html,${encodeURIComponent(getRoute(path, ...args))}`,
+	);
+};

@@ -1,6 +1,6 @@
 _lang:
   #Language name localized
-  name: "English"
+  name: "Ελληνικά"
   #Language name in English
   en-name: "Greek"
   #Language code (should match folder (in locale with - format))
