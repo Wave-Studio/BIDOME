@@ -1,5 +1,5 @@
 import { parse } from "$std/yaml/mod.ts";
-import { languages } from "./index.ts";
+import { getLocale } from "./index.ts";
 
 // For some reason doing this as a `type` has an error - Bloxs
 export interface RecursiveRecord {
@@ -18,7 +18,7 @@ export class Language {
 	}
 
 	public get completionAmount(): number {
-		this._en = this._en ?? languages.get("en-US");
+		this._en = this._en ?? getLocale("en-US");
 
 		if (this._en == undefined) throw new Error("en-US language not found");
 
@@ -117,7 +117,7 @@ export class Language {
 			const res = record[nextKey];
 
 			if (res == undefined && this.locale != "en-US") {
-				this._en = this._en ?? languages.get("en-US");
+				this._en = this._en ?? getLocale("en-US");
 
 				if (this._en == undefined) throw new Error("en-US language not found");
 
