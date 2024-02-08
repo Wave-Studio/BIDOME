@@ -9,5 +9,6 @@
 		"https://x.nest.land": true,
 		"https://crux.land": true,
 		"https://code.harmony.rocks": false
-	}
+	},
+	"workbench.iconTheme": "vscode-icons"
 }

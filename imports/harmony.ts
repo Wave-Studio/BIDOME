@@ -1,4 +1,4 @@
-export * from "https://raw.githubusercontent.com/harmonyland/harmony/04bbcfc6d6afc79d72ad2b44b38f4c27c2854d06/mod.ts";
+export * from "https://raw.githubusercontent.com/harmonyland/harmony/824e70c16efc4688a83a6c1a18b386a4df7ce8f3/mod.ts";
 
 import {
 	ApplicationCommandInteraction,
@@ -10,4 +10,4 @@ export interface ApplicationCommand extends ApplicationCommandPartial {
 }
 
 // For local harmony development:
-//export * from "../../harmony/mod.ts";
+// export * from "../../harmony/mod.ts";

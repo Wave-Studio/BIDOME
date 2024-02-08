@@ -39,7 +39,7 @@ const bot = new CommandClient({
 	presence: {
 		activity: {
 			name: "Bidome Bot | Starting up",
-			type: "PLAYING",
+			type: "CUSTOM_STATUS",
 		},
 		status: "online",
 	},
@@ -127,6 +127,7 @@ for (const ext of await loopFilesAndReturn("./extensions/")) {
 		slashCommands.push(...(extension.slashCommands as ApplicationCommand[]));
 	}
 }
+
 for (const clock of await loopFilesAndReturn("./clocks/")) {
 	(await import(clock)).default(bot);
 }
