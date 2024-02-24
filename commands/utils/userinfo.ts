@@ -137,7 +137,11 @@ export default class UserInfo extends Command {
 						...createEmbedFromLangData(
 							lang,
 							"commands.userinfo.memberinfo",
-							`${banInfo != undefined ? `${getEmote("banhammer")} ` : ""}${member.user.tag}${
+							`${
+								banInfo != undefined
+									? `${getEmote("banhammer")} `
+									: ""
+							}${member.user.tag}${
 								member.nick != undefined
 									? ` (${member.nick})`
 									: ""
@@ -201,10 +205,12 @@ export default class UserInfo extends Command {
 						...createEmbedFromLangData(
 							lang,
 							"commands.userinfo.userinfo",
-							`${banInfo != undefined ? `${getEmote("banhammer")} ` : ""}${user.tag}${
-								userBadges.trim() != ""
-									? ` ${userBadges}`
+							`${
+								banInfo != undefined
+									? `${getEmote("banhammer")} `
 									: ""
+							}${user.tag}${
+								userBadges.trim() != "" ? ` ${userBadges}` : ""
 							}`,
 							`<@!${user.id}>`,
 							`<t:${

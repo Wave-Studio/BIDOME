@@ -47,7 +47,7 @@ export async function button(i: MessageComponentInteraction) {
 				queue.loop = LoopType.OFF;
 
 				await queue.player.seek(0);
-				await queue.player.stop();
+				await queue.player.stop({});
 
 				await i.respond({
 					embeds: [

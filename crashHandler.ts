@@ -1,4 +1,4 @@
-import "./imports/env.ts"; 
+import "./imports/env.ts";
 import { Embed, Webhook } from "./imports/harmony.ts";
 import { formatMs, reverseTruncateString, sleep } from "./imports/tools.ts";
 
@@ -71,9 +71,12 @@ const startNewInstance = async () => {
 		);
 	}
 
-	const instance = new Worker(new URL(`./index.ts#${Date.now()}`, import.meta.url), {
-		type: "module",
-	});
+	const instance = new Worker(
+		new URL(`./index.ts#${Date.now()}`, import.meta.url),
+		{
+			type: "module",
+		},
+	);
 
 	instance.addEventListener("message", (e) => {
 		if (e.data.type != "log") return;

@@ -49,7 +49,7 @@ export default class ForceSkip extends Command {
 				queue.loop = LoopType.OFF;
 
 				await queue.player.seek(0);
-				await queue.player.stop();
+				await queue.player.stop({});
 
 				await ctx.message.reply({
 					embeds: [

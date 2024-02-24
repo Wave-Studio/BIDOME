@@ -28,7 +28,10 @@ export async function button(i: MessageComponentInteraction) {
 			return false;
 		}
 
-		if (!i.member!.permissions.has("MANAGE_GUILD", true) && i.guild?.ownerID != i.user.id) {
+		if (
+			!i.member!.permissions.has("MANAGE_GUILD", true) &&
+			i.guild?.ownerID != i.user.id
+		) {
 			await i.respond({
 				ephemeral: true,
 				embeds: [

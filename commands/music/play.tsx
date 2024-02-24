@@ -9,7 +9,7 @@ import {
 	isMessageComponentInteraction,
 } from "harmony";
 import { doPermCheck, lavaCluster, queues, ServerQueue, Song } from "queue";
-import { LoadType, Track } from "lavadeno";
+import { Track } from "lavadeno";
 import { getEmojiByName } from "emoji";
 import { removeDiscordFormatting } from "tools";
 import { getEmote } from "i18n";
@@ -81,17 +81,13 @@ export default class Play extends Command {
 						.test(
 							ctx.argString,
 						);
-				const { tracks, loadType } = await lavaCluster.rest.loadTracks(
+				const { data, loadType } = await lavaCluster.api.loadTracks(
 					isLink || /(yt|sc)search\:/i.test(ctx.argString)
 						? ctx.argString
 						: `ytsearch:${ctx.argString}`,
 				);
 
-				if (
-					tracks.length == 0 ||
-					loadType == LoadType.LoadFailed ||
-					loadType == LoadType.NoMatches
-				) {
+				if (loadType == "error" || loadType == "empty") {
 					await message.edit(undefined, {
 						embeds: [
 							new Embed({
@@ -139,14 +135,50 @@ export default class Play extends Command {
 					};
 
 					if (isLink) {
-						if (loadType == LoadType.PlaylistLoaded) {
-							for (const track of tracks) {
-								addTrackData(track);
+						switch (loadType) {
+							case "playlist": {
+								for (const track of data.tracks) {
+									addTrackData({
+										info: {
+											author: track.info.author,
+											identifier: track.info.identifier,
+											isSeekable: track.info.isSeekable,
+											isStream: track.info.isStream,
+											length: track.info.length,
+											position: track.info.position,
+											sourceName: track.info.sourceName,
+											title: track.info.title,
+											uri: track.info.uri!,
+										},
+										track: track.encoded,
+									});
+								}
+								break;
 							}
-						} else {
-							addTrackData(tracks[0]);
+
+							case "track": {
+								addTrackData({
+									info: {
+										author: data.info.author,
+										identifier: data.info.identifier,
+										isSeekable: data.info.isSeekable,
+										isStream: data.info.isStream,
+										length: data.info.length,
+										position: data.info.position,
+										sourceName: data.info.sourceName,
+										title: data.info.title,
+										uri: data.info.uri!,
+									},
+									track: data.encoded,
+								});
+								break;
+							}
 						}
 					} else {
+						if (loadType != "search") {
+							throw new Error("Invalid load type");
+						}
+
 						const now = Date.now();
 
 						const emojiMap = {
@@ -165,7 +197,7 @@ export default class Play extends Command {
 										icon_url: ctx.client.user!.avatarURL(),
 									},
 									title: "Please select an option",
-									description: tracks
+									description: data
 										.slice(0, 5)
 										.map(
 											(track, i) =>
@@ -189,7 +221,7 @@ export default class Play extends Command {
 							components: (
 								<>
 									<ActionRow>
-										{tracks.slice(0, 5).map((_, i) => (
+										{data.slice(0, 5).map((_, i) => (
 											<Button
 												style={"blurple"}
 												emoji={{
@@ -249,8 +281,21 @@ export default class Play extends Command {
 							return;
 						} else {
 							const [_, selected] = response.customID.split("-");
-							const selectedTrack = tracks[parseInt(selected)];
-							addTrackData(selectedTrack);
+							const selectedTrack = data[parseInt(selected)];
+							addTrackData({
+								info: {
+									author: selectedTrack.info.author,
+									identifier: selectedTrack.info.identifier,
+									isSeekable: selectedTrack.info.isSeekable,
+									isStream: selectedTrack.info.isStream,
+									length: selectedTrack.info.length,
+									position: selectedTrack.info.position,
+									sourceName: selectedTrack.info.sourceName,
+									title: selectedTrack.info.title,
+									uri: selectedTrack.info.uri!,
+								},
+								track: selectedTrack.encoded,
+							});
 						}
 					}
 

@@ -6,24 +6,24 @@ if (isNaN(nodesCount)) {
 	throw new Error("Invalid node count");
 }
 
-export const nodes: ClusterNodeOptions[] = new Array(nodesCount).fill(undefined)
-	.map((
-		_,
-		i,
-	) => ({
-		host: Deno.env.get(`LAVALINK_${i + 1}_HOST`)!,
-		id: Deno.env.get(`LAVALINK_${i + 1}_NAME`)!,
-		password: Deno.env.get(`LAVALINK_${i + 1}_PASSWORD`)!,
-		port: parseInt(Deno.env.get(`LAVALINK_${i + 1}_PORT`)!),
-		resuming: {
-			key: `Bidome-${Date.now()}`,
+export const nodes: ClusterNodeOptions[] = new Array(nodesCount)
+	.fill(undefined)
+	.map((_, i) => ({
+		info: {
+			host: Deno.env.get(`LAVALINK_${i + 1}_HOST`)!,
+			port: parseInt(Deno.env.get(`LAVALINK_${i + 1}_PORT`)!),
+			auth: Deno.env.get(`LAVALINK_${i + 1}_PASSWORD`)!,
+			secure: Deno.env.get(`LAVALINK_${i + 1}_SECURE`) == "true",
 		},
-		reconnect: {
-			type: "exponential",
-			// One minute for reconnect
-			maxDelay: 60 * 1000,
-			initialDelay: 1000,
-			tries: -1,
+		identifier: Deno.env.get(`LAVALINK_${i + 1}_NAME`)!,
+		ws: {
+			reconnecting: {
+				tries: Infinity,
+				delay: 5 * 1000,
+			},
+			resuming: {
+				timeout: 60 * 1000,
+			},
+			clientName: "Bidome",
 		},
-		secure: Deno.env.get(`LAVALINK_${i + 1}_SECURE`) == "true",
 	}));

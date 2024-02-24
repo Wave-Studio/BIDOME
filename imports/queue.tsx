@@ -14,11 +14,12 @@ import {
 	VoiceChannel,
 	VoiceState,
 } from "./harmony.ts";
-import { Cluster, NodeState, Player, PlayerEvents } from "./lavadeno.ts";
+import { Cluster, Player, PlayerEvents } from "./lavadeno.ts";
 import { formatMs, removeDiscordFormatting, shuffleArray } from "./tools.ts";
 import { nodes } from "./nodes.ts";
 import { getEmojiByName } from "./emoji.ts";
 import { supabase } from "supabase";
+import { GatewayResponse } from "https://raw.githubusercontent.com/harmonyland/harmony/824e70c16efc4688a83a6c1a18b386a4df7ce8f3/src/types/gatewayResponse.ts";
 
 let client: CommandClient;
 
@@ -66,10 +67,10 @@ export class ServerQueue {
 	) {
 		this.guildId = this.guild.id;
 
-		this.player = lavaCluster.players.get(BigInt(this.guildId)) ??
-			lavaCluster.createPlayer(BigInt(this.guildId));
-		this.player.connect(BigInt(this.channel), {
-			deafen: true,
+		this.player = lavaCluster.players.resolve(this.guildId) ??
+			lavaCluster.players.create(this.guildId);
+		this.player.voice.connect(this.channel, {
+			deafened: true,
 		});
 
 		this.player.on("trackStart", async () => {
@@ -110,11 +111,11 @@ export class ServerQueue {
 			}
 		});
 
-		this.player.on("channelMove", (_, to) => {
+		this.player.voice.on("channelMove", (_, to) => {
 			this.channel = to.toString();
 		});
 
-		this.player.on("channelLeave", () => {
+		this.player.voice.on("channelLeave", () => {
 			this.deleteQueue();
 		});
 
@@ -155,7 +156,7 @@ export class ServerQueue {
 		}
 
 		this.player.on("trackEnd", () => {
-			this.player.stop();
+			this.player.stop({});
 
 			switch (this.loop) {
 				case LoopType.SONG: {
@@ -222,17 +223,14 @@ export class ServerQueue {
 				"channelMove",
 			] as (keyof PlayerEvents)[]
 		) {
-			this.player.off(key);
+			this.player.removeAllListeners(key);
 		}
-		this.player.position = 0;
 
 		if (this.player.playing) {
-			await this.player.stop();
+			await this.player.stop({});
 		}
 
-		this.player.disconnect();
-
-		await this.player.destroy();
+		this.player.voice.disconnect();
 
 		await supabase
 			.from("music_notifications")
@@ -289,13 +287,11 @@ export class ServerQueue {
 			volume: this.volume,
 		});
 
-		this.player.position = 0;
-
-		if (!this.player.connected) {
-			this.player.connect(BigInt(this.channel), {
-				deafen: true,
+		if (!this.player.voice.connected) {
+			this.player.voice.connect(this.channel, {
+				deafened: true,
 			});
-			this.player.connected = true;
+			this.player.voice.connected = true;
 		}
 	}
 
@@ -451,70 +447,55 @@ export interface Song {
 }
 
 export const initLava = (bot: CommandClient) => {
-	let reconnectingIDs: string[] = [];
 	client = bot;
 
 	const cluster = new Cluster({
 		nodes,
-		userId: BigInt(bot.user!.id),
-		sendGatewayPayload: (id, payload) => {
-			const shardID = Number(
-				(BigInt(id) << 22n) % BigInt(bot.shards.cachedShardCount ?? 1),
-			);
-			const shard = bot.shards.get(shardID) as Gateway;
-			shard.send(payload);
+		discord: {
+			userId: bot.user!.id,
+			sendGatewayCommand: (id, payload) => {
+				const shardID = Number(
+					(BigInt(id) << 22n) %
+						BigInt(bot.shards.cachedShardCount ?? 1),
+				);
+				const shard = bot.shards.get(shardID) as Gateway;
+				shard.send(payload as GatewayResponse);
+			},
 		},
 	});
 	lavaCluster = cluster;
 
-	setInterval(() => {
-		if (reconnectingIDs.length > 0) {
-			try {
-				cluster.nodes.forEach((node) => {
-					if (reconnectingIDs.includes(node.id)) {
-						if (node.state === NodeState.Disconnected) {
-							node.connect(BigInt(bot.user!.id));
-						}
-					}
-				});
-			} catch {
-				console.log("Failed to reconnect to Lavalink. Retrying...");
-			}
-		}
-	}, 5000);
-
-	cluster.on("nodeConnect", (node, took, reconnect) => {
-		reconnectingIDs = reconnectingIDs.filter((id) => id !== node.id);
+	cluster.on("nodeConnected", (node, ev) => {
 		console.log(
-			`[Lavalink] Connected to node ${node.id} in ${
+			`[Lavalink] Connected to node ${node.identifier} in ${
 				formatMs(
-					took < 1000 ? 1000 : took,
+					ev.took < 1000 ? 1000 : ev.took,
 					true,
 				).toLowerCase()
-			} Reconnected: ${reconnect ? "Yes" : "No"}`,
+			} Reconnected: ${ev.reconnected ? "Yes" : "No"}`,
 		);
 	});
 
-	cluster.on("nodeDisconnect", (node, code, reason) => {
+	cluster.on("nodeDisconnected", (node, ev) => {
 		console.log(
-			`[Lavalink] Disconnected from node ${node.id} with code ${code} and reason ${reason}. Attempting to reconnect`,
+			`[Lavalink] Disconnected from node ${node.identifier} with code ${ev.code} and reason ${ev.reason}. Attempting to reconnect`,
 		);
-		reconnectingIDs.push(node.id);
 	});
 
 	cluster.on("nodeError", (node, error) => {
-		if (reconnectingIDs.includes(node.id)) return;
-		console.log(`[Lavalink] Error on node ${node.id}:`, error);
+		console.log(`[Lavalink] Error on node ${node.identifier}:`, error);
 	});
 
 	bot.on("raw", (event, payload) => {
 		switch (event) {
 			case "VOICE_STATE_UPDATE":
 			case "VOICE_SERVER_UPDATE": {
-				cluster.handleVoiceUpdate(payload);
+				cluster.players.handleVoiceUpdate(payload);
 			}
 		}
 	});
 
-	cluster.init(BigInt(bot.user!.id));
+	cluster.connect({
+		userId: bot.user!.id,
+	});
 };

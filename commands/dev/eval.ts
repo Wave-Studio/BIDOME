@@ -30,7 +30,8 @@ export default class Eval extends Command {
 		let executed: string;
 
 		try {
-			executed = `${(await eval(`
+			executed = `${
+				(await eval(`
 				(async () => {
 					async function _func() {
 						${code}
@@ -38,7 +39,8 @@ export default class Eval extends Command {
 
 					return await _func();
 				})();
-			`)) ?? "No output!"}`.replace(
+			`)) ?? "No output!"
+			}`.replace(
 				ctx.client.token!,
 				"lol you thought",
 			);
