@@ -4,6 +4,7 @@
 # Ignore Cache files
 /.cache
 deno.lock
+node_modules
 
 # Ignore temporary files (for dev)
 /temp

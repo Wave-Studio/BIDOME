@@ -1,5 +1,6 @@
 {
 	"lock": false,
+	"nodeModulesDir": true,
 	"fmt": {
 		"useTabs": true,
 		"singleQuote": false,
