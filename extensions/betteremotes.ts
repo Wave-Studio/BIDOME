@@ -10,6 +10,7 @@ import {
 	Member,
 	Message,
 	MessageAttachment,
+	User,
 	Webhook,
 } from "harmony";
 import { getDiscordImage } from "cache";
@@ -118,6 +119,126 @@ export const slashCommands: ApplicationCommand[] = [
 			});
 		},
 	},
+	{
+		name: "Find Message Author",
+		type: "MESSAGE",
+		handler: async (i) => {
+			if (!isApplicationCommandInteraction(i)) return;
+			const message = i.targetMessage;
+			const authorIsBot = message?.webhookID != undefined;
+
+			if (
+				!authorIsBot ||
+				!message.attachments.filter(
+					(a) =>
+						a.filename.toLowerCase() == `b-data-${i.user.id}.png`,
+				)
+			) {
+				await i.respond({
+					embeds: [
+						new Embed({
+							title: "Unable to get author",
+							description:
+								"This is not an emotified message sent by me.",
+							author: {
+								name: "Bidome bot",
+								icon_url: i.client.user!.avatarURL(),
+							},
+						}).setColor("red"),
+					],
+					ephemeral: true,
+				});
+			} else {
+				const userId = message.attachments[0].filename
+					.toLowerCase()
+					.replace(`b-data-`, "")
+					.replace(".png", "");
+
+				let member: Member | undefined;
+				let user: User | undefined;
+
+				try {
+					member = await i.guild!.members.resolve(userId);
+					if (
+						member == undefined || member.user.username == undefined
+					) {
+						member = await i.guild!.members.fetch(userId);
+					}
+				} catch {
+					member = undefined;
+				}
+
+				try {
+					user = await i.client.users.resolve(userId);
+					if (user == undefined || user.username == undefined) {
+						user = await i.client.users.fetch(userId);
+					}
+				} catch {
+					user = undefined;
+				}
+
+				if (user == undefined && member == undefined) {
+					await i.respond({
+						ephemeral: true,
+						embeds: [
+							new Embed({
+								title: `Unable to fetch user`,
+								description:
+									`I'm unable to find any information regarding <@!${userId}>, who originally sent this message.`,
+								author: {
+									name: "Bidome bot",
+									icon_url: i.client.user!.avatarURL(),
+								},
+							}).setColor("red"),
+						],
+					});
+
+					return;
+				}
+
+				// One of these won't be undefined - Bloxs
+				const userAvatarURL = user!.avatarURL() ??
+					member!.user.avatarURL();
+				let embedColor = "random";
+
+				if (userAvatarURL != undefined) {
+					const avatar = await Image.decode(
+						await getDiscordImage(userAvatarURL),
+					);
+
+					const avgColor = avatar.averageColor();
+
+					embedColor = `#${avgColor.toString(16).substring(0, 6)}`;
+				}
+
+				await i.respond({
+					ephemeral: true,
+					embeds: [
+						new Embed({
+							title: `Message by ${
+								user?.tag ?? member?.user.tag
+							} ${
+								member?.nick != undefined
+									? `(${member?.nick})`
+									: ""
+							}`,
+							description:
+								`This message was sent by <@!${userId}>`,
+							thumbnail: {
+								url: userAvatarURL,
+							},
+							author: {
+								name: "Bidome bot",
+								icon_url: i.client.user!.avatarURL(),
+							},
+						})
+							.setColor(embedColor)
+							.setThumbnail(userAvatarURL),
+					],
+				});
+			}
+		},
+	},
 ];
 
 export default class BetterEmotes extends Extension {
@@ -195,6 +316,22 @@ export default class BetterEmotes extends Extension {
 
 	@event("messageCreate")
 	async messageCreate(_: Extension, msg: Message) {
+		await this.loadCache();
+		const mutualGuilds = this.memberServerCache.get(msg.author.id) ?? [];
+
+		if (!mutualGuilds.includes(msg.guild!.id)) {
+			mutualGuilds.push(msg.guild!.id);
+			this.memberServerCache.set(msg.author.id, mutualGuilds);
+
+			const serverEmoteCache = this.serverEmoteCache.get(msg.guild!.id);
+
+			if (serverEmoteCache == undefined) {
+				await this.cacheServerEmotes(msg.guild!);
+			}
+
+			await this.saveCache();
+		}
+
 		if (Deno.env.get("IS_DEV") == "true") return;
 		if (
 			msg.author.bot ||
@@ -217,9 +354,6 @@ export default class BetterEmotes extends Extension {
 			(w) =>
 				w.name?.toLowerCase() == "bidome bot" && w.token != undefined,
 		);
-
-		await this.loadCache();
-		const mutualGuilds = this.memberServerCache.get(msg.author.id) ?? [];
 
 		if (!this.memberServerCache.has(msg.author.id)) {
 			const guildsToSearch = this.serverIds ??

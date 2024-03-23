@@ -1,5 +1,5 @@
 /// <deno-types imports="npm:lavaclient@5.0.0-rc.2" />
-export * from "https://esm.sh/lavaclient@5.0.0-rc.2"
+export * from "https://esm.sh/lavaclient@5.0.0-rc.2";
 
 // Non exported types
 /**

@@ -194,12 +194,22 @@ bot.once("ready", async () => {
 		) {
 			continue;
 		}
+
 		needsToUpdateCommands = true;
 	}
 
 	if (needsToUpdateCommands) {
 		console.log("Updating slash commands...");
-		await bot.interactions.commands.bulkEdit(slashCommands);
+
+		if (Deno.env.get("IS_DEV") == "true") {
+			// Scuffed Af Dev Server - Bloxs
+			await bot.interactions.commands.bulkEdit(
+				slashCommands,
+				"688115766867918950",
+			);
+		} else {
+			await bot.interactions.commands.bulkEdit(slashCommands);
+		}
 	}
 
 	console.log(
@@ -324,6 +334,14 @@ bot.on("interactionCreate", async (i) => {
 				if (!res) {
 					return;
 				}
+			}
+		}
+	}
+
+	if (i.isApplicationCommand()) {
+		for (const command of slashCommands) {
+			if (i.name == command.name) {
+				await command.handler(i);
 			}
 		}
 	}
