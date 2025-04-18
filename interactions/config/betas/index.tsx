@@ -83,12 +83,12 @@ export async function button(i: MessageComponentInteraction) {
 				<>
 					<ActionRow>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							label={getString(
 								lang,
 								"interactions.config.betas.buttons.nqn",
 							)}
-							id={"cfg-beta-nqn"}
+							id="cfg-beta-nqn"
 						/>
 					</ActionRow>
 				</>

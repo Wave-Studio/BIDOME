@@ -123,7 +123,7 @@ export async function button(i: MessageComponentInteraction) {
 							emoji={{
 								name: emoji("arrows_counterclockwise"),
 							}}
-							id={"cfg-suggest"}
+							id="cfg-suggest"
 						/>
 					</ActionRow>
 				</>

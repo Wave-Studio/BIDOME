@@ -68,8 +68,8 @@ export async function button(i: MessageComponentInteraction) {
 							title: "Server queue",
 							description: [
 								queue.player.current,
-								...queue.player.queue.tracks,
-							]
+								...queue.player.queue.map((t) => t),
+							].filter((t) => t != undefined) // Filter out undefined values
 								.slice(startingValue, startingValue + 10)
 								.map(
 									({ title, url }, index) =>
@@ -97,7 +97,7 @@ export async function button(i: MessageComponentInteraction) {
 						<>
 							<ActionRow>
 								<Button
-									style={"blurple"}
+									style="blurple"
 									disabled={pageOffset < 1}
 									id={pageOffset < 1
 										? "queuepg-0"
@@ -107,7 +107,7 @@ export async function button(i: MessageComponentInteraction) {
 									}}
 								/>
 								<Button
-									style={"blurple"}
+									style="blurple"
 									id={`queuepg-${pageOffset + 1}`}
 									disabled={queue.player.queue.size <=
 										startingValue + 10}

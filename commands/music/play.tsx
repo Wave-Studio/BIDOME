@@ -187,7 +187,7 @@ export default class Play extends Command {
 									<ActionRow>
 										{tracks.slice(0, 5).map((_, i) => (
 											<Button
-												style={"blurple"}
+												style="blurple"
 												emoji={{
 													name: emojiMap[
 														i as
@@ -204,8 +204,8 @@ export default class Play extends Command {
 									</ActionRow>
 									<ActionRow>
 										<Button
-											style={"red"}
-											label={"Cancel"}
+											style="red"
+											label="Cancel"
 											id={`${now}-cancel`}
 										/>
 									</ActionRow>

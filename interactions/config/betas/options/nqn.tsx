@@ -91,14 +91,14 @@ export async function button(i: MessageComponentInteraction) {
 				<>
 					<ActionRow>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							label={getString(
 								lang,
 								`interactions.config.betas.toggle.${
 									!isEnabled ? "enable" : "disable"
 								}`,
 							)}
-							id={"cfg-beta-nqn-t"}
+							id="cfg-beta-nqn-t"
 						/>
 					</ActionRow>
 				</>
@@ -141,14 +141,14 @@ export async function button(i: MessageComponentInteraction) {
 				<>
 					<ActionRow>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							label={getString(
 								lang,
 								`interactions.config.betas.toggle.${
 									isEnabled ? "enable" : "disable"
 								}`,
 							)}
-							id={"cfg-beta-nqn-t"}
+							id="cfg-beta-nqn-t"
 						/>
 					</ActionRow>
 				</>

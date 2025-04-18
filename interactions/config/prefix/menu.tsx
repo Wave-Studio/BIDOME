@@ -88,7 +88,7 @@ export async function button(i: MessageComponentInteraction) {
 					<ActionRow>
 						<Button
 							style="green"
-							id={"cfg-addprefix"}
+							id="cfg-addprefix"
 							label={getString(
 								lang,
 								"commands.config.buttons.addprefix",
@@ -96,7 +96,7 @@ export async function button(i: MessageComponentInteraction) {
 						/>
 						<Button
 							style="red"
-							id={"cfg-rmprefix"}
+							id="cfg-rmprefix"
 							label={getString(
 								lang,
 								"commands.config.buttons.removeprefix",
@@ -107,7 +107,7 @@ export async function button(i: MessageComponentInteraction) {
 							emoji={{
 								name: emoji("arrows_counterclockwise"),
 							}}
-							id={"cfg-prefix"}
+							id="cfg-prefix"
 						/>
 					</ActionRow>
 				</>

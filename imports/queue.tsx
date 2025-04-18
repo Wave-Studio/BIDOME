@@ -351,35 +351,35 @@ export class ServerQueue {
 				<>
 					<ActionRow>
 						<Button
-							style={"grey"}
+							style="grey"
 							emoji={{ name: emoji("question") }}
-							id={"help-song"}
+							id="help-song"
 						/>
 						<Button
-							style={"red"}
+							style="red"
 							emoji={{
 								name: emoji("stop_button"),
 							}}
-							id={"stop-song"}
+							id="stop-song"
 						/>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("fast_forward") }}
-							id={"skip-song"}
+							id="skip-song"
 						/>
 						<Button
-							style={"green"}
+							style="green"
 							emoji={{
 								name: emoji("twisted_rightwards_arrows"),
 							}}
-							id={"shuffle-songs"}
+							id="shuffle-songs"
 						/>
 						<Button
-							style={"grey"}
+							style="grey"
 							emoji={{
 								name: emoji("arrows_counterclockwise"),
 							}}
-							id={"refresh-songs"}
+							id="refresh-songs"
 						/>
 					</ActionRow>
 				</>

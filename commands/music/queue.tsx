@@ -89,16 +89,16 @@ export default class Queue extends Command {
 					<>
 						<ActionRow>
 							<Button
-								style={"blurple"}
-								disabled={true}
-								id={"queuepg-0"}
+								style="blurple"
+								disabled
+								id="queuepg-0"
 								emoji={{
 									name: emoji("arrow_left"),
 								}}
 							/>
 							<Button
-								style={"blurple"}
-								id={"queuepg-1"}
+								style="blurple"
+								id="queuepg-1"
 								disabled={queueEntries.length <= 10}
 								emoji={{
 									name: emoji("arrow_right"),

@@ -52,115 +52,115 @@ export default class Calculator extends Command {
 				<>
 					{/* ( ) back del */}
 					<ActionRow>
-						<Button style={"blurple"} label={"("} id={"calc-opa"} />
-						<Button style={"blurple"} label={")"} id={"calc-cpa"} />
+						<Button style="blurple" label="(" id="calc-opa" />
+						<Button style="blurple" label=")" id="calc-cpa" />
 						<Button
-							style={"red"}
+							style="red"
 							emoji={{ name: emoji("arrow_left") }}
-							id={"calc-bck"}
+							id="calc-bck"
 						/>
 						<Button
-							style={"red"}
+							style="red"
 							emoji={{ name: emoji("wastebasket") }}
-							id={"calc-clr"}
+							id="calc-clr"
 						/>
 					</ActionRow>
 					{/* 7 8 9 / */}
 					<ActionRow>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("seven") }}
-							id={"calc-7"}
+							id="calc-7"
 						/>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("eight") }}
-							id={"calc-8"}
+							id="calc-8"
 						/>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("nine") }}
-							id={"calc-9"}
+							id="calc-9"
 						/>
 						<Button
-							style={"green"}
+							style="green"
 							emoji={{
 								name: emoji("heavy_division_sign"),
 							}}
-							id={"calc-div"}
+							id="calc-div"
 						/>
 					</ActionRow>
 					{/* 4 5 6 * */}
 					<ActionRow>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("four") }}
-							id={"calc-4"}
+							id="calc-4"
 						/>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("five") }}
-							id={"calc-5"}
+							id="calc-5"
 						/>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("six") }}
-							id={"calc-6"}
+							id="calc-6"
 						/>
 						<Button
-							style={"green"}
+							style="green"
 							emoji={{
 								name: emoji("heavy_multiplication_x"),
 							}}
-							id={"calc-mul"}
+							id="calc-mul"
 						/>
 					</ActionRow>
 					{/* 1 2 3 - */}
 					<ActionRow>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("one") }}
-							id={"calc-1"}
+							id="calc-1"
 						/>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("two") }}
-							id={"calc-2"}
+							id="calc-2"
 						/>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("three") }}
-							id={"calc-3"}
+							id="calc-3"
 						/>
 						<Button
-							style={"green"}
+							style="green"
 							emoji={{ name: emoji("heavy_minus_sign") }}
-							id={"calc-sub"}
+							id="calc-sub"
 						/>
 					</ActionRow>
 					{/*  0 . = + */}
 					<ActionRow>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("zero") }}
-							id={"calc-0"}
+							id="calc-0"
 						/>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{
 								name: emoji("record_button"),
 							}}
-							id={"calc-dot"}
+							id="calc-dot"
 						/>
 						<Button
-							style={"blurple"}
+							style="blurple"
 							emoji={{ name: emoji("arrow_up") }}
-							id={"calc-exp"}
+							id="calc-exp"
 						/>
 						<Button
-							style={"green"}
+							style="green"
 							emoji={{ name: emoji("heavy_plus_sign") }}
-							id={"calc-add"}
+							id="calc-add"
 						/>
 					</ActionRow>
 				</>

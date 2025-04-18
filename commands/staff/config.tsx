@@ -38,7 +38,7 @@ export default class Config extends Command {
 					<ActionRow>
 						<Button
 							style="blurple"
-							id={"cfg-prefix"}
+							id="cfg-prefix"
 							label={getString(
 								lang,
 								"commands.config.buttons.prefix",
@@ -56,7 +56,7 @@ export default class Config extends Command {
 						}
 						<Button
 							style="blurple"
-							id={"cfg-betas"}
+							id="cfg-betas"
 							label={getString(
 								lang,
 								"commands.config.buttons.betas",
