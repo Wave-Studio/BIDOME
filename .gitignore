@@ -1,12 +1,12 @@
-# Ignore ENV vars
-/.env
+# Ignore Secrets
+.env*
+!.env.example
 
-# Ignore Cache files
-/.cache
-deno.lock
-node_modules
+# Ignore deps
+node_modules/
+.cache/
+logs/
 
-# Ignore temporary files (for dev)
-/temp
-/.cache
-/logs
+# Ignore OS generated files
+.temp
+.DS_Store

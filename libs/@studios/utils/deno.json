@@ -1,0 +1,14 @@
+{
+	"name": "@studios/utils",
+	"version": "1.0.0",
+	"license": "MIT",
+	"exports": {
+		".": "./src/index.ts",
+		"./array": "./src/array.ts",
+		"./fs": "./src/fs.ts",
+		"./misc": "./src/misc.ts",
+		"./number": "./src/number.ts",
+		"./string": "./src/string.ts",
+		"./time": "./src/time.ts"
+	}
+}

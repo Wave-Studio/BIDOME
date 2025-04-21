@@ -1,0 +1,13 @@
+{
+	"name": "@studios/lang",
+	"version": "1.0.0",
+	"license": "MIT",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"imports": {
+		"@std/path": "jsr:@std/path@^1.0.8",
+		"@std/yaml": "jsr:@std/yaml@^1.0.5",
+		"@studios/utils": "jsr:@studios/utils@^1.0.0"
+	}
+}
