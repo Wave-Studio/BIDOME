@@ -15,7 +15,7 @@ export interface LoadedLanguageOutput {
  * @see YamlLoaderPlugin from "@studios/lang/loaders/yaml.ts"
  * @see JsonLoaderPlugin from "@studios/lang/loaders/json.ts"
  */
-export class LanguageLoaderPlugin {
+export class LoaderPlugin {
 	/**
 	 * Loader plugin for language files, files and folders prefixed with - will be ignored and files/folders prefixed with _ will not have their name added to the key
 	 * @param filePathBase This is the base path for the folders in a `[locale-REGION]/*` format

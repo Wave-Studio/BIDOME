@@ -1,5 +1,5 @@
-import { YamlLoaderPlugin } from "@studios/lang"
+import { Language, YamlLoaderPlugin } from "@studios/lang";
 
-const plugin = new YamlLoaderPlugin("./lang");
+const lang = await new Language().load(new YamlLoaderPlugin("./lang"));
 
-console.log(await plugin.load())
+console.log(lang.get("test.hello", "testing"));

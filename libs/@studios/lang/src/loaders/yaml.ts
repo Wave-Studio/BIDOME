@@ -1,12 +1,12 @@
 import {
-	LanguageLoaderPlugin,
 	type LoadedLanguageOutput,
+	LoaderPlugin,
 	type RecursiveObject,
-} from "./plugin.ts";
+} from "../api/loader.ts";
 import {
+	getAllFilesRecursively,
 	getAllRootFolders,
 	normalizePath,
-	getAllFilesRecursively,
 } from "@studios/utils/fs";
 import { relative } from "@std/path/relative";
 import { join } from "@std/path/join";
@@ -14,13 +14,14 @@ import { join } from "@std/path/join";
 import { readFile } from "node:fs/promises";
 import { parse } from "@std/yaml/parse";
 
-export class YamlLoaderPlugin extends LanguageLoaderPlugin {
+export class YamlLoaderPlugin extends LoaderPlugin {
 	public override async load(
-		defaultLocale = "en-US"
+		defaultLocale = "en-US",
 	): Promise<LoadedLanguageOutput> {
-		const locales: string[] = (await getAllRootFolders(this.folderBase)).map(
-			(l) => normalizePath(relative(this.folderBase, l))
-		);
+		const locales: string[] = (await getAllRootFolders(this.folderBase))
+			.map(
+				(l) => normalizePath(relative(this.folderBase, l)),
+			);
 		const langData: LoadedLanguageOutput = {};
 
 		if (locales.length === 0) {
@@ -29,7 +30,7 @@ export class YamlLoaderPlugin extends LanguageLoaderPlugin {
 
 		if (!locales.find((locale) => locale == defaultLocale)) {
 			throw new Error(
-				`Default locale ${defaultLocale} not found in ${this.folderBase}`
+				`Default locale ${defaultLocale} not found in ${this.folderBase}`,
 			);
 		}
 
@@ -49,7 +50,7 @@ export class YamlLoaderPlugin extends LanguageLoaderPlugin {
 
 			for (const file of files) {
 				const parsed = parse(
-					await readFile(join(this.folderBase, locale, file), "utf8")
+					await readFile(join(this.folderBase, locale, file), "utf8"),
 				) as RecursiveObject;
 				let baseObject = lang;
 				const keys = file

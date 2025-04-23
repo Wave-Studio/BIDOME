@@ -2,5 +2,18 @@
 	"version": "3.0.0",
 	"workspace": [
 		"./libs/@studios/*"
-	]
+	],
+	"fmt": {
+		"indentWidth": 4,
+		"lineWidth": 80,
+		"proseWrap": "always",
+		"semiColons": true,
+		"singleQuote": false,
+		"useTabs": true
+	},
+	"lint": {
+		"rules": {
+			"tags": ["recommended", "jsr", "jsx"]
+		}
+	}
 }

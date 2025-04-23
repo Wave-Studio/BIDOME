@@ -1,12 +1,12 @@
 import {
-	LanguageLoaderPlugin,
 	type LoadedLanguageOutput,
+	LoaderPlugin,
 	type RecursiveObject,
-} from "./plugin.ts";
+} from "../api/loader.ts";
 import {
+	getAllFilesRecursively,
 	getAllRootFolders,
 	normalizePath,
-	getAllFilesRecursively,
 } from "@studios/utils/fs";
 import { relative } from "@std/path/relative";
 import { join } from "@std/path/join";
@@ -15,13 +15,14 @@ import { readFile } from "node:fs/promises";
 
 // Yes, this is just a copy paste + a few edits from yaml.ts - Bloxs
 
-export class JsonLoaderPlugin extends LanguageLoaderPlugin {
+export class JsonLoaderPlugin extends LoaderPlugin {
 	public override async load(
-		defaultLocale = "en-US"
+		defaultLocale = "en-US",
 	): Promise<LoadedLanguageOutput> {
-		const locales: string[] = (await getAllRootFolders(this.folderBase)).map(
-			(l) => normalizePath(relative(this.folderBase, l))
-		);
+		const locales: string[] = (await getAllRootFolders(this.folderBase))
+			.map(
+				(l) => normalizePath(relative(this.folderBase, l)),
+			);
 		const langData: LoadedLanguageOutput = {};
 
 		if (locales.length === 0) {
@@ -30,7 +31,7 @@ export class JsonLoaderPlugin extends LanguageLoaderPlugin {
 
 		if (!locales.find((locale) => locale == defaultLocale)) {
 			throw new Error(
-				`Default locale ${defaultLocale} not found in ${this.folderBase}`
+				`Default locale ${defaultLocale} not found in ${this.folderBase}`,
 			);
 		}
 
@@ -50,12 +51,15 @@ export class JsonLoaderPlugin extends LanguageLoaderPlugin {
 
 			for (const file of files) {
 				const parsed = JSON.parse(
-					(await readFile(join(this.folderBase, locale, file), "utf8"))
+					(await readFile(
+						join(this.folderBase, locale, file),
+						"utf8",
+					))
 						// Adapted from https://github.com/tarkh/json-easy-strip/blob/master/index.js#L37 + StackOverflow to allow jsonc parsing - Bloxs
 						.replace(
 							/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g,
-							(m, g) => (g ? "" : m)
-						)
+							(m, g) => (g ? "" : m),
+						),
 				) as RecursiveObject;
 				let baseObject = lang;
 				const keys = file

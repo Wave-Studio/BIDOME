@@ -6,7 +6,7 @@ export const shuffleArray = <T>(array: T[], runs = 2): T[] => {
 
 	for (const _ of Array.from({ length: runs })) {
 		const newArray: T[] = [];
-		
+
 		while (shuffledArray.length > 0) {
 			const index = Math.floor(Math.random() * shuffledArray.length);
 

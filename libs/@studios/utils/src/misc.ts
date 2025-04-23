@@ -4,7 +4,7 @@
  * @returns The result wrapped in an object containing success, data, and error properties
  */
 export const tryCatch = async <T>(
-	fn: () => Promise<T>
+	fn: () => Promise<T>,
 ): Promise<
 	| { success: true; data: T; error: undefined }
 	| { success: false; data: undefined; error: Error }

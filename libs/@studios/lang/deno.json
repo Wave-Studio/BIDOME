@@ -3,7 +3,13 @@
 	"version": "1.0.0",
 	"license": "MIT",
 	"exports": {
-		".": "./src/index.ts"
+		".": "./src/index.ts",
+		"./api": "./src/api/index.ts",
+		"./api/formatter": "./src/api/formatter.ts",
+		"./api/loader": "./src/api/loader.ts",
+		"./loader/json": "./src/loaders/json.ts",
+		"./loader/yaml": "./src/loaders/yaml.ts",
+		"./lang": "./src/lang.ts"
 	},
 	"imports": {
 		"@std/path": "jsr:@std/path@^1.0.8",

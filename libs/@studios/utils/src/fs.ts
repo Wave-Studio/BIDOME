@@ -1,6 +1,6 @@
 /**
  * Finds all files in said directory and any subdirectories
- * 
+ *
  * @requires Deno.readDir - Not supported outside Deno without polyfill
  */
 export const getAllFilesRecursively = async (
@@ -8,11 +8,15 @@ export const getAllFilesRecursively = async (
 	extensions?: string[],
 ): Promise<string[]> => {
 	if (globalThis.Deno == undefined) {
-		throw new Error("This function relies on Deno.readDir to function, please polyfill it or use a different method");
+		throw new Error(
+			"This function relies on Deno.readDir to function, please polyfill it or use a different method",
+		);
 	}
 
 	const files: string[] = [];
-	extensions = extensions?.map((ext) => ext.toLowerCase()).map((ext => ext.startsWith(".") ? ext.substring(1) : ext));
+	extensions = extensions?.map((ext) => ext.toLowerCase()).map(
+		(ext) => ext.startsWith(".") ? ext.substring(1) : ext,
+	);
 
 	for await (const file of Deno.readDir(dir)) {
 		const filePath = `${dir}/${file.name}`;
@@ -40,7 +44,9 @@ export const getAllFilesRecursively = async (
  */
 export const getAllRootFolders = async (dir: string): Promise<string[]> => {
 	if (globalThis.Deno == undefined) {
-		throw new Error("This function relies on Deno.readDir to function, please polyfill it or use a different method");
+		throw new Error(
+			"This function relies on Deno.readDir to function, please polyfill it or use a different method",
+		);
 	}
 
 	const folders: string[] = [];
@@ -61,4 +67,4 @@ export const getAllRootFolders = async (dir: string): Promise<string[]> => {
  */
 export const normalizePath = (path: string): string => {
 	return path.replace(/\\/g, "/").replace(/\/+$/, "");
-}
+};
