@@ -9,7 +9,7 @@ import {
 	isMessageComponentInteraction,
 } from "harmony";
 import { doPermCheck, nodes, queues, ServerQueue } from "queue";
-import { LilyTrack, Source } from "lavadeno";
+import { Track } from "lavadeno";
 import { emoji } from "emoji";
 import { shuffleArray } from "tools";
 import { getEmote } from "i18n";
@@ -89,9 +89,9 @@ export default class Play extends Command {
 					requester: ctx.author.id,
 					source: isLink
 						? ctx.argString.includes("youtu")
-							? Source.YOUTUBE
+							? "youtube"
 							: undefined
-						: Source.YOUTUBE,
+						: "youtube",
 				});
 
 				if (loadType == "error" || loadType == "empty") {
@@ -109,7 +109,7 @@ export default class Play extends Command {
 						],
 					});
 				} else {
-					let songsToAdd: LilyTrack[] = [];
+					let songsToAdd: Track[] = [];
 
 					if (isLink) {
 						switch (loadType) {
@@ -122,7 +122,7 @@ export default class Play extends Command {
 											.split(" ")[0],
 									)
 								) {
-									const tracks: LilyTrack[] = [];
+									const tracks: Track[] = [];
 
 									for (const track of tracks) {
 										songsToAdd.push(track);
@@ -283,6 +283,7 @@ export default class Play extends Command {
 							vc.channel.id,
 							ctx.guild,
 							vc.channel,
+							ctx.channel,
 							await doPermCheck(ctx.member!, vc.channel),
 						);
 
@@ -340,12 +341,6 @@ export default class Play extends Command {
 					}
 
 					queue.addSongs(songsToAdd);
-
-					if (queue.queueMessage == undefined) {
-						queue.queueMessage = await ctx.channel.send(
-							queue.nowPlayingMessage,
-						);
-					}
 				}
 			}
 		}

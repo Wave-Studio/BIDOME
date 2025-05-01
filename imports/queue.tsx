@@ -11,10 +11,11 @@ import {
 	Guild,
 	Member,
 	Message,
+	TextChannel,
 	VoiceChannel,
 	type VoiceState,
 } from "./harmony.ts";
-import { LilyManager, LilyPlayer, type LilyTrack } from "./lavadeno.ts";
+import { Manager, Player, type Track } from "./lavadeno.ts";
 import { formatMs } from "./tools.ts";
 import { emoji } from "./emoji.ts";
 import { getConfig } from "./settings.ts";
@@ -29,7 +30,7 @@ if (isNaN(nodesCount)) {
 	throw new Error("Invalid node count");
 }
 
-export const nodes = new LilyManager({
+export const nodes = new Manager({
 	nodes: new Array(nodesCount).fill(undefined).map((_, i) => ({
 		host: Deno.env.get(`LAVALINK_${i + 1}_HOST`)!,
 		port: parseInt(Deno.env.get(`LAVALINK_${i + 1}_PORT`)!),
@@ -39,7 +40,8 @@ export const nodes = new LilyManager({
 		retryDelay: 60 * 1000,
 	})),
 	options: {
-		clientName: "Bidome/1.0.0",
+		NodeLinkFeatures: true,
+		clientName: "Bidome/2.0.0",
 	},
 	sendPayload: async (guildID: string, payload: unknown) => {
 		const guild = await client.guilds.resolve(guildID);
@@ -53,7 +55,7 @@ export const nodes = new LilyManager({
 export const playerEventHandlers = new Map<
 	string,
 	{
-		trackStart: (track: LilyTrack) => Promise<void> | void;
+		trackStart: (track: Track) => Promise<void> | void;
 		playerMoved: (
 			oldChannel: string,
 			newChannel: string,
@@ -108,7 +110,7 @@ export const doPermCheck = async (user: Member, channel: VoiceChannel) => {
 };
 
 export class ServerQueue {
-	public readonly player: LilyPlayer;
+	public readonly player: Player;
 	public readonly guildId: string;
 	public voteSkipUsers: string[] = [];
 	public volume = 100;
@@ -119,6 +121,7 @@ export class ServerQueue {
 		public channel: string,
 		private guild: Guild,
 		channelObject: VoiceChannel,
+		textChannel: TextChannel,
 		setAsSpeaker = false,
 	) {
 		this.guildId = this.guild.id;
@@ -163,11 +166,14 @@ export class ServerQueue {
 				this.voteSkipUsers = [];
 
 				if (this.queueMessage != undefined) {
-					if (this.firstSong) {
-						this.firstSong = false;
-					} else {
-						await this.queueMessage.edit(this.nowPlayingMessage);
-					}
+					await this.queueMessage.edit(this.nowPlayingMessage);
+				}
+
+				if (this.firstSong) {
+					this.firstSong = false;
+					this.queueMessage = await textChannel.send(
+						this.nowPlayingMessage,
+					);
 				}
 			},
 		});
@@ -196,6 +202,8 @@ export class ServerQueue {
 			}
 			queues.delete(this.guildId);
 			playerEventHandlers.delete(this.guildId);
+			// Prevent the message from being edited again
+			this.queueMessage = undefined;
 
 			this.player.queue.clear();
 			this.player.disconnect();
@@ -214,7 +222,7 @@ export class ServerQueue {
 		].patch({ channel_id: this.channel, suppress: false });
 	}
 
-	public addSongs(songs: LilyTrack | LilyTrack[]) {
+	public addSongs(songs: Track | Track[]) {
 		if (Array.isArray(songs)) {
 			for (const song of songs) {
 				this.player.queue.add(song);
@@ -258,7 +266,7 @@ export class ServerQueue {
 		for (
 			const { duration } of [
 				this.player.current,
-				...this.player.queue.values(),
+				...this.player.queue.all,
 			].filter((song) => song != undefined)
 		) {
 			queueLength += duration;
@@ -270,7 +278,11 @@ export class ServerQueue {
 	public get nowPlayingMessage(): AllMessageOptions {
 		const song = this.player.current;
 
-		if (song == undefined) {
+		if (song == undefined || song.requestedBy == undefined) {
+			if (song != undefined) {
+				this.deleteQueue();
+			}
+
 			return {
 				embeds: [
 					new Embed({
@@ -313,7 +325,12 @@ export class ServerQueue {
 
 						{
 							name: "Requested by",
-							value: `<@!${song.requestedBy}>`,
+							value: `<@!${
+								typeof song.requestedBy === "string"
+									? song.requestedBy
+									: (song.requestedBy as { id: string })
+										.id
+							}>`,
 							inline: true,
 						},
 						{
@@ -333,7 +350,7 @@ export class ServerQueue {
 								off: "Off",
 								track: "Song",
 								queue: "Queue",
-							}[this.player.loop],
+							}[this.player.loop as "off"],
 							inline: true,
 						},
 					],

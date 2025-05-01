@@ -1,6 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
 import { doPermCheck, queues } from "queue";
-import { PlayerLoop } from "lavadeno";
 
 export default class Skip extends Command {
 	override name = "skip";
@@ -53,11 +52,7 @@ export default class Skip extends Command {
 				if (queue.player.queue.size == 0) {
 					queue.deleteQueue();
 				} else {
-					const currentLoopState = queue.player.loop;
-					queue.player.setLoop(PlayerLoop.OFF);
-					// Skip for some reason ends the queue - This is a super jank workaround
 					await queue.player.skip();
-					queue.player.setLoop(currentLoopState);
 				}
 
 				await ctx.message.reply({

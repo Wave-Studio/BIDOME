@@ -56,7 +56,7 @@ export default class Queue extends Command {
 			];
 			const queueEntries = [
 				queue.player.current!,
-				...queue.player.queue.values(),
+				...queue.player.queue.all,
 			];
 
 			await ctx.message.reply(undefined, {

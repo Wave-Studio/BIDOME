@@ -68,8 +68,8 @@ export async function button(i: MessageComponentInteraction) {
 							title: "Server queue",
 							description: [
 								queue.player.current,
-								...queue.player.queue.map((t) => t),
-							].filter((t) => t != undefined) // Filter out undefined values
+								...queue.player.queue.all,
+							]
 								.slice(startingValue, startingValue + 10)
 								.map(
 									({ title, url }, index) =>

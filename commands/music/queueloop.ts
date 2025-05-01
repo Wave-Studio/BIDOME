@@ -1,6 +1,5 @@
 import { Command, CommandContext, Embed } from "harmony";
 import { doPermCheck, queues } from "queue";
-import { PlayerLoop } from "lavadeno";
 
 export default class QueueLoop extends Command {
 	override name = "queueloop";
@@ -44,12 +43,12 @@ export default class QueueLoop extends Command {
 			const queue = queues.get(ctx.guild!.id)!;
 			if (await doPermCheck(ctx.member!, botState.channel)) {
 				const previousLoopType = queue.player.loop.toString();
-				const isLoopDisabled = queue.player.loop != PlayerLoop.QUEUE;
+				const isLoopDisabled = queue.player.loop != "queue";
 
 				if (isLoopDisabled) {
-					queue.player.setLoop(PlayerLoop.QUEUE);
+					queue.player.setLoop("queue");
 				} else {
-					queue.player.setLoop(PlayerLoop.OFF);
+					queue.player.setLoop("off");
 				}
 
 				await ctx.message.reply({
