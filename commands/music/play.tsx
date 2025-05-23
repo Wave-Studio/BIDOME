@@ -78,8 +78,8 @@ export default class Play extends Command {
 					],
 				});
 
-				// Fix edge case where user trys to crash the bot with a really long message
-				if (ctx.argString.length > 2000) {
+				// Fix edge case where user trys to crash the bot with a really long unicode message
+				if (ctx.argString.length > 2000 || ctx.argString.includes("𞫙")) {
 					await sleep(getRandomInteger(1000, 2000));
 					return await message.edit(undefined, {
 						embeds: [
