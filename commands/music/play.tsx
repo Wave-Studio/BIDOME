@@ -11,7 +11,7 @@ import {
 import { doPermCheck, nodes, queues, ServerQueue } from "queue";
 import { Track } from "lavadeno";
 import { emoji } from "emoji";
-import { shuffleArray } from "tools";
+import { getRandomInteger, shuffleArray, sleep } from "tools";
 import { getEmote } from "i18n";
 
 const shuffleCommands = ["shuffleplay", "sp"];
@@ -77,6 +77,24 @@ export default class Play extends Command {
 						}).setColor("random"),
 					],
 				});
+
+				// Fix edge case where user trys to crash the bot with a really long message
+				if (ctx.argString.length > 2000) {
+					await sleep(getRandomInteger(1000, 2000));
+					return await message.edit(undefined, {
+						embeds: [
+							new Embed({
+								author: {
+									name: "Bidome bot",
+									icon_url: ctx.client.user!.avatarURL(),
+								},
+								title: "Unable to find songs!",
+								description:
+									"No songs were found for that result!",
+							}).setColor("red"),
+						],
+					});
+				}
 
 				const isLink =
 					/(https?:\/\/)?(www\.)?([a-zA-Z0-9][a-zA-Z0-9\-]{1,}[a-zA-Z0-9]\.?){1,}(\.[a-zA-Z]{2})?\.[a-zA-Z]{2,63}/i
