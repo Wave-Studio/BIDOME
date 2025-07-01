@@ -42,6 +42,8 @@ export const nodes = new Manager({
 	options: {
 		NodeLinkFeatures: true,
 		clientName: "Bidome/2.0.0",
+		// Disable spotify which causes crashes
+		disableNativeSources: true
 	},
 	sendPayload: async (guildID: string, payload: unknown) => {
 		const guild = await client.guilds.resolve(guildID);
