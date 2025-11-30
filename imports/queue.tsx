@@ -38,7 +38,7 @@ export const nodes = new Manager({
 		secure: Deno.env.get(`LAVALINK_${i + 1}_SECURE`) == "true",
 		identifier: Deno.env.get(`LAVALINK_${i + 1}_NAME`)!,
 		retryDelay: 60 * 1000,
-		priority: Deno.env.get(`LAVALINK_${i + 1}_NAME`)!.includes("primary") ? 1 : 5,
+		priority: Deno.env.get(`LAVALINK_${i + 1}_NAME`)!.toLowerCase().includes("primary") ? 1 : 5,
 	})),
 	options: {
 		NodeLinkFeatures: true,
