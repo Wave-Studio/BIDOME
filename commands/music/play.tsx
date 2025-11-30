@@ -308,9 +308,6 @@ export default class Play extends Command {
 
 					if (queue.player.voiceChannelId == undefined) {
 						queue.player.setVoiceChannelId(vc.channel.id);
-						queue.player.connect({
-							setDeaf: true,
-						});
 					}
 
 					if (songsToAdd.length > 1) {
