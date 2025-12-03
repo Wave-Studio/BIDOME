@@ -36,6 +36,10 @@ export default class Stop extends Command {
 				],
 			});
 
+			if (botState != undefined) {
+				botState.disconnect();
+			}
+
 			if (queue != undefined) {
 				queue.deleteQueue();
 			}
