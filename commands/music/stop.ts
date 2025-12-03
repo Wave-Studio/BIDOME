@@ -37,15 +37,18 @@ export default class Stop extends Command {
 			});
 
 			if (botState != undefined) {
-				botState.disconnect();
+				await botState.disconnect();
 			}
 
 			if (queue != undefined) {
-				queue.deleteQueue();
+				await queue.deleteQueue();
 			}
 		} else {
 			const queue = queues.get(ctx.guild!.id)!;
 			if (await doPermCheck(ctx.member!, botState.channel)) {
+				if (botState != undefined) {
+					await botState.disconnect();
+				}
 				queue.deleteQueue(true);
 				await ctx.message.reply({
 					embeds: [
