@@ -48,32 +48,48 @@ export default class Volume extends Command {
 									icon_url: ctx.client.user!.avatarURL(),
 								},
 								title: "Invalid argument",
-								description:
-									"Please select a value larger than 0",
+								description: "Please select a value larger than 0",
 							}).setColor("red"),
 						],
 					});
 				} else {
 					const volume = parseInt(ctx.argString);
-					queue.volume = volume;
-					queue.player.setVolume(volume);
-					await ctx.message.reply({
-						embeds: [
-							new Embed({
-								author: {
-									name: "Bidome bot",
-									icon_url: ctx.client.user!.avatarURL(),
-								},
-								title: "Changed volume",
-								description: `Volume set to ${volume}`,
-								footer: {
-									text: volume > 100
-										? "Audio may be distorted at volumes above 100"
-										: "",
-								},
-							}).setColor("green"),
-						],
-					});
+
+					if (volume > 1000) {
+						await ctx.message.reply({
+							embeds: [
+								new Embed({
+									author: {
+										name: "Bidome bot",
+										icon_url: ctx.client.user!.avatarURL(),
+									},
+									title: "Invalid argument",
+									description: "Please select a value less than 1000",
+								}).setColor("red"),
+							],
+						});
+					} else {
+						queue.volume = volume;
+						queue.player.setVolume(volume);
+						await ctx.message.reply({
+							embeds: [
+								new Embed({
+									author: {
+										name: "Bidome bot",
+										icon_url: ctx.client.user!.avatarURL(),
+									},
+									title: "Changed volume",
+									description: `Volume set to ${volume}`,
+									footer: {
+										text:
+											volume > 100
+												? "Audio may be distorted at volumes above 100"
+												: "",
+									},
+								}).setColor("green"),
+							],
+						});
+					}
 				}
 			} else {
 				await ctx.message.reply({
