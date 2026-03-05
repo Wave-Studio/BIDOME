@@ -9,7 +9,7 @@ import {
 	isMessageComponentInteraction,
 } from "harmony";
 import { doPermCheck, nodes, queues, ServerQueue } from "queue";
-import { Track } from "lavadeno";
+import { Track, SearchResult } from "lavadeno";
 import { emoji } from "emoji";
 import { getRandomInteger, shuffleArray, sleep } from "tools";
 import { getEmote } from "i18n";
@@ -79,8 +79,12 @@ export default class Play extends Command {
 				});
 
 				// Fix unicode breaking this
-				// deno-lint-ignore no-control-regex
-				if (!/^[\x00-\x7F\xA0-\xFF\u0400-\u04FF\u4E00-\u9FFF]*$/u.test(ctx.argString)) {
+				if (
+					// deno-lint-ignore no-control-regex
+					!/^[\x00-\x7F\xA0-\xFF\u0400-\u04FF\u4E00-\u9FFF]*$/u.test(
+						ctx.argString,
+					)
+				) {
 					await sleep(getRandomInteger(1000, 2000));
 					return await message.edit(undefined, {
 						embeds: [
@@ -103,15 +107,32 @@ export default class Play extends Command {
 							ctx.argString,
 						);
 
+				const startsWithLavaSearch = /^((sc|ytm?)search):/i.test(
+					ctx.argString,
+				);
+
+				const sourceMap = {
+					"scsearch:": "soundcloud",
+					"ytsearch:": "youtube",
+					"ytmsearch:": "ytmusic",
+					"bandcamp:": "bandcamp",
+				};
+
+				const [source, ...rest] = ctx.argString.split(":");
+
 				const { loadType, tracks } = await nodes.search({
-					query: ctx.argString,
+					query: startsWithLavaSearch
+						? rest.join(":")
+						: ctx.argString,
 					requester: ctx.author.id,
-					source: isLink
+					source: startsWithLavaSearch
+						? sourceMap[source as keyof typeof sourceMap]
+						: isLink
 						? ctx.argString.includes("youtu")
 							? "youtube"
 							: undefined
 						: "youtube",
-				});
+				}) as SearchResult;
 
 				if (loadType == "error" || loadType == "empty") {
 					await message.edit(undefined, {
@@ -192,7 +213,7 @@ export default class Play extends Command {
 													emojiMap[
 														i as 0 | 1 | 2 | 3 | 4
 													]
-												} - [${track.title}](${track.url})`,
+												} - [${track.title}](${track.uri})`,
 										)
 										.join("\n"),
 									footer: {
@@ -277,8 +298,8 @@ export default class Play extends Command {
 						const bannedSongIDs = ["vhpxylukBxo"];
 
 						for (const song of songsToAdd) {
-							if (song.url == undefined) continue;
-							const url = new URL(song.url);
+							if (song.uri == undefined) continue;
+							const url = new URL(song.uri);
 							const id = url.searchParams.get("v");
 							if (id != null && bannedSongIDs.includes(id)) {
 								await message.edit(undefined, {
@@ -344,7 +365,7 @@ export default class Play extends Command {
 									title: "Enqueued song",
 									description: `Added [${
 										songsToAdd[0].title
-									}](${songsToAdd[0].url}) to the queue!`,
+									}](${songsToAdd[0].uri}) to the queue!`,
 									footer: {
 										text: `Songs in queue: ${
 											queue.player.queue.size + 1

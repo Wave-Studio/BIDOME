@@ -43,7 +43,7 @@ export default class ForceSkip extends Command {
 			const queue = queues.get(ctx.guild!.id)!;
 			if (
 				(await doPermCheck(ctx.member!, botState.channel!)) ||
-				(queue.player.current!.requestedBy as unknown as string) ==
+				(queue.player.current!.requester as unknown as string) ==
 					ctx.author.id
 			) {
 				if (queue.player.queue.size == 0) {

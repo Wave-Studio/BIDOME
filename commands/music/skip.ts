@@ -99,7 +99,7 @@ export default class Skip extends Command {
 											botState.channel,
 										)) ||
 											(queue.player.current!
-													.requestedBy as unknown as string) ==
+													.requester as unknown as string) ==
 												ctx.author.id
 										? "Use forceskip to skip without a vote"
 										: "",

@@ -80,7 +80,7 @@ export default class Remove extends Command {
 						});
 					} else {
 						const position = parseInt(ctx.argString);
-						const track = queue.player.queue.get(position - 1);
+						const track = queue.player.queue.get(position - 1)!;
 						const _remove = queue.player.queue.remove(position - 1);
 
 						await ctx.message.reply({
@@ -92,7 +92,7 @@ export default class Remove extends Command {
 									},
 									title: "Removed song",
 									description:
-										`Removed [${track.title}](${track.url}) from the queue!`,
+										`Removed [${track.title}](${track.uri}) from the queue!`,
 								}).setColor("green"),
 							],
 						});

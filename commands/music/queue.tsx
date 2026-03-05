@@ -70,8 +70,8 @@ export default class Queue extends Command {
 						description: queueEntries
 							.slice(0, 10)
 							.map(
-								({ title, url }, index) =>
-									`${emojiMap[index]} [${title}](${url})`,
+								({ title, uri }, index) =>
+									`${emojiMap[index]} [${title}](${uri})`,
 							)
 							.join("\n"),
 						footer: {

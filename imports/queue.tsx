@@ -41,17 +41,14 @@ export const nodes = new Manager({
 		priority: Deno.env.get(`LAVALINK_${i + 1}_NAME`)!.toLowerCase().includes("primary") ? 1 : 5,
 	})),
 	options: {
-		NodeLinkFeatures: true,
 		clientName: "Bidome/2.0.0",
-		// Disable spotify which causes crashes
-		disableNativeSources: true
 	},
-	sendPayload: async (guildID: string, payload: unknown) => {
+	send: async (guildID: string, payload: unknown) => {
 		const guild = await client.guilds.resolve(guildID);
 		if (guild == undefined) return;
 		const shard = client.shards.get(guild.shardID) as Gateway;
 		// deno-lint-ignore no-explicit-any
-		shard.send(JSON.parse(payload as any));
+		shard.send(payload as any);
 	},
 });
 
@@ -143,7 +140,7 @@ export class ServerQueue {
 		})!;
 
 		this.player.connect({
-			setDeaf: true,
+			selfDeaf: true,
 		});
 
 		playerEventHandlers.set(this.guildId, {
@@ -156,7 +153,7 @@ export class ServerQueue {
 			trackStart: async () => {
 				if (!this.player.connected) {
 					this.player.connect({
-						setDeaf: true,
+						selfDeaf: true,
 					});
 				}
 
@@ -281,7 +278,7 @@ export class ServerQueue {
 	public get nowPlayingMessage(): AllMessageOptions {
 		const song = this.player.current;
 
-		if (song == undefined || song.requestedBy == undefined) {
+		if (song == undefined || song.requester == undefined) {
 			if (song != undefined) {
 				this.deleteQueue();
 			}
@@ -312,7 +309,7 @@ export class ServerQueue {
 					fields: [
 						{
 							name: "Song",
-							value: `[${song.title}](${song.url})`,
+							value: `[${song.title}](${song.uri})`,
 							inline: true,
 						},
 						{
@@ -329,9 +326,9 @@ export class ServerQueue {
 						{
 							name: "Requested by",
 							value: `<@!${
-								typeof song.requestedBy === "string"
-									? song.requestedBy
-									: (song.requestedBy as { id: string })
+								typeof song.requester === "string"
+									? song.requester
+									: (song.requester as { id: string })
 										.id
 							}>`,
 							inline: true,
@@ -358,7 +355,7 @@ export class ServerQueue {
 						},
 					],
 					thumbnail: {
-						url: song.artworkUrl,
+						url: song.artworkUrl ?? undefined,
 					},
 					footer: {
 						text: `Songs in queue: ${
