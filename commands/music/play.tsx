@@ -21,10 +21,18 @@ export default class Play extends Command {
 	override aliases = ["p", "enqueue", "add", ...shuffleCommands];
 	override category = "music";
 	override description = "Play a song";
-	override usage = ["play <song query or URL>", "shuffleplay <playlist URL>"];
+	override usage = ["play <song query or URL>", "shuffleplay <playlist URL>", "play [attachment]"];
 
 	override async execute(ctx: CommandContext) {
 		if (ctx.guild == undefined) return;
+
+		if (ctx.argString == "") {
+			if (ctx.message.attachments.length > 0) {
+				const attachment = ctx.message.attachments[0];
+				ctx.argString = attachment.url;
+			}
+		}
+
 		if (ctx.argString == "") {
 			await ctx.message.reply(undefined, {
 				embeds: [
