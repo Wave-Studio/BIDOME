@@ -120,10 +120,10 @@ export default class Play extends Command {
 				);
 
 				const sourceMap = {
-					"scsearch:": "soundcloud",
-					"ytsearch:": "youtube",
-					"ytmsearch:": "ytmusic",
-					"bandcamp:": "bandcamp",
+					"scsearch": "soundcloud",
+					"ytsearch": "youtube",
+					"ytmsearch": "ytmusic",
+					"bandcamp": "bandcamp",
 				};
 
 				const [source, ...rest] = ctx.argString.split(":");
