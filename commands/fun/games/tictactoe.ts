@@ -7,6 +7,7 @@ export default class TicTacToe extends Command {
 	override description = "Play tic-tac-toe with a friend or a computer!";
 	override usage = "[user's mention or id]";
 	override category = "fun";
+	
 	override async execute(ctx: CommandContext) {
 		let targetPlayer: "ai" | User = "ai";
 		const userId = ctx.argString != ""
