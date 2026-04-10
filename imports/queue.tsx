@@ -439,5 +439,16 @@ export const initLava = (bot: CommandClient) => {
 		});
 	});
 
+	bot.on("voiceStateRemove", (state) => {
+		if (state.user.id != bot.user!.id) return;
+
+		if (queues.has(state.guild?.id ?? "")) {
+			queues.get(state.guild!.id)?.deleteQueue();
+			console.log(
+				`[Lavalink] Bot was disconnected from a voice channel in guild ${state.guild?.id}, deleting queue`,
+			);
+		}
+	});
+
 	nodes.init(bot.user!.id);
 };
