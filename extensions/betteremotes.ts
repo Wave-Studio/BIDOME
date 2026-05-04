@@ -362,7 +362,7 @@ export default class BetterEmotes extends Extension {
 		validEmojisArray: ServerEmoteList[],
 	) {
 		for (const emote of validEmojisArray ?? []) {
-			if (!emote.available) continue;
+			if (typeof emote.available == "boolean" && !emote.available) continue;
 			message = message.replace(
 				new RegExp(`(?!<a?):${emote.name}:(?![0-9]+>)`, "g"),
 				`<${emote.animated ? "a" : ""}:${emote.name}:${emote.id}>`,
@@ -644,11 +644,10 @@ export default class BetterEmotes extends Extension {
 		const serverEmojisArray = this.serverEmoteCache.has(emoji.guild.id)
 			? this.serverEmoteCache.get(emoji.guild.id)
 			: (await emoji.guild.emojis.fetchAll()).map(
-					({ name, id, animated, available }) => ({
+					({ name, id, animated }) => ({
 						name: name!,
 						id: id!,
 						animated: animated!,
-						available: available!,
 					}),
 				);
 
@@ -656,7 +655,6 @@ export default class BetterEmotes extends Extension {
 			name: emoji.name!,
 			id: emoji.id!,
 			animated: emoji.animated!,
-			available: emoji.available!,
 		});
 
 		this.serverEmoteCache.set(emoji.guild.id, serverEmojisArray!);
@@ -669,11 +667,10 @@ export default class BetterEmotes extends Extension {
 		const serverEmojisArray = this.serverEmoteCache.has(emoji.guild.id)
 			? this.serverEmoteCache.get(emoji.guild.id)
 			: (await emoji.guild.emojis.fetchAll()).map(
-					({ name, id, animated, available }) => ({
+					({ name, id, animated }) => ({
 						name: name!,
 						id: id!,
 						animated: animated!,
-						available: available!,
 					}),
 				);
 
@@ -690,11 +687,10 @@ export default class BetterEmotes extends Extension {
 		let serverEmojisArray = this.serverEmoteCache.has(before.guild.id)
 			? this.serverEmoteCache.get(before.guild.id)
 			: (await before.guild.emojis.fetchAll()).map(
-					({ name, id, animated, available }) => ({
+					({ name, id, animated }) => ({
 						name: name!,
 						id: id!,
 						animated: animated!,
-						available: available!,
 					}),
 				);
 
@@ -703,7 +699,6 @@ export default class BetterEmotes extends Extension {
 			name: after.name!,
 			id: after.id!,
 			animated: after.animated!,
-			available: after.available!,
 		});
 
 		this.serverEmoteCache.set(before.guild.id, serverEmojisArray);
