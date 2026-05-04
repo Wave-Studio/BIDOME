@@ -960,7 +960,7 @@ export default class BetterEmotes extends Extension {
 		ownerOnly: true,
 		guildOnly: true,
 	})
-	async invalidateServerCache(_: Extension, ctx: CommandContext) {
+	async invalidateServerCache(ctx: CommandContext) {
 		const serverId = ctx.argString ?? ctx.guild?.id;
 
 		const guild = await ctx.client.guilds.resolve(serverId);
