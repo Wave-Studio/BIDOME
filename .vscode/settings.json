@@ -1,14 +1,8 @@
 {
 	"deno.enable": true,
 	"deno.lint": true,
-	"deno.unstable": true,
-	"deno.importMap": "./imports.json",
-	"deno.config": "./deno.jsonc",
-	"deno.suggest.imports.hosts": {
-		"https://deno.land": true,
-		"https://x.nest.land": true,
-		"https://crux.land": true,
-		"https://code.harmony.rocks": false
-	},
+	"deno.unstable": [
+		"desktop"
+	],
 	"workbench.iconTheme": "vscode-icons"
 }

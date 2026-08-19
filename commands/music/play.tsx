@@ -157,11 +157,17 @@ export default class Play extends Command {
 						],
 					});
 				} else {
-					let songsToAdd: Track[] = [];
+					const songsToAdd: Track[] = [];
 
 					if (isLink) {
 						switch (loadType) {
 							case "playlist": {
+								const toAddSongs: Track[] = [];
+
+								for (const track of tracks) {
+									toAddSongs.push(track);
+								}
+
 								if (
 									shuffleCommands.includes(
 										ctx.message.content
@@ -170,18 +176,11 @@ export default class Play extends Command {
 											.split(" ")[0],
 									)
 								) {
-									const tracks: Track[] = [];
-
-									for (const track of tracks) {
-										songsToAdd.push(track);
-									}
-
-									songsToAdd = shuffleArray(songsToAdd);
+									songsToAdd.push(...shuffleArray(toAddSongs));
 								} else {
-									for (const track of tracks) {
-										songsToAdd.push(track);
-									}
+									songsToAdd.push(...toAddSongs);
 								}
+
 								break;
 							}
 
